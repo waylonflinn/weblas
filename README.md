@@ -1,2 +1,3 @@
-# webblas
-GPU accelerated BLAS for javascript
+![logo](weblas.png)
+
+GPU accelerated BLAS for your browser, no add-ons required.
