@@ -8,10 +8,19 @@ GPU accelerated BLAS for your browser, no add-ons required.
 This is mostly a preview to whet your appetite for the soon-to-be-released (in a week or so)
 real thing.
 
+## Example
+First, include the `weblas.js` file (from a release or the `dist` directory).
+
+```html
+<script src="./weblas.js"></script>
 ```
 
-var gl = new WebGL(),
-	gemm = new GEMMFloatCalculator(gl);
+Then use it like this (in another `script` tag).
+
+```javascript
+
+var gl = new weblas.WebGL(),
+	gemm = new weblas.GEMMFloatCalculator(gl);
 
 
 var h1 = 1024, w1 = 1024,
