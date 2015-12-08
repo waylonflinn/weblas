@@ -5,9 +5,8 @@ some parts Copyright (c) 2014 Jonathan Watmough
 
 webgl.js
 
-multiply matrices up to 2048 x 2048 on GPU's that support OES_texture_float
-extension.
-input is encoded into the red and green channels of an input texture and
+multiply matrices up to 2048 x 2048 on GPUs that support OES_texture_float
+extension. input is encoded into the red and green channels of an input texture and
 calculations are done using a custom fragment shader.
 
 */

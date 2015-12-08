@@ -26,7 +26,7 @@ var alpha = 1.0; // not yet implemented
 var beta = 0.0;  // not yet implemented
 var C = {};      // not yet implemented
 
-
+// result will contain matrix multiply of A x B
 result = gemm.calculate(h1, w1, h2, w2, alpha, beta, A, B, C);
 
 
