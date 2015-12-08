@@ -2,15 +2,10 @@
 
 GPU accelerated BLAS for your browser, no add-ons required.
 
+*Current version is an early preview*
 
-# Extra Super Alpha
+# Example
 
-This is mostly a preview to whet your appetite for the soon-to-be-released (in a week or so)
-real thing.
-
-## Example
-
-### Browser
 First, include the `weblas.js` file (from a release or the `dist` directory).
 
 ```html
