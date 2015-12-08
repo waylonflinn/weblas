@@ -9,15 +9,18 @@ This is mostly a preview to whet your appetite for the soon-to-be-released (in a
 real thing.
 
 ## Example
+
+### Browser
 First, include the `weblas.js` file (from a release or the `dist` directory).
 
 ```html
-<script src="./weblas.js"></script>
+<script type="text/javascript" src="weblas.js"></script>
 ```
 
-Then use it like this (in another `script` tag).
+Then use it like this.
 
-```javascript
+```html
+<script>
 
 var gl = new weblas.WebGL(),
 	gemm = new weblas.GEMMFloatCalculator(gl);
@@ -38,5 +41,5 @@ var C = {};      // not yet implemented
 // result will contain matrix multiply of A x B
 result = gemm.calculate(h1, w1, h2, w2, alpha, beta, A, B, C);
 
-
+</script>
 ```
