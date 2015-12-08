@@ -1,122 +1,13 @@
-/*
-Copyright (c) 2015 Waylon Flinn
+(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.weblas = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+var WebGL = require("./lib/webgl"),
+    GEMMFloatCalculator = require("./lib/gemmfloatcalculator");
 
-some parts Copyright (c) 2014 Jonathan Watmough
-
-webgl.js
-
-multiply matrices up to 2048 x 2048 on GPUs that support OES_texture_float
-extension. input is encoded into the red and green channels of an input texture and
-calculations are done using a custom fragment shader.
-
-*/
-
-
-/*
-	A WebGL context associated with a specific canvas element.
-
-	* keeps webgl context
-	* translates numbers into textures
-	* compiles and stores kernels
- */
-function WebGL(options) {
-
-	var glOptions,
-		ext;
-
-	options = options || {};
-
-	// canvas
-	if(typeof options.canvas === 'undefined')
-		this.canvas = document.createElement('canvas');
-	else
-		this.canvas = options.canvas;
-
-	// context
-	glOptions = { premultipliedAlpha: false, preserveDrawingBuffer: false };
-	this.context = this.canvas.getContext("experimental-webgl", glOptions);
-
-	if (typeof this.context === 'undefined')
-		throw new Error("No support for Webgl.");
-
-	// float texture extension
-	try {
-		ext = this.context.getExtension('OES_texture_float');
-	} catch(e) {
-
-	}
-	if ( !ext ) {
-		console.log("No support for OES_texture_float extension.");
-		this.hasFloat = false;
-	} else {
-		this.hasFloat = true;
-	}
-
-	// create pass through vertex shader
-	this.vertexShader = this.context.createShader(this.context.VERTEX_SHADER);
-	this.context.shaderSource(this.vertexShader, WebGL.PASS_THROUGH_VERTEX_SHADER);
-	this.context.compileShader(this.vertexShader);
-
+module.exports = {
+    "WebGL" : WebGL,
+    "GEMMFloatCalculator" : GEMMFloatCalculator
 };
 
-WebGL.PASS_THROUGH_VERTEX_SHADER = "\
-// vertex shader for a single quad                                           \n\
-// work is performed based on the texels being passed through                \n\
-// the operation specific texture shader.                                    \n\
-#ifdef GL_ES                                                                 \n\
-precision highp float;                                                       \n\
-#endif                                                                       \n\
-attribute vec3 aPos;                                                         \n\
-attribute vec2 aTex;                                                         \n\
-varying vec2   vTex;                                                         \n\
-void main(void)                                                              \n\
-{                                                                            \n\
-	// just pass the position and texture coords                             \n\
-	gl_Position = vec4(aPos, 1.0);                                           \n\
-	vTex = aTex;                                                             \n\
-}                                                                            \n\
-";
-
-/*  Create a shader program based on a pass through vertex shader and
-	the supplied operation specific fragment shader.
-
-	fragmentShaderSource - string containing the fragment shader source code.
- */
-WebGL.prototype.createProgram = function(fragmentShaderSource){
-	var gl = this.context,
-		fragmentShader;
-
-	// compile the provided fragment/texture shader
-	fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
-	gl.shaderSource(fragmentShader, fragmentShaderSource);
-	gl.compileShader(fragmentShader);
-
-	// did it compile correctly?
-	if (gl.getShaderParameter(fragmentShader, gl.COMPILE_STATUS) == 0)
-		throw new Error(gl.getShaderInfoLog(fragmentShader));
-
-	// link the program specific fragment shader and the generic pass through
-	// shader into a program
-	var program = gl.createProgram();
-	gl.attachShader(program, this.vertexShader);
-	gl.attachShader(program, fragmentShader);
-	gl.linkProgram(program);
-
-	return program;
-};
-
-WebGL.prototype.createDestinationTexture = function() {
-	var gl = this.context;
-
-	// create and bind texture to render to
-	var destTexture = gl.createTexture();
-	gl.activeTexture(gl.TEXTURE2);
-	gl.bindTexture(gl.TEXTURE_2D, destTexture);
-	gl.texImage2D(gl.TEXTURE_2D,/*level*/0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, this.canvas);
-
-	return destTexture;
-};
-
+},{"./lib/gemmfloatcalculator":2,"./lib/webgl":3}],2:[function(require,module,exports){
 
 
 /* A calculator object for the Float texture based GEMM
@@ -136,6 +27,8 @@ function GEMMFloatCalculator(webgl){
 	this.program = this.webgl.createProgram(GEMMFloatCalculator.FRAGMENT_SHADER);
 
 }
+
+module.exports = GEMMFloatCalculator;
 
 GEMMFloatCalculator.FRAGMENT_SHADER = "                                      \n\
 // fragment shader that calculates the sum of the passed row and         \n\
@@ -164,7 +57,7 @@ float sumrowcol(float row, float col) {                                  \n\
 	float tt = 0.5 * uStepT;       // row on source texture              \n\
 	float r = (row + 0.5)*uStepT;  // moving texture coordinate          \n\
 	float c = (col + 0.5)*uStepS;  // moving texture coordinate          \n\
-	for (int pos=0 ; pos<2048 ; ++pos) {                                 \n\
+	for (int pos=0 ; pos<4096 ; ++pos) {                                 \n\
 		if(pos>=uLength) break;    // stop when we finish the row/column \n\
 		float m1 = texture2D(usampler,vec2(ss,r)).r;                     \n\
 		float m2 = texture2D(usampler,vec2(c,tt)).g;                     \n\
@@ -281,9 +174,8 @@ GEMMFloatCalculator.prototype.setupInputTexture = function(d1, h1, w1, d2, h2, w
 
 GEMMFloatCalculator.TEXTURE_UNIFORM_NAME = "usampler";
 
-/* Create a texture from the given data and bind it to the given shader program
-_bindDualSrcTexture
-	w = Math.max(m1.c,m2.c), h = Math.max(m1.r,m2.r)
+/* Create a texture from the given texel data and bind it to our shader program.
+
 */
 GEMMFloatCalculator.prototype.bindData = function(texels, w, h){
 	var gl = this.webgl.context,
@@ -339,22 +231,18 @@ GEMMFloatCalculator.prototype.calculate = function(h1, w1, h2, w2, alpha, beta, 
 		rawbuffer;
 
 
-
-
-	// create destination buffer
-	rawbuffer = new ArrayBuffer(h1*w2*Float32Array.BYTES_PER_ELEMENT);
-
 	// set calculator program to current shader program
 	gl.useProgram(this.program);
 
-	// d1, h1, w1, d2, h2, w2
+	// create and bind our input texture using matrix data
 	this.setupInputTexture(A, h1, w1, B, h2, w2);
 
 
-	// bind uniforms, etc
+	// set the data specific variables in our shader program
 	this.bindUniforms(h1, w1, h2, w2);
 	this.bindVertices();
 
+	// create our destination texture
 	destTexture = this.webgl.createDestinationTexture();
 	frameBuffer = this.bindFramebuffer(destTexture, h1, w2);
 
@@ -362,12 +250,17 @@ GEMMFloatCalculator.prototype.calculate = function(h1, w1, h2, w2, alpha, beta, 
 	if( gl.checkFramebufferStatus(gl.FRAMEBUFFER) != gl.FRAMEBUFFER_COMPLETE)
 		throw new Error("Bound framebuffer is not complete.");
 
+	// initiate calculation
 	gl.drawElements(gl.TRIANGLES, /*num items*/6, gl.UNSIGNED_SHORT, 0);
 
-	// extract the product and return in new matrix
+	// create destination buffer
+	rawbuffer = new ArrayBuffer(h1*w2*Float32Array.BYTES_PER_ELEMENT);
+
+	// read the result into our buffer, as bytes
 	prod = new Uint8Array(rawbuffer);
 	gl.readPixels(0, 0, w2, h1, gl.RGBA, gl.UNSIGNED_BYTE, prod);
 
+	// create and return a view over result bytes as a float array
 	return new Float32Array(rawbuffer); // h1 x w2
 };
 
@@ -427,3 +320,133 @@ GEMMFloatCalculator.prototype.bindVertices = function() {
 	var vertexIndices = [0, 1, 2, 0, 2, 3];
 	gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(vertexIndices), gl.STATIC_DRAW);
 };
+
+},{}],3:[function(require,module,exports){
+/*
+Copyright (c) 2015 Waylon Flinn
+
+some parts Copyright (c) 2014 Jonathan Watmough
+
+webgl.js
+
+multiply matrices up to 4096 x 4096 on GPUs that support OES_texture_float
+extension. input is encoded into the red and green channels of an input texture and
+calculations are done using a custom fragment shader.
+
+*/
+
+
+/*
+	A WebGL context associated with a specific canvas element.
+
+	* creates a canvas
+	* sets up webgl context
+	* translates numbers into textures
+	* compiles shader programs for executing math (when supplied with an
+		operation specific fragment shader)
+ */
+function WebGL(options) {
+
+	var glOptions,
+		ext;
+
+	options = options || {};
+
+	// canvas
+	if(typeof options.canvas === 'undefined')
+		this.canvas = document.createElement('canvas');
+	else
+		this.canvas = options.canvas;
+
+	// context
+	glOptions = { premultipliedAlpha: false, preserveDrawingBuffer: false };
+	this.context = this.canvas.getContext("experimental-webgl", glOptions);
+
+	if (typeof this.context === 'undefined')
+		throw new Error("No support for Webgl.");
+
+	// float texture extension
+	try {
+		ext = this.context.getExtension('OES_texture_float');
+	} catch(e) {
+
+	}
+	if ( !ext ) {
+		console.log("No support for OES_texture_float extension.");
+		this.hasFloat = false;
+	} else {
+		this.hasFloat = true;
+	}
+
+	// create pass through vertex shader
+	this.vertexShader = this.context.createShader(this.context.VERTEX_SHADER);
+	this.context.shaderSource(this.vertexShader, WebGL.PASS_THROUGH_VERTEX_SHADER);
+	this.context.compileShader(this.vertexShader);
+
+};
+
+module.exports = WebGL;
+
+WebGL.PASS_THROUGH_VERTEX_SHADER = "\
+// vertex shader for a single quad                                           \n\
+// work is performed based on the texels being passed through                \n\
+// the operation specific texture shader.                                    \n\
+#ifdef GL_ES                                                                 \n\
+precision highp float;                                                       \n\
+#endif                                                                       \n\
+attribute vec3 aPos;                                                         \n\
+attribute vec2 aTex;                                                         \n\
+varying vec2   vTex;                                                         \n\
+void main(void)                                                              \n\
+{                                                                            \n\
+	// just pass the position and texture coords                             \n\
+	gl_Position = vec4(aPos, 1.0);                                           \n\
+	vTex = aTex;                                                             \n\
+}                                                                            \n\
+";
+
+/*  Create a shader program based on a pass through vertex shader and
+	the supplied operation specific fragment shader.
+
+	fragmentShaderSource - string containing the fragment shader source code.
+ */
+WebGL.prototype.createProgram = function(fragmentShaderSource){
+	var gl = this.context,
+		fragmentShader;
+
+	// compile the provided fragment/texture shader
+	fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
+	gl.shaderSource(fragmentShader, fragmentShaderSource);
+	gl.compileShader(fragmentShader);
+
+	// did it compile correctly?
+	if (gl.getShaderParameter(fragmentShader, gl.COMPILE_STATUS) == 0)
+		throw new Error(gl.getShaderInfoLog(fragmentShader));
+
+	// link the program specific fragment shader and the generic pass through
+	// shader into a program
+	var program = gl.createProgram();
+	gl.attachShader(program, this.vertexShader);
+	gl.attachShader(program, fragmentShader);
+	gl.linkProgram(program);
+
+	return program;
+};
+
+/* Create and bind a texture to store the result.
+   Requires canvas height and width be set to size of output matrix.
+ */
+WebGL.prototype.createDestinationTexture = function() {
+	var gl = this.context;
+
+	// create and bind texture to render to
+	var destTexture = gl.createTexture();
+	gl.activeTexture(gl.TEXTURE2);
+	gl.bindTexture(gl.TEXTURE_2D, destTexture);
+	gl.texImage2D(gl.TEXTURE_2D,/*level*/0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, this.canvas);
+
+	return destTexture;
+};
+
+},{}]},{},[1])(1)
+});

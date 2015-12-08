@@ -1,0 +1,39 @@
+{
+  "name": "weblas",
+  "version": "0.1.0",
+  "description": "GPU accelerated BLAS for node and the browser",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib",
+    "example": "example",
+    "test": "test",
+    "dist" : "dist"
+  },
+  "dependencies": {
+    "tape": "^4.2.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "tap test/*.js",
+    "browserify" : "browserify index.js --s weblas > dist/weblas.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/waylonflinn/weblas.git"
+  },
+  "keywords": [
+    "gpu",
+    "blas",
+    "gemm",
+    "matrix",
+    "multiply",
+    "neural network",
+    "deep learning"
+  ],
+  "author": "Waylon Flinn <waylonflinn@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/waylonflinn/weblas/issues"
+  },
+  "homepage": "https://github.com/waylonflinn/weblas"
+}
