@@ -10,9 +10,10 @@
     "dist" : "dist"
   },
   "dependencies": {
+  },
+  "devDependencies": {
     "tape": "^4.2.2"
   },
-  "devDependencies": {},
   "scripts": {
     "test": "tap test/*.js",
     "browserify" : "browserify index.js --s weblas > dist/weblas.js"
