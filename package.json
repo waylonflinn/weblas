@@ -15,7 +15,7 @@
     "tape": "^4.2.2"
   },
   "scripts": {
-    "test": "tap test/*.js",
+    "test": "tape test/*.js",
     "browserify" : "browserify index.js --s weblas > dist/weblas.js"
   },
   "repository": {
