@@ -16,7 +16,7 @@
   },
   "scripts": {
     "test": "tape test/*.js",
-    "browserify" : "browserify index.js --s weblas > dist/weblas.js"
+    "build" : "browserify index.js --s weblas > dist/weblas.js"
   },
   "repository": {
     "type": "git",
