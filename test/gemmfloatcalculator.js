@@ -20,42 +20,50 @@ var webgl = new WebGL(),
 var dataDirectory = 'test/data/',
 	matrixFiles = ['a.json', 'b.json', 'c.json'];
 
-tape("allclose", function(t){
-	t.plan(1);
-	var a, b, c, // javascript arrays
-		A, B, C; // typed arrays
+function generateTestCase(prefix){
+	return function(t){
+		t.plan(1);
+		var a, b, c, // javascript arrays
+			A, B, C; // typed arrays
 
-		// directory containing matrix data files for current test
-	var testDirectory = dataDirectory + '001/',
-		// array of paths to matrix data files for current test
-		testFiles = matrixFiles.map(function(item){ return testDirectory + item;});
+			// directory containing matrix data files for current test
+		var testDirectory = dataDirectory + prefix + '/',
+			// array of paths to matrix data files for current test
+			testFiles = matrixFiles.map(function(item){ return testDirectory + item;});
 
-	async.map(testFiles, loader.load,
-		function(err, results){
 
-			// results contains three strings.
-			// each string contains the contents of a file
-			// files contain JSON describing a matrix (2D array)
-			a = JSON.parse(results[0]);
-			b = JSON.parse(results[1]);
-			c = JSON.parse(results[2]);
+		//console.log(testFiles);
+		async.map(testFiles, loader.load,
+			function(err, results){
 
-			if(!(a[0] && a[0].length && b && a[0].length == b.length))
-				throw new Error("malformed data");
+				// results contains three strings.
+				// each string contains the contents of a file
+				// files contain JSON describing a matrix (2D array)
+				a = JSON.parse(results[0]);
+				b = JSON.parse(results[1]);
+				c = JSON.parse(results[2]);
 
-			A = WebGL.fromArray(a);
-			B = WebGL.fromArray(b);
-			C = WebGL.fromArray(c);
+				if(!(a[0] && a[0].length && b && a[0].length == b.length))
+					throw new Error("malformed data");
 
-			var m = a.length,
-				k = b.length,
-				n = b[0].length,
-				alpha = 1.0,
-				beta = 0.0;
+				A = WebGL.fromArray(a);
+				B = WebGL.fromArray(b);
+				C = WebGL.fromArray(c);
 
-			result = calculator.calculate(m, n, k, alpha, A, B, beta, null);
+				var m = a.length,
+					k = b.length,
+					n = b[0].length,
+					alpha = 1.0,
+					beta = 0.0;
 
-			t.assert(test.allclose(C, result), m + "x" + k + " times " + k + "x" + n);
-		}
-	);
-});
+				//console.log(m + "x" + k + " times " + k + "x" + n);
+
+				result = calculator.calculate(m, n, k, alpha, A, B, beta, null);
+
+				t.assert(test.allclose(C, result), m + "x" + k + " times " + k + "x" + n);
+			}
+		);
+	};
+}
+
+tape("allclose", generateTestCase("0005"));
