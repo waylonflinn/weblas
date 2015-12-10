@@ -11,14 +11,19 @@ from docopt import docopt
 import json
 import numpy as np
 
-if __name__ == '__main__':
-	arguments = docopt(__doc__, version='JSON Matrix Generator')
+def create_matrix_multiply(prefix, a, b):
 
-	if '<dir>' in arguments and arguments['<dir>']:
-		prefix = arguments['<dir>'] + "/"
+	prefix = prefix + '/'
+	c = np.dot(a, b)
 
-	else:
-		prefix = "./"
+	filename = 'c.json'
+
+	with open(prefix + filename, 'w') as f:
+		json.dump(c.tolist(), f)
+
+def open_and_multiply_matrices(prefix):
+
+	prefix = prefix + "/"
 
 	with open(prefix + 'a.json', 'r') as f:
 		a = np.array(json.load(f))
@@ -26,9 +31,15 @@ if __name__ == '__main__':
 	with open(prefix + 'b.json', 'r') as f:
 		b = np.array(json.load(f))
 
-	c = np.dot(a, b)
+	create_matrix_multiply(prefix, a, b)
 
-	filename = 'c.json'
+if __name__ == '__main__':
+	arguments = docopt(__doc__, version='JSON Matrix Generator')
 
-	with open(prefix + filename, 'w') as f:
-		json.dump(c.tolist(), f)
+	if '<dir>' in arguments and arguments['<dir>']:
+		prefix = arguments['<dir>']
+
+	else:
+		prefix = "./"
+
+	open_and_multiply_matrices(prefix)

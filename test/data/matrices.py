@@ -21,6 +21,26 @@ def create_matrix_json(path, shape):
 	with open(path, 'w') as f:
 		json.dump(matrix.tolist(), f)
 
+	return matrix
+
+def create_matrices(m, n, k, prefix):
+
+	prefix = prefix + "/"
+	if not os.path.exists(prefix):
+		os.makedirs(prefix)
+
+	matrix_spec = [
+		(prefix + 'a.json' , (m, k)),
+		(prefix + 'b.json' , (k, n))
+	]
+
+	matrices = []
+
+	for (path, shape) in matrix_spec:
+		matrices.append(create_matrix_json(path, shape))
+
+	return matrices
+
 if __name__ == '__main__':
 	arguments = docopt(__doc__, version='JSON Matrix Generator')
 
@@ -29,17 +49,8 @@ if __name__ == '__main__':
 	n = int(arguments['<n>']) # columns in b
 
 	if '<dir>' in arguments and arguments['<dir>']:
-		prefix = arguments['<dir>'] + "/"
-
-		if not os.path.exists(prefix):
-			os.makedirs(prefix)
+		prefix = arguments['<dir>']
 	else:
 		prefix = "./"
 
-	matrices = {
-		prefix + 'a.json' : (m, k),
-		prefix + 'b.json' : (k, n)
-	}
-
-	for (path, shape) in matrices.items():
-		create_matrix_json(path, shape)
+	create_matrices(m, n, k, prefix)
