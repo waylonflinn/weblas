@@ -31,28 +31,31 @@ tape("allclose", function(t){
 		testFiles = matrixFiles.map(function(item){ return testDirectory + item;});
 
 	async.map(testFiles, loader.load,
-	function(err, results){
+		function(err, results){
 
-		// results contains three strings.
-		// each string contains the contents of a file
-		// files contain JSON describing a matrix (2D array)
-		a = JSON.parse(results[0]);
-		b = JSON.parse(results[1]);
-		c = JSON.parse(results[2]);
+			// results contains three strings.
+			// each string contains the contents of a file
+			// files contain JSON describing a matrix (2D array)
+			a = JSON.parse(results[0]);
+			b = JSON.parse(results[1]);
+			c = JSON.parse(results[2]);
 
-		A = WebGL.fromArray(a);
-		B = WebGL.fromArray(b);
-		C = WebGL.fromArray(c);
+			if(!(a[0] && a[0].length && b && a[0].length == b.length))
+				throw new Error("malformed data");
 
-		var h1 = a.length,
-			w1 = a[0].length,
-			h2 = b.length,
-			w2 = b[0].length,
-			alpha = 1.0,
-			beta = 0.0;
+			A = WebGL.fromArray(a);
+			B = WebGL.fromArray(b);
+			C = WebGL.fromArray(c);
 
-		result = calculator.calculate(h1, w1, h2, w2, alpha, beta, A, B, null);
+			var m = a.length,
+				k = b.length,
+				n = b[0].length,
+				alpha = 1.0,
+				beta = 0.0;
 
-		t.assert(test.allclose(C, result), h1 + "x" + w1 + " times " + h2 + "x" + w2);
-	});
+			result = calculator.calculate(m, n, k, alpha, A, B, beta, null);
+
+			t.assert(test.allclose(C, result), m + "x" + k + " times " + k + "x" + n);
+		}
+	);
 });
