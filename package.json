@@ -15,7 +15,7 @@
     "tape": "^4.2.2"
   },
   "scripts": {
-    "test": "tape test/*.js",
+    "test": "browserify test/*.js | testling -x google-chrome",
     "build" : "browserify index.js --s weblas > dist/weblas.js"
   },
   "repository": {
