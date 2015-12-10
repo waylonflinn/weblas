@@ -1,13 +1,17 @@
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.weblas = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 var WebGL = require("./lib/webgl"),
-    GEMMFloatCalculator = require("./lib/gemmfloatcalculator");
+    GEMMFloatCalculator = require("./lib/gemmfloatcalculator"),
+    test = require("./lib/test");
+
+
 
 module.exports = {
     "WebGL" : WebGL,
-    "GEMMFloatCalculator" : GEMMFloatCalculator
+    "GEMMFloatCalculator" : GEMMFloatCalculator,
+    "test" : test
 };
 
-},{"./lib/gemmfloatcalculator":2,"./lib/webgl":3}],2:[function(require,module,exports){
+},{"./lib/gemmfloatcalculator":2,"./lib/test":3,"./lib/webgl":4}],2:[function(require,module,exports){
 
 
 /* A calculator object for the Float texture based GEMM
@@ -223,14 +227,22 @@ GEMMFloatCalculator.prototype.bindFramebuffer = function(dstTex, h1, w2) {
 	return this.framebuffer;
 };
 
-GEMMFloatCalculator.prototype.calculate = function(h1, w1, h2, w2, alpha, beta, A, B, C){
+// signature should look like this:
+// ( TRANSA, TRANSB, M, N, K, ALPHA, A, LDA, B, LDB, BETA, C, LDC )
+// http://www.math.utah.edu/software/lapack/lapack-blas/dgemm.html
+GEMMFloatCalculator.prototype.calculate = function(m, n, k, alpha, A, B, beta, C){
 
 	var gl = this.webgl.context,
 		destTexture,
 		frameBuffer,
 		rawbuffer;
 
+	var h1 = m,
+		w1 = k,
+		h2 = k
+		w2 = n;
 
+	//console.log(h1 + "x" + w1 + " times " + h2 + "x" + w2);
 	// set calculator program to current shader program
 	gl.useProgram(this.program);
 
@@ -322,6 +334,56 @@ GEMMFloatCalculator.prototype.bindVertices = function() {
 };
 
 },{}],3:[function(require,module,exports){
+/* Collection of helper methods for testing numerical computation
+ */
+test = {};
+
+/* Check all entries in two TypedArrays of identical length for approximate
+    equality.
+    If the following equation is element-wise true, returns true
+
+    absolute(a - b) <= (atol + rtol * absolute(b))
+
+    from numpy.allclose
+ */
+test.allclose = function(a, b, RTOL, ATOL){
+    RTOL= RTOL || 1e-05;  // for 32 bit precision: 1e-06
+    ATOL= ATOL || 1e-12;
+
+    if(a.length != b.length){
+        console.log("lengths not equal: " + a.length + ", " + b.length);
+        return false;
+    }
+
+    var result;
+    for(var i = 0; i < a.length; i++){
+
+        result = Math.abs(a[i] - b[i]) <= ATOL + RTOL * Math.abs(b[i]);
+
+        if(!result) return result;
+    }
+
+    return true;
+};
+
+test.randomArray = function(N, M){
+
+	var data = [];
+
+	for(var i = 0; i < N; i++){
+		var row = [];
+		for(var j = 0; j < M; j++){
+			row[j] = Math.random() / Math.sqrt(N);
+		}
+		data.push(row);
+	}
+
+	return data;
+};
+
+module.exports = test;
+
+},{}],4:[function(require,module,exports){
 /*
 Copyright (c) 2015 Waylon Flinn
 
@@ -446,6 +508,35 @@ WebGL.prototype.createDestinationTexture = function() {
 	gl.texImage2D(gl.TEXTURE_2D,/*level*/0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, this.canvas);
 
 	return destTexture;
+};
+
+/* create a typed array from a 2D javascript array */
+WebGL.fromArray = function(array, type, tranpose) {
+	var shape = [],
+			data,
+			c;   // number of columns
+
+	if(!tranpose){
+		shape[0] = array.length;
+		shape[1] = array[0].length;
+	} else {
+		shape[1] = array.length;
+		shape[0] = array[0].length;
+	}
+	c = shape[1];
+
+	type = type || Float32Array;
+
+	data = new type(shape[0]*shape[1]);
+
+	for (var ii = 0; ii < shape[0]; ++ii)
+		for (var jj = 0; jj < shape[1]; ++jj)
+		if(!tranpose)
+			data[ii*c + jj] = array[ii][jj];
+		else
+			data[ii*c + jj] = array[jj][ii];
+
+	return data;
 };
 
 },{}]},{},[1])(1)
