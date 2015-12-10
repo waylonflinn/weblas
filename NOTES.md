@@ -12,6 +12,9 @@ Things I hope to make better
 * [Synaptic.js](https://github.com/cazala/synaptic)
 * [Convnetjs](https://github.com/karpathy/convnetjs)
 
+# Performance Targets
+[Matrix Multiply BLAS Benchmarks](http://gcdart.blogspot.com/2013/06/fast-matrix-multiply-and-ml.html)
+
 # Based On
 Where the ideas (and sometimes code) come from
 
