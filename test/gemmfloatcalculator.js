@@ -58,7 +58,13 @@ function generateTestCase(prefix){
 
 				//console.log(m + "x" + k + " times " + k + "x" + n);
 
-				result = calculator.calculate(m, n, k, alpha, A, B, beta, null);
+				try{
+					result = calculator.calculate(m, n, k, alpha, A, B, beta, null);
+				}
+				catch(ex){
+					t.assert(false, m + "x" + k + " times " + k + "x" + n + " : " + ex);
+					return;
+				}
 
 				t.assert(test.allclose(C, result), m + "x" + k + " times " + k + "x" + n);
 			}
@@ -66,4 +72,10 @@ function generateTestCase(prefix){
 	};
 }
 
-tape("allclose", generateTestCase("0005"));
+var suite = require('./data/micro.json');
+
+// suite configuration file uses directory name as key
+for(directory in suite){
+
+	tape("allclose", generateTestCase(directory));
+}
