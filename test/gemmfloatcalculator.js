@@ -62,11 +62,11 @@ function generateTestCase(prefix){
 					result = calculator.calculate(m, n, k, alpha, A, B, beta, null);
 				}
 				catch(ex){
-					t.assert(false, m + "x" + k + " times " + k + "x" + n + " : " + ex);
+					t.assert(false, ex);
 					return;
 				}
 
-				t.assert(test.allclose(C, result), m + "x" + k + " times " + k + "x" + n);
+				t.assert(test.allclose(C, result), "allclose");
 			}
 		);
 	};
@@ -77,5 +77,9 @@ var suite = require('./data/micro.json');
 // suite configuration file uses directory name as key
 for(directory in suite){
 
-	tape("allclose", generateTestCase(directory));
+	var m = suite[directory][0],
+		n = suite[directory][1],
+		k = suite[directory][2];
+
+	tape(m + "x" + k + " times " + k + "x" + n, generateTestCase(directory));
 }
