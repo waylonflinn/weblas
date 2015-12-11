@@ -72,7 +72,7 @@ function generateTestCase(prefix){
 	};
 }
 
-var suite = require('./data/micro.json');
+var suite = require('./data/small.json');
 
 // suite configuration file uses directory name as key
 for(directory in suite){
