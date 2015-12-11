@@ -23,15 +23,21 @@ if __name__ == '__main__':
 
 	for [number, sizes] in sorted_tests:
 
-		m = sizes[0]
-		n = sizes[1]
-		k = sizes[2]
-		# run matrix creation
-		#os.system("./matrices.py {0} {1} {2} {3}".format(m, n, k, number))
-		[a, b] = matrices.create_matrices(m, n, k, number)
+		if os.path.exists(number):
+			# skip existing directories
+			print("Skipping {0}".format(number))
+		else:
+			os.makedirs(number)
 
-		# run mutliplication
-		#os.system("./multiply.py {0}".format(number))
-		multiply.create_matrix_multiply(number, a, b)
+			m = sizes[0]
+			n = sizes[1]
+			k = sizes[2]
+			# run matrix creation
+			#os.system("./matrices.py {0} {1} {2} {3}".format(m, n, k, number))
+			[a, b] = matrices.create_matrices(m, n, k, number)
 
-		print("Created {0}".format(number))
+			# run mutliplication
+			#os.system("./multiply.py {0}".format(number))
+			multiply.create_matrix_multiply(number, a, b)
+
+			print("Created {0}".format(number))

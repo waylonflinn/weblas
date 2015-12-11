@@ -26,8 +26,6 @@ def create_matrix_json(path, shape):
 def create_matrices(m, n, k, prefix):
 
 	prefix = prefix + "/"
-	if not os.path.exists(prefix):
-		os.makedirs(prefix)
 
 	matrix_spec = [
 		(prefix + 'a.json' , (m, k)),
