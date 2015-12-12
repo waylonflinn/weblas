@@ -43,7 +43,8 @@ function generateTestCase(prefix){
 				b = JSON.parse(results[1]);
 				c = JSON.parse(results[2]);
 
-				if(!(a[0] && a[0].length && b && a[0].length == b.length))
+				if(!(a[0] && a[0].length && b && a[0].length == b.length
+					&& a.length == c.length && b[0].length == c[0].length ))
 					throw new Error("malformed data");
 
 				A = WebGL.fromArray(a);
