@@ -9,16 +9,18 @@
     "test": "test",
     "dist": "dist"
   },
-  "dependencies": {
-  },
+  "dependencies": {},
   "devDependencies": {
-    "tape": "^4.2.2",
+    "async": "^1.5.0",
+    "benchmark": "^1.0.0",
     "floader": "^1.0.1",
-    "async": "^1.5.0"
+    "microtime": "^2.0.0",
+    "tape": "^4.2.2"
   },
   "scripts": {
     "test": "browserify test/*.js | testling -x google-chrome",
-    "build": "browserify index.js --s weblas > dist/weblas.js"
+    "build": "browserify index.js --s weblas > dist/weblas.js",
+    "benchmark": "browserify benchmark/*.js | testling -x 'google-chrome --enable-benchmarking'"
   },
   "repository": {
     "type": "git",
