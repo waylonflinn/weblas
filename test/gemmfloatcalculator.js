@@ -58,9 +58,29 @@ function generateTestCase(prefix){
 				return;
 			}
 
-			t.assert(test.allclose(C, result), "allclose");
+			allclose(t, C, result);
 		});
 	};
+}
+
+/* create a tape compatible assert */
+function allclose(t, a, b, msg, extra) {
+
+	var ok = test.allclose(a, b),
+		actual, expected;
+
+	if(!ok.result){
+		actual = a[ok.index];
+		expected = b[ok.index];
+	}
+
+    t._assert(ok.result, {
+        message : msg || 'should be allclose',
+        operator : 'allclose',
+        actual : actual,
+        expected : expected,
+        extra : extra
+    });
 }
 
 var suite = require('./data/small.json');
