@@ -17,6 +17,11 @@ var webgl = new WebGL(),
 
 var dataDirectory = 'test/data/';
 
+var highp = webgl.context.getShaderPrecisionFormat(webgl.context.FRAGMENT_SHADER, webgl.context.HIGH_FLOAT);
+
+if(highp.precision == 0)
+	console.log("# high precision not supported, expect precision related failures.");
+
 function generateTestCase(prefix){
 	return function(t){
 		t.plan(1);
