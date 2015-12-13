@@ -15,6 +15,9 @@ var tape = require('tape'),
 var webgl = new WebGL(),
 	calculator = new GEMMFloatCalculator(webgl);
 
+var RTOL = 1e-05,
+	ATOL = 1e-12;
+
 var dataDirectory = 'test/data/';
 
 var highp = webgl.context.getShaderPrecisionFormat(webgl.context.FRAGMENT_SHADER, webgl.context.HIGH_FLOAT);
@@ -66,12 +69,18 @@ function generateTestCase(prefix){
 /* create a tape compatible assert */
 function allclose(t, a, b, msg, extra) {
 
-	var ok = test.allclose(a, b),
-		actual, expected;
+	var ok = test.allclose(a, b, RTOL, ATOL),
+		actual = "[..., ",
+		expected = "[..., ";
 
 	if(!ok.result){
-		actual = a[ok.index];
-		expected = b[ok.index];
+		for(var i = ok.index; i < ok.index + 4 && i < a.length; i++ ){
+			actual += a[i] + ", ";
+			expected += b[i] + ", ";
+		}
+		actual += "...]";
+		expected += "...]";
+		msg = msg || 'should be allclose at ' + ok.index;
 	}
 
     t._assert(ok.result, {
