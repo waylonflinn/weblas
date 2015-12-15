@@ -20,10 +20,15 @@ var RTOL = 1e-05,
 
 var dataDirectory = 'test/data/';
 
-var highp = webgl.context.getShaderPrecisionFormat(webgl.context.FRAGMENT_SHADER, webgl.context.HIGH_FLOAT);
+if(window)
+	console.log("# User Agent: " + window.navigator.userAgent);
 
-if(highp.precision == 0)
-	console.log("# high precision not supported, expect precision related failures.");
+console.log("# OES_float_texture support: \t" + (webgl.hasFloat ? "YES" : "NO"));
+console.log("# MAX_TEXTURE_SIZE:      \t" + webgl.context.getParameter(webgl.context.MAX_TEXTURE_SIZE));
+console.log("# MAX_RENDERBUFFER_SIZE: \t" + webgl.context.getParameter(webgl.context.MAX_RENDERBUFFER_SIZE));
+console.log("# highp support:         \t" + (webgl.hasHighPrecision ? "YES" : "NO"));
+console.log("# highp.precision:       \t" + JSON.stringify(webgl.highp.precision));
+
 
 function generateTestCase(prefix){
 	return function(t){
