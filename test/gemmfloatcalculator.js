@@ -23,6 +23,10 @@ var dataDirectory = 'test/data/';
 if(window)
 	console.log("# User Agent: " + window.navigator.userAgent);
 
+var debugInfo = webgl.context.getExtension('WEBGL_debug_renderer_info');
+if(debugInfo)
+	console.log("# Renderer:              \t" + webgl.context.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL));
+
 console.log("# OES_float_texture support: \t" + (webgl.hasFloat ? "YES" : "NO"));
 console.log("# MAX_TEXTURE_SIZE:      \t" + webgl.context.getParameter(webgl.context.MAX_TEXTURE_SIZE));
 console.log("# MAX_RENDERBUFFER_SIZE: \t" + webgl.context.getParameter(webgl.context.MAX_RENDERBUFFER_SIZE));
