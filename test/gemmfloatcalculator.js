@@ -70,7 +70,7 @@ function generateTestCase(prefix){
 				return;
 			}
 
-			allclose(t, C, result);
+			allclose(t, result, C);
 		});
 	};
 }
