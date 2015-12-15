@@ -39,3 +39,36 @@ result = gemm.calculate(h1, w2, h2, alpha, A, B, beta, C);
 
 </script>
 ```
+
+# Tests
+Testing is easy:
+```
+npm test
+```
+
+Before that works, though, you have to set up the testing environment:
+
+Install browserify and testling globally (may require `sudo`)
+```
+npm install -g browserify
+npm install -g testling
+```
+
+Install `docopt` (needed to generate data)
+```
+sudo easy_install docopt
+```
+
+(OSX only)
+
+Symlink to chrome:
+```
+ln -s /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome /usr/local/bin/google-chrome
+```
+
+Generate the data
+
+```
+cd test/data/
+./generate small.json
+```
