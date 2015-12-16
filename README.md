@@ -46,22 +46,19 @@ Testing is easy:
 npm test
 ```
 
-First install the global dependencies.
+First, install the global dependencies.
 
-Install browserify and testling globally (may require `sudo`)
 ```
 npm install -g browserify
 npm install -g testling
 ```
 
-(OSX only)
-
-Symlink to chrome:
+on OS X, symlink to chrome:
 ```
 ln -s /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome /usr/local/bin/google-chrome
 ```
 
-Generate the data
+Lastly, generate the data
 
 ```
 cd test/data/
