@@ -46,17 +46,12 @@ Testing is easy:
 npm test
 ```
 
-Before that works, though, you have to set up the testing environment:
+First install the global dependencies.
 
 Install browserify and testling globally (may require `sudo`)
 ```
 npm install -g browserify
 npm install -g testling
-```
-
-Install `docopt` (needed to generate data)
-```
-sudo easy_install docopt
 ```
 
 (OSX only)
