@@ -40,27 +40,40 @@ result = gemm.calculate(h1, w2, h2, alpha, A, B, beta, C);
 </script>
 ```
 
-# Tests
-Testing is easy:
-```
-npm test
-```
+# Testing
+Unit tests and benchmarks both require `browserify` and `testling`.
 
-First, install the global dependencies.
+Install with:
 
 ```
 npm install -g browserify
 npm install -g testling
 ```
 
-on OS X, symlink to chrome:
+on OS X, you also need to symlink to chrome:
 ```
 ln -s /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome /usr/local/bin/google-chrome
 ```
 
-Lastly, generate the data
+## Unit Tests
+Unit tests use data generated outside the browser (to verify correctness). 
+Generating the data requires `python` and `numpy`. 
+
+With those installed, generate the data by running:
 
 ```
 cd test/data/
 ./generate small.json
 ```
+
+Then, run the unit tests with:
+```
+npm test
+```
+
+## Benchmarks
+After installing `browserify` and `testling`, run the benchmarks with:
+```
+npm run benchmark
+```
+
