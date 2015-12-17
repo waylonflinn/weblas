@@ -9,6 +9,9 @@ var suite = new Benchmark.Suite();
 var webgl = new WebGL(),
 	calculator = new GEMMFloatCalculator(webgl);
 
+var pass = 0,
+	fail = 0;
+
 function createBenchmark(M, N, K){
 
 	var alpha, A, B, beta, C;
@@ -34,13 +37,27 @@ function createBenchmark(M, N, K){
 			mu = '\xb5'
 			size = this.stats.sample.length;
 
-		var info = Benchmark.formatNumber(this.hz.toFixed(this.hz < 100 ? 2 : 0)) + ' ops/sec ' + 
-			' ' + pm + this.stats.rme.toFixed(2) + '% ' +
-         	' n = ' + size + 
-        	' ' + mu + " = " + (this.stats.mean * 1000).toFixed(0) + 'ms';
+        if(this.error){
+        	console.log("not ok " + event.currentTarget.id + " " + this.name);
+        	// show error
+        	console.log("  ---");
+        	console.log("  error: " + this.error);
+        	console.log("  ...");
 
-		console.log("ok " + event.currentTarget.id + " " + this.name);
-		console.log("# " + info );
+        	fail++;
+        } else {
+
+			var info = Benchmark.formatNumber(this.hz.toFixed(this.hz < 100 ? 2 : 0)) + ' ops/sec ' + 
+				' ' + pm + this.stats.rme.toFixed(2) + '% ' +
+	         	' n = ' + size + 
+	        	' ' + mu + " = " + (this.stats.mean * 1000).toFixed(0) + 'ms';
+
+			console.log("ok " + event.currentTarget.id + " " + this.name);
+			console.log("# " + info);
+
+			pass++;
+        }
+
 
 	});
 
@@ -49,15 +66,20 @@ function createBenchmark(M, N, K){
 
 console.log("TAP version 13");
 
+suite.add(createBenchmark(128));
+suite.add(createBenchmark(256));
 suite.add(createBenchmark(512));
 suite.add(createBenchmark(1024));
+//suite.add(createBenchmark(2048));
 
 suite.on('complete', function(){
-	console.log("1.." + suite.length);
+	console.log("\n1.." + suite.length);
 	console.log("# tests " + suite.length);
-	console.log("# pass  " + suite.length);
-
-	console.log("\n# ok\n");
+	console.log("# pass  " + pass);
+	if(fail)
+		console.log("# fail  " + fail);
+	else
+		console.log("\n# ok\n");
 });
 
 // run async
