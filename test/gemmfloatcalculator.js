@@ -110,5 +110,5 @@ for(directory in suite){
 		n = suite[directory][1],
 		k = suite[directory][2];
 
-	tape(m + "x" + k + " times " + k + "x" + n, generateTestCase(directory));
+	tape(m + "x" + k + " . " + k + "x" + n, generateTestCase(directory));
 }
