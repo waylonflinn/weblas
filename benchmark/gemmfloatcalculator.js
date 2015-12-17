@@ -1,4 +1,5 @@
 var Benchmark = require('benchmark'),
+	tape = require('tape'),
 	test = require('../index').test,
 	WebGL = require('../index').WebGL,
 	GEMMFloatCalculator = require("../index").GEMMFloatCalculator;
@@ -8,37 +9,57 @@ var suite = new Benchmark.Suite();
 var webgl = new WebGL(),
 	calculator = new GEMMFloatCalculator(webgl);
 
-var dataDirectory = 'test/data/';
+function createBenchmark(M, N, K){
 
-var testDirectory = dataDirectory + '0004/';
+	var alpha, A, B, beta, C;
 
-test.load(testDirectory, function(err, a, b, c){
-	var A, B, C;
+	// default to square matrices, if only one length is provided
+	N = N || M;
+	K = K || M;
+	var name = M + "x" + K + " . " + K + "x" + N;
 
-	if(!(a[0] && a[0].length && b && a[0].length == b.length
-		&& a.length == c.length && b[0].length == c[0].length ))
-		throw new Error("malformed data");
-
-	A = WebGL.fromArray(a);
-	B = WebGL.fromArray(b);
-
-	var m = a.length,
-		k = b.length,
-		n = b[0].length,
-		alpha = 1.0,
-		beta = 0.0;
-
-	suite.add(m + "x" + k, function(){
-		result = calculator.calculate(m, n, k, alpha, A, B, beta, null);
+	var b = new Benchmark(name, function(){
+			result = calculator.calculate(M, N, K, alpha, A, B, beta, null);
 	})// add listeners
+	.on('start', function(event){
+		var a = test.randomArray(M, K);
+		A = WebGL.fromArray(a);
+		B = WebGL.fromArray(a);
+	})
 	.on('cycle', function(event) {
-		console.log(String(event.target));
 	})
-	.on('complete', function() {
-		var fastest = this.filter('fastest')[0];
-		console.log('Mean run time ' + (fastest.stats.mean * 1000).toFixed(0) + 'ms');
-	})
-	// run async
-	.run({ 'async': true });
+	.on('complete', function(event) {
 
+		var pm = '\xb1',
+			mu = '\xb5'
+			size = this.stats.sample.length;
+
+		var info = Benchmark.formatNumber(this.hz.toFixed(this.hz < 100 ? 2 : 0)) + ' ops/sec ' + 
+			' ' + pm + this.stats.rme.toFixed(2) + '% ' +
+         	' n = ' + size + 
+        	' ' + mu + " = " + (this.stats.mean * 1000).toFixed(0) + 'ms';
+
+		console.log("ok " + event.currentTarget.id + " " + this.name);
+		console.log("# " + info );
+
+	});
+
+	return b;
+}
+
+console.log("TAP version 13");
+
+suite.add(createBenchmark(512));
+suite.add(createBenchmark(1024));
+
+suite.on('complete', function(){
+	console.log("1.." + suite.length);
+	console.log("# tests " + suite.length);
+	console.log("# pass  " + suite.length);
+
+	console.log("\n# ok\n");
 });
+
+// run async
+suite.run({ 'async': true });
+
