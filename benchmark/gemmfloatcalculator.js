@@ -67,8 +67,13 @@ function createBenchmark(M, N, K){
 console.log("TAP version 13");
 
 suite.add(createBenchmark(128));
+suite.add(createBenchmark(128, 128, 256));
 suite.add(createBenchmark(256));
+suite.add(createBenchmark(512, 512, 256));
+suite.add(createBenchmark(256, 256, 512));
 suite.add(createBenchmark(512));
+suite.add(createBenchmark(1024, 1024, 512));
+suite.add(createBenchmark(512, 512, 1024));
 suite.add(createBenchmark(1024));
 //suite.add(createBenchmark(2048));
 
