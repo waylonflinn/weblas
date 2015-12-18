@@ -64,6 +64,7 @@ With those installed, generate the data by running:
 ```
 cd test/data/
 ./generate small.json
+cd ../../
 ```
 
 Then, run the unit tests with:
