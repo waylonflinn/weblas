@@ -16,7 +16,7 @@ def run_benchmark(M, N, K, n):
 	# 1.11 ops/sec  ±0.22%  n = 7 µ = 904ms
 	# 235 ops/sec  ±2.86%  n = 59 µ = 4ms
 	print("ok {3} {0}x{2} . {2}.{1}".format(M, N, K, n))
-	print("# {0:.2f} ops/sec n = {1} µ = {2:.4f}ms".format(count / elapsed, count, average_millis))
+	print("# {0:.2f} ops/sec n = {1} µ = {2:.2f}ms".format(count / elapsed, count, average_millis))
 
 print("TAP version 13")
 run_benchmark( 128,  128,  128, 1)
