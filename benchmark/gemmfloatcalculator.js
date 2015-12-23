@@ -27,7 +27,7 @@ function createBenchmark(M, N, K){
 	.on('start', function(event){
 		var a = test.randomArray(M, K);
 		A = WebGL.fromArray(a);
-		B = WebGL.fromArray(a);
+		B = WebGL.fromArray(a, Float32Array, true);
 	})
 	.on('cycle', function(event) {
 	})
@@ -47,9 +47,9 @@ function createBenchmark(M, N, K){
         	fail++;
         } else {
 
-			var info = Benchmark.formatNumber(this.hz.toFixed(this.hz < 100 ? 2 : 0)) + ' ops/sec ' + 
+			var info = Benchmark.formatNumber(this.hz.toFixed(this.hz < 100 ? 2 : 0)) + ' ops/sec ' +
 				' ' + pm + this.stats.rme.toFixed(2) + '% ' +
-	         	' n = ' + size + 
+	         	' n = ' + size +
 	        	' ' + mu + " = " + (this.stats.mean * 1000).toFixed(0) + 'ms';
 
 			console.log("ok " + event.currentTarget.id + " " + this.name);
@@ -89,4 +89,3 @@ suite.on('complete', function(){
 
 // run async
 suite.run({ 'async': true });
-

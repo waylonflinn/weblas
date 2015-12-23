@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<!--
+pregenerated page to duplicate `npm run benchmark`, for profiling.
+generate required script with this command in the root of the repo:
+browserify test/*.js > test/test.js
+-->
+<style>
+body{ font-family: monospace; }
+</style>
+<body>
+	<script>
+		console.old_log = console.log;
+
+		console.log = function(message) {
+			var d,
+				m;
+
+			console.old_log(message);
+			d = document.createElement("div");
+			d.appendChild(document.createTextNode(message));
+
+			document.body.appendChild(d);
+		};
+	</script>
+
+	<script src="test.js"></script>
+</body>

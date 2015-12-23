@@ -2,7 +2,18 @@ var tape = require('tape'),
 	test = require('../index').test,
 	WebGL = require('../index').WebGL,
 	GEMMFloatCalculator = require("../index").GEMMFloatCalculator;
-
+// First, checks if it isn't implemented yet.
+if (!String.prototype.format) {
+  String.prototype.format = function() {
+	var args = arguments;
+	return this.replace(/{(\d+)}/g, function(match, number) {
+	  return typeof args[number] != 'undefined'
+		? args[number]
+		: match
+	  ;
+	});
+  };
+}
 /*  run in a browser with testling
 
 		browserify test/*.js | testling -x google-chrome
@@ -51,7 +62,7 @@ function generateTestCase(prefix){
 				throw new Error("malformed data");
 
 			A = WebGL.fromArray(a);
-			B = WebGL.fromArray(b);
+			B = WebGL.fromArray(b, Float32Array, true);
 			C = WebGL.fromArray(c);
 
 			var m = a.length,
