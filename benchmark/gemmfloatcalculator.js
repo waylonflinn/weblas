@@ -75,7 +75,7 @@ suite.add(createBenchmark(512));
 suite.add(createBenchmark(1024, 1024, 512));
 suite.add(createBenchmark(512, 512, 1024));
 suite.add(createBenchmark(1024));
-//suite.add(createBenchmark(2048));
+suite.add(createBenchmark(2048));
 
 suite.on('complete', function(){
 	console.log("\n1.." + suite.length);
