@@ -47,9 +47,9 @@ function createBenchmark(M, N, K){
         	fail++;
         } else {
 
-			var info = Benchmark.formatNumber(this.hz.toFixed(this.hz < 100 ? 2 : 0)) + ' ops/sec ' + 
+			var info = Benchmark.formatNumber(this.hz.toFixed(this.hz < 100 ? 2 : 0)) + ' ops/sec ' +
 				' ' + pm + this.stats.rme.toFixed(2) + '% ' +
-	         	' n = ' + size + 
+	         	' n = ' + size +
 	        	' ' + mu + " = " + (this.stats.mean * 1000).toFixed(0) + 'ms';
 
 			console.log("ok " + event.currentTarget.id + " " + this.name);
@@ -75,7 +75,7 @@ suite.add(createBenchmark(512));
 suite.add(createBenchmark(1024, 1024, 512));
 suite.add(createBenchmark(512, 512, 1024));
 suite.add(createBenchmark(1024));
-//suite.add(createBenchmark(2048));
+suite.add(createBenchmark(2048));
 
 suite.on('complete', function(){
 	console.log("\n1.." + suite.length);
@@ -89,4 +89,3 @@ suite.on('complete', function(){
 
 // run async
 suite.run({ 'async': true });
-

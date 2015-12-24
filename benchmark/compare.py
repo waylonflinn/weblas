@@ -28,6 +28,8 @@ run_benchmark( 512,  512,  512, 6)
 run_benchmark(1024, 1024,  512, 7)
 run_benchmark(1024, 1024,  512, 8)
 run_benchmark(1024, 1024, 1024, 9)
+run_benchmark(2048, 2048, 2048, 10)
+
 
 print("\n1..9")
 print("# tests 9")
