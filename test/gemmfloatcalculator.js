@@ -62,7 +62,7 @@ function generateTestCase(prefix){
 				throw new Error("malformed data");
 
 			A = WebGL.fromArray(a);
-			B = WebGL.fromArray(b, Float32Array, true);
+			B = WebGL.fromArray(b);
 			C = WebGL.fromArray(c);
 
 			var m = a.length,

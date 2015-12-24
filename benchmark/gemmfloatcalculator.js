@@ -27,7 +27,7 @@ function createBenchmark(M, N, K){
 	.on('start', function(event){
 		var a = test.randomArray(M, K);
 		A = WebGL.fromArray(a);
-		B = WebGL.fromArray(a, Float32Array, true);
+		B = WebGL.fromArray(a);
 	})
 	.on('cycle', function(event) {
 	})
