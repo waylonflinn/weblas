@@ -21,7 +21,7 @@ if __name__ == '__main__':
 
 	sorted_tests = sorted(list(tests.items()), key = lambda test : test[0])
 
-	for [number, sizes] in sorted_tests:
+	for [number, options] in sorted_tests:
 
 		if os.path.exists(number):
 			# skip existing directories
@@ -29,12 +29,16 @@ if __name__ == '__main__':
 		else:
 			os.makedirs(number)
 
+			sizes = options['sizes']
+
 			m = sizes[0]
 			n = sizes[1]
 			k = sizes[2]
+
+			a = options['a']
 			# run matrix creation
 			#os.system("./matrices.py {0} {1} {2} {3}".format(m, n, k, number))
-			[a, b] = matrices.create_matrices(m, n, k, number)
+			[a, b] = matrices.create_matrices(m, n, k, a, number)
 
 			# run mutliplication
 			#os.system("./multiply.py {0}".format(number))

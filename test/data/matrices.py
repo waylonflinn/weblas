@@ -14,28 +14,28 @@ import json
 import numpy as np
 
 
-def create_matrix_json(path, shape):
+def create_matrix_json(path, shape, alpha=1.0):
 
-	matrix = np.random.random_sample(shape)
+	matrix = alpha * np.random.random_sample(shape)
 
 	with open(path, 'w') as f:
 		json.dump(matrix.tolist(), f)
 
 	return matrix
 
-def create_matrices(m, n, k, prefix):
+def create_matrices(m, n, k, a, prefix):
 
 	prefix = prefix + "/"
 
 	matrix_spec = [
-		(prefix + 'a.json' , (m, k)),
-		(prefix + 'b.json' , (k, n))
+		(prefix + 'a.json' , (m, k), a),
+		(prefix + 'b.json' , (k, n), 1.0)
 	]
 
 	matrices = []
 
-	for (path, shape) in matrix_spec:
-		matrices.append(create_matrix_json(path, shape))
+	for (path, shape, a) in matrix_spec:
+		matrices.append(create_matrix_json(path, shape, a))
 
 	return matrices
 

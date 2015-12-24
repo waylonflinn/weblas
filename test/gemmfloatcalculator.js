@@ -117,9 +117,11 @@ var suite = require('./data/small.json');
 // suite configuration file uses directory name as key
 for(directory in suite){
 
-	var m = suite[directory][0],
-		n = suite[directory][1],
-		k = suite[directory][2];
+	var sizes = suite[directory]['sizes'];
+
+	var m = sizes[0],
+		n = sizes[1],
+		k = sizes[2];
 
 	tape(m + "x" + k + " . " + k + "x" + n, generateTestCase(directory));
 }
