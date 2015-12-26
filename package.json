@@ -1,6 +1,6 @@
 {
   "name": "weblas",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "GPU accelerated BLAS for node and the browser",
   "main": "index.js",
   "directories": {
