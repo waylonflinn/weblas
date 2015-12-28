@@ -47,7 +47,7 @@ console.log("# highp support:         \t" + (webgl.hasHighPrecision ? "YES" : "N
 console.log("# highp.precision:       \t" + JSON.stringify(webgl.highp.precision));
 
 
-function generateTestCase(prefix){
+function generateTestCase(prefix, alpha){
 	return function(t){
 		t.plan(1);
 
@@ -70,7 +70,6 @@ function generateTestCase(prefix){
 			var m = a.length,
 				k = b.length,
 				n = b[0].length,
-				alpha = 1.0,
 				beta = 0.0;
 
 			//console.log(m + "x" + k + " times " + k + "x" + n);
@@ -128,9 +127,10 @@ loader.load(dataDirectory + configFile, function(err, config){
 
 		var m = sizes[0],
 			n = sizes[1],
-			k = sizes[2];
+			k = sizes[2],
+			alpha = suite[directory]['alpha'] || 1.0;
 
-		tape(m + "x" + k + " . " + k + "x" + n, generateTestCase(directory));
+		tape(m + "x" + k + " . " + k + "x" + n, generateTestCase(directory, alpha));
 	}
 
 });
