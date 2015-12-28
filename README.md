@@ -29,7 +29,7 @@ var B = new Float32Array(h2 * w2);
 
 // fill A and B with science
 
-var alpha = 1.0; // not yet implemented
+var alpha = 1.0;
 var beta = 0.0;  // not yet implemented
 var C = {};      // not yet implemented
 
