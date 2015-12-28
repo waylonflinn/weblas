@@ -11,27 +11,27 @@ from docopt import docopt
 import json
 import numpy as np
 
-def create_matrix_multiply(prefix, a, b):
+def create_matrix_multiply(prefix, alpha, A, B):
 
 	prefix = prefix + '/'
-	c = np.dot(a, b)
+	C = alpha * np.dot(A, B)
 
 	filename = 'c.json'
 
 	with open(prefix + filename, 'w') as f:
-		json.dump(c.tolist(), f)
+		json.dump(C.tolist(), f)
 
 def open_and_multiply_matrices(prefix):
 
 	prefix = prefix + "/"
 
 	with open(prefix + 'a.json', 'r') as f:
-		a = np.array(json.load(f))
+		A = np.array(json.load(f))
 
 	with open(prefix + 'b.json', 'r') as f:
-		b = np.array(json.load(f))
+		B = np.array(json.load(f))
 
-	create_matrix_multiply(prefix, a, b)
+	create_matrix_multiply(prefix, A, B)
 
 if __name__ == '__main__':
 	arguments = docopt(__doc__, version='JSON Matrix Generator')
