@@ -1,7 +1,9 @@
 var tape = require('tape'),
 	test = require('../index').test,
 	WebGL = require('../index').WebGL,
-	GEMMFloatCalculator = require("../index").GEMMFloatCalculator;
+	GEMMFloatCalculator = require("../index").GEMMFloatCalculator,
+	loader = require('floader'); // browserify aware file loader (xhr in browser)
+
 // First, checks if it isn't implemented yet.
 if (!String.prototype.format) {
   String.prototype.format = function() {
@@ -112,16 +114,23 @@ function allclose(t, a, b, msg, extra) {
     });
 }
 
-var suite = require('./data/small.json');
 
-// suite configuration file uses directory name as key
-for(directory in suite){
+var configFile = 'small.json';
 
-	var sizes = suite[directory]['sizes'];
+loader.load(dataDirectory + configFile, function(err, config){
 
-	var m = sizes[0],
-		n = sizes[1],
-		k = sizes[2];
+	var suite = JSON.parse(config);
 
-	tape(m + "x" + k + " . " + k + "x" + n, generateTestCase(directory));
-}
+	// suite configuration file uses directory name as key
+	for(directory in suite){
+
+		var sizes = suite[directory]['sizes'];
+
+		var m = sizes[0],
+			n = sizes[1],
+			k = sizes[2];
+
+		tape(m + "x" + k + " . " + k + "x" + n, generateTestCase(directory));
+	}
+
+});
