@@ -7,7 +7,7 @@ GPU accelerated BLAS for your browser, no add-ons required.
 
 Don't see what you need? Give a :+1: to an [existing issue](https://github.com/waylonflinn/weblas/issues?q=is%3Aissue+is%3Aopen+label%3Aoperation) or create a [new one](https://github.com/waylonflinn/weblas/issues)!
 
-# Example
+# Usage
 
 First, include the `weblas.js` file (from a release or the `dist` directory).
 
