@@ -2,7 +2,10 @@
 
 GPU accelerated BLAS for your browser, no add-ons required.
 
-*Current version is an early preview*
+# Includes
+* SGEMM - 32-bit Floating Point Matrix Multiply
+
+Don't see what you need? Create an issue or :+1: an existing one!
 
 # Example
 
@@ -29,13 +32,16 @@ var B = new Float32Array(h2 * w2);
 
 // fill A and B with science
 
+var M = h1,
+	N = w2,
+	K = h2; // must match w1
+
 var alpha = 1.0;
 var beta = 0.0;  // not yet implemented
 var C = {};      // not yet implemented
 
-// result will contain matrix multiply of A x B
-// w1 must equal h2
-result = gemm.calculate(h1, w2, h2, alpha, A, B, beta, C);
+// result will contain matrix multiply of A x B (times alpha)
+result = gemm.calculate(M, N, K, alpha, A, B, beta, C);
 
 </script>
 ```
