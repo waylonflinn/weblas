@@ -5,7 +5,8 @@ GPU accelerated BLAS for your browser, no add-ons required.
 # Includes
 * SGEMM - 32-bit Floating Point Matrix Multiply
 
-Don't see what you need? Create an issue or :+1: an existing one!
+Don't see what you need? :+1: an [existing issue](https://github.com/waylonflinn/weblas/issues?q=is%3Aissue+is%3Aopen+label%3Aoperation) or
+create a [new one](https://github.com/waylonflinn/weblas/issues)! 
 
 # Example
 
