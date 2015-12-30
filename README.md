@@ -1,6 +1,6 @@
 ![logo](weblas.png)
 
-GPU accelerated BLAS for your browser, no add-ons required.
+GPU accelerated BLAS for your browser, no add-ons required. Performance [comparable to native](https://github.com/waylonflinn/weblas/wiki).
 
 
 # Operations
