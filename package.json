@@ -9,8 +9,10 @@
     "test": "test",
     "dist": "dist"
   },
-  "dependencies": {},
+  "dependencies": {
+  },
   "devDependencies": {
+    "minifyify": "^7.1.0",
     "async": "^1.5.0",
     "benchmark": "^1.0.0",
     "floader": "^1.0.1",
