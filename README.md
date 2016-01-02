@@ -21,9 +21,6 @@ Then use it like this.
 ```html
 <script>
 
-var gl = new weblas.WebGL(),
-	gemm = new weblas.GEMMFloatCalculator(gl);
-
 
 var h1 = 1024, w1 = 1024,
     h2 = 1024, w2 = 1024;
@@ -42,7 +39,7 @@ var beta = 0.0;  // not yet implemented
 var C = {};      // not yet implemented
 
 // result will contain matrix multiply of A x B (times alpha)
-result = gemm.calculate(M, N, K, alpha, A, B, beta, C);
+result = weblas.sgemm(M, N, K, alpha, A, B, beta, C);
 
 </script>
 ```
