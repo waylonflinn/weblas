@@ -1,7 +1,5 @@
 var tape = require('tape'),
-	test = require('../index').test,
-	WebGL = require('../index').WebGL,
-	GEMMFloatCalculator = require("../index").GEMMFloatCalculator,
+	weblas = require('../index'),
 	loader = require('floader'); // browserify aware file loader (xhr in browser)
 
 // First, checks if it isn't implemented yet.
@@ -25,8 +23,6 @@ if (!String.prototype.format) {
 		sudo apt-get install xvfb
  */
 
-var webgl = new WebGL(),
-	calculator = new GEMMFloatCalculator(webgl);
 
 var RTOL = 1e-05,
 	ATOL = 1e-12;
@@ -36,15 +32,15 @@ var dataDirectory = 'test/data/';
 if(window)
 	console.log("# User Agent: " + window.navigator.userAgent);
 
-var debugInfo = webgl.context.getExtension('WEBGL_debug_renderer_info');
+var debugInfo = weblas.gl.context.getExtension('WEBGL_debug_renderer_info');
 if(debugInfo)
-	console.log("# Renderer:              \t" + webgl.context.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL));
+	console.log("# Renderer:              \t" + weblas.gl.context.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL));
 
-console.log("# OES_float_texture support: \t" + (webgl.hasFloat ? "YES" : "NO"));
-console.log("# MAX_TEXTURE_SIZE:      \t" + webgl.context.getParameter(webgl.context.MAX_TEXTURE_SIZE));
-console.log("# MAX_RENDERBUFFER_SIZE: \t" + webgl.context.getParameter(webgl.context.MAX_RENDERBUFFER_SIZE));
-console.log("# highp support:         \t" + (webgl.hasHighPrecision ? "YES" : "NO"));
-console.log("# highp.precision:       \t" + JSON.stringify(webgl.highp.precision));
+console.log("# OES_float_texture support: \t" + (weblas.gl.hasFloat ? "YES" : "NO"));
+console.log("# MAX_TEXTURE_SIZE:      \t" + weblas.gl.context.getParameter(weblas.gl.context.MAX_TEXTURE_SIZE));
+console.log("# MAX_RENDERBUFFER_SIZE: \t" + weblas.gl.context.getParameter(weblas.gl.context.MAX_RENDERBUFFER_SIZE));
+console.log("# highp support:         \t" + (weblas.gl.hasHighPrecision ? "YES" : "NO"));
+console.log("# highp.precision:       \t" + JSON.stringify(weblas.gl.highp.precision));
 
 
 function generateTestCase(prefix, alpha){
@@ -57,15 +53,15 @@ function generateTestCase(prefix, alpha){
 		var testDirectory = dataDirectory + prefix + '/';
 
 		// load matrices from files
-		test.load(testDirectory, function(err, a, b, c){
+		weblas.test.load(testDirectory, function(err, a, b, c){
 
 			if(!(a[0] && a[0].length && b && a[0].length == b.length
 				&& a.length == c.length && b[0].length == c[0].length ))
 				throw new Error("malformed data");
 
-			A = WebGL.fromArray(a);
-			B = WebGL.fromArray(b);
-			C = WebGL.fromArray(c);
+			A = weblas.util.fromArray(a);
+			B = weblas.util.fromArray(b);
+			C = weblas.util.fromArray(c);
 
 			var m = a.length,
 				k = b.length,
@@ -75,7 +71,7 @@ function generateTestCase(prefix, alpha){
 			//console.log(m + "x" + k + " times " + k + "x" + n);
 
 			try{
-				result = calculator.calculate(m, n, k, alpha, A, B, beta, null);
+				result = weblas.sgemm(m, n, k, alpha, A, B, beta, null);
 			}
 			catch(ex){
 				t.assert(false, ex);
@@ -90,7 +86,7 @@ function generateTestCase(prefix, alpha){
 /* create a tape compatible assert */
 function allclose(t, a, b, msg, extra) {
 
-	var ok = test.allclose(a, b, RTOL, ATOL),
+	var ok = weblas.test.allclose(a, b, RTOL, ATOL),
 		actual = "[..., ",
 		expected = "[..., ";
 

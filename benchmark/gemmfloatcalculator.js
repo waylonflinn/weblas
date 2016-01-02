@@ -1,13 +1,8 @@
 var Benchmark = require('benchmark'),
 	tape = require('tape'),
-	test = require('../index').test,
-	WebGL = require('../index').WebGL,
-	GEMMFloatCalculator = require("../index").GEMMFloatCalculator;
+	weblas = require('../index');
 
 var suite = new Benchmark.Suite();
-
-var webgl = new WebGL(),
-	calculator = new GEMMFloatCalculator(webgl);
 
 var pass = 0,
 	fail = 0;
@@ -22,12 +17,12 @@ function createBenchmark(M, N, K){
 	var name = M + "x" + K + " . " + K + "x" + N;
 
 	var b = new Benchmark(name, function(){
-			result = calculator.calculate(M, N, K, alpha, A, B, beta, null);
+			result = weblas.sgemm(M, N, K, alpha, A, B, beta, null);
 	})// add listeners
 	.on('start', function(event){
 		var a = test.randomArray(M, K);
-		A = WebGL.fromArray(a);
-		B = WebGL.fromArray(a);
+		A = weblas.util.fromArray(a);
+		B = weblas.util.fromArray(a);
 	})
 	.on('cycle', function(event) {
 	})
