@@ -4,7 +4,8 @@ GPU accelerated BLAS for your browser, no add-ons required. Performance [compara
 
 
 # Operations
-* SGEMM - 32-bit Floating Point Matrix Multiply
+* saxpy - 32-bit Floating Point Vector Addition
+* sgemm - 32-bit Floating Point Matrix Multiply
 
 Don't see what you need? Give a :+1: to an [existing issue](https://github.com/waylonflinn/weblas/issues?q=is%3Aissue+is%3Aopen+label%3Aoperation) or create a [new one](https://github.com/waylonflinn/weblas/issues)!
 
