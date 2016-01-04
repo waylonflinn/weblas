@@ -2,18 +2,6 @@ var tape = require('tape'),
 	weblas = require('../index'),
 	loader = require('floader'); // browserify aware file loader (xhr in browser)
 
-// First, checks if it isn't implemented yet.
-if (!String.prototype.format) {
-  String.prototype.format = function() {
-	var args = arguments;
-	return this.replace(/{(\d+)}/g, function(match, number) {
-	  return typeof args[number] != 'undefined'
-		? args[number]
-		: match
-	  ;
-	});
-  };
-}
 /*  run in a browser with testling
 
 		browserify test/*.js | testling -x google-chrome
@@ -27,7 +15,8 @@ if (!String.prototype.format) {
 var RTOL = 1e-05,
 	ATOL = 1e-12;
 
-var dataDirectory = 'test/data/';
+var dataDirectory = 'test/data/',
+	testFile = 'medium.json';
 
 if(window)
 	console.log("# User Agent: " + window.navigator.userAgent);
@@ -78,41 +67,12 @@ function generateTestCase(prefix, alpha){
 				return;
 			}
 
-			allclose(t, result, C);
+			weblas.test.assert.allclose(t, result, C, null, RTOL, ATOL);
 		});
 	};
 }
 
-/* create a tape compatible assert */
-function allclose(t, a, b, msg, extra) {
-
-	var ok = weblas.test.allclose(a, b, RTOL, ATOL),
-		actual = "[..., ",
-		expected = "[..., ";
-
-	if(!ok.result){
-		for(var i = ok.index; i < ok.index + 4 && i < a.length; i++ ){
-			actual += a[i] + ", ";
-			expected += b[i] + ", ";
-		}
-		actual += "...]";
-		expected += "...]";
-		msg = msg || 'should be allclose at ' + ok.index;
-	}
-
-    t._assert(ok.result, {
-        message : msg || 'should be allclose',
-        operator : 'allclose',
-        actual : actual,
-        expected : expected,
-        extra : extra
-    });
-}
-
-
-var configFile = 'small.json';
-
-loader.load(dataDirectory + configFile, function(err, config){
+loader.load(dataDirectory + testFile, function(err, config){
 
 	var suite = JSON.parse(config);
 
@@ -126,7 +86,7 @@ loader.load(dataDirectory + configFile, function(err, config){
 			k = sizes[2],
 			alpha = suite[directory]['alpha'] || 1.0;
 
-		tape(m + "x" + k + " . " + k + "x" + n, generateTestCase(directory, alpha));
+		tape("sgemm: " + m + "x" + k + " . " + k + "x" + n, generateTestCase(directory, alpha));
 	}
 
 });
