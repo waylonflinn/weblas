@@ -1,26 +1,28 @@
 var WebGL = require("./lib/webgl"),
     SGEMMCalculator = require("./lib/sgemmcalculator"),
+    SAXPYCalculator = require("./lib/saxpycalculator"),
     test = require("./lib/test");
 
 
 
 var gl = new WebGL(),
-    gemm = new SGEMMCalculator(gl);
+    sgemm = new SGEMMCalculator(gl),
+    saxpy = new SAXPYCalculator(gl);
 
 
 module.exports = {
-    "sgemm" : gemm.calculate.bind(gemm),
-    "saxpy" : saxpy,
+    "sgemm" : sgemm.calculate.bind(sgemm),
+    "saxpy" : saxpy.calculate.bind(saxpy),
     "gl" : gl,
     "util" : { "fromArray" : fromArray, "transpose" : transpose},
     "test" : test
 };
-
+/*
 function saxpy(n, a, x, y){
     var i = 0,
         result = new Float32Array(n);
 
-    // assert n = a.length
+    // assert n = x.length
     // assert a is scalar
     // assert x is Float32Array
 
@@ -38,7 +40,7 @@ function saxpy(n, a, x, y){
 
     return result;
 
-}
+}*/
 
 // add a String.format method, if none exists
 if (!String.prototype.format) {
