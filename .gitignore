@@ -2,4 +2,4 @@ node_modules
 
 __pycache__
 
-test/data/0*
+test/data/sgemm/0*
