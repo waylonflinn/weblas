@@ -16,7 +16,7 @@ var RTOL = 1e-05,
 	ATOL = 1e-12;
 
 var dataDirectory = 'test/data/sgemm/',
-	testFile = 'medium.json';
+	testFile = 'small.json';
 
 if(window)
 	console.log("# User Agent: " + window.navigator.userAgent);
