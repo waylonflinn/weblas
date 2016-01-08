@@ -18,6 +18,8 @@ module.exports = {
     "test" : test
 };
 
+var CHANNELS_PER_TEXEL = 4;
+
 /* Wrap the GL calculation object in a (relatively) user friendly function that
     accepts TypedArrays
 
@@ -32,8 +34,8 @@ function sgemm(M, N, K, alpha, A, B, beta, C){
     var texels0 = packData(M, K, A, false),
     	texels1 = packData(K, N, B, true);
 
-    var mod = (K % 4),
-    	pad = mod == 0 ? 0 : 4 - mod;
+    var mod = (K % CHANNELS_PER_TEXEL),
+    	pad = mod == 0 ? 0 : CHANNELS_PER_TEXEL - mod;
 
     // create input textures from data
     var texture0 = gl.createInputTexture(M, K + pad, texels0);
@@ -51,11 +53,22 @@ function saxpy(N, a, X, Y){
 
     var rawBuffer;
 
-	var texels0 = packData(1, N, X, false),
-		texels1 = packData(1, N, Y, false);
+	var mod = (N % CHANNELS_PER_TEXEL),
+		pad = mod == 0 ? 0 : CHANNELS_PER_TEXEL - mod;
 
-	var mod = (N % 4),
-		pad = mod == 0 ? 0 : 4 - mod;
+    // replace with ArrayBuffer.transfer, when available
+	var texels0,// = new Float32Array(N + pad);//packData(1, N, X, false),
+		texels1;// = new Float32Array(N + pad);//packData(1, N, Y, false);
+
+
+    if(pad == 0){
+        texels0 = X;
+    } else {
+        texels0 = new Float32Array(N + pad);
+        texels0.set(X);
+    }
+    texels1 = new Float32Array(N + pad);
+    texels1.fill(Y);
 
     // create input textures from data
     var texture0 = gl.createInputTexture(1, N + pad, texels0);
@@ -65,8 +78,8 @@ function saxpy(N, a, X, Y){
 
     saxpycalculator.calculate(N + pad, a, texture0, texture1, destTexture);
 
-    rawBuffer = gl.readData(1, N + pad);
-    return new Float32Array(rawBuffer.slice(0, N * 4));
+    rawBuffer = gl.readData(1, N);
+    return new Float32Array(rawBuffer);
 
 }
 /*
