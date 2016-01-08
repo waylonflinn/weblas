@@ -12,7 +12,7 @@ var gl = new WebGL(),
 
 module.exports = {
     "sgemm" : sgemm,
-    "saxpy" : saxpycalculator.calculate.bind(saxpycalculator),
+    "saxpy" : saxpy,
     "gl" : gl,
     "util" : { "fromArray" : fromArray, "transpose" : transpose},
     "test" : test
@@ -29,7 +29,7 @@ module.exports = {
 function sgemm(M, N, K, alpha, A, B, beta, C){
 
     // pack each matrix into a single RGBA texel array, with the second transposed
-    var texels0 = packData(M, K, A, false);
+    var texels0 = packData(M, K, A, false),
     	texels1 = packData(K, N, B, true);
 
     var mod = (K % 4),
@@ -43,7 +43,30 @@ function sgemm(M, N, K, alpha, A, B, beta, C){
 
     sgemmcalculator.calculate(M, N, K + pad, alpha, texture0, texture1, null, destTexture);
 
-    return gl.readData(M, N);
+    return new Float32Array(gl.readData(M, N));
+
+}
+
+function saxpy(N, a, X, Y){
+
+    var rawBuffer;
+
+	var texels0 = packData(1, N, X, false),
+		texels1 = packData(1, N, Y, false);
+
+	var mod = (N % 4),
+		pad = mod == 0 ? 0 : 4 - mod;
+
+    // create input textures from data
+    var texture0 = gl.createInputTexture(1, N + pad, texels0);
+    var texture1 = gl.createInputTexture(1, N + pad, texels1);
+
+    var destTexture = gl.createDestinationTexture(1, N + pad);
+
+    saxpycalculator.calculate(N + pad, a, texture0, texture1, destTexture);
+
+    rawBuffer = gl.readData(1, N + pad);
+    return new Float32Array(rawBuffer.slice(0, N * 4));
 
 }
 /*
@@ -67,16 +90,16 @@ function packData(r, c, data, transpose) {
 
 	var CHANNELS_PER_TEXEL = 4; // RGBA: four channels, one per color
 
-	var k = !transpose ? c : r;
+	var k = !transpose ? c : r,
+        isArray = isFloat32Array(data);
 
 	var mod = (k % CHANNELS_PER_TEXEL),
 		pad = mod == 0 ? 0 : CHANNELS_PER_TEXEL - mod;
 
-	if (mod === 0 && !transpose) {
+	if (mod === 0 && !transpose && isArray) {
 		// special case if column count is a multiple of number of channels
 		return data;
 	}
-
 
 	// dimensions
 	var i, j, p;
@@ -89,16 +112,25 @@ function packData(r, c, data, transpose) {
 	for(i = 0; i < r; i++){
 
 		if(!transpose){
-			// copy actual data
-			for(j = 0; j < c; j++){
-				texels[i * (c + pad) + j] = data[i * c + j];
-			}
+
+            if(isArray){
+    			// copy actual data
+    			for(j = 0; j < c; j++){
+    				texels[i * (c + pad) + j] = data[i * c + j];
+    			}
+            } else {
+    			// assume it's a constant
+    			for(j = 0; j < c; j++){
+    				texels[i * (c + pad) + j] = data;
+    			}
+            }
 
 			// pad last texel in this row with zeros
 			for(p = 0; p < pad; p++){
 				texels[i * (c + pad) + j + p] = 0.0;
 			}
 		} else {
+
 			// copy actual data, transposed
 			for(j = 0; j < c; j++){
 				texels[j * (r + pad) + i] = data[i * c + j];
@@ -115,6 +147,9 @@ function packData(r, c, data, transpose) {
 
 	return texels;
 };
+
+function isFloat32Array(obj) { return Object.prototype.toString.call(obj) === "[object Float32Array]"; }
+
 
 /*
 function saxpy(n, a, x, y){
