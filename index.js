@@ -48,7 +48,15 @@ function sgemm(M, N, K, alpha, A, B, beta, C){
 
     sgemmcalculator.calculate(M, N, K + pad, alpha, texture0, texture1, null, destTexture);
 
+    // retrieve data
     rawBuffer = gl.readData(M, N);
+
+    // clean up
+    gl.context.deleteTexture(texture0);
+    gl.context.deleteTexture(texture1);
+    gl.context.deleteTexture(destTexture);
+
+    // return result
     return new Float32Array(rawBuffer);
 
 }
@@ -79,7 +87,15 @@ function saxpy(N, a, X, Y){
 
     saxpycalculator.calculate(N + pad, a, texture0, texture1, destTexture);
 
+    // retrieve data
     rawBuffer = gl.readData(1, N);
+
+    // clean up
+    gl.context.deleteTexture(texture0);
+    gl.context.deleteTexture(texture1);
+    gl.context.deleteTexture(destTexture);
+
+    // return result
     return new Float32Array(rawBuffer);
 
 }
