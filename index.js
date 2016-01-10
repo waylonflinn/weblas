@@ -41,12 +41,12 @@ function sgemm(M, N, K, alpha, A, B, beta, C){
     texels1 = transpose(K, N, B);
 
     // create input textures from data
-    var texture0 = gl.createInputTexture(M, K, texels0);
-    var texture1 = gl.createInputTexture(N, K, texels1);
+    var texture0 = gl.createDataTexture(M, K, texels0);
+    var texture1 = gl.createDataTexture(N, K, texels1);
 
-    var destTexture = gl.createDestinationTexture(M, N);
+    var texture3 = gl.createOutputTexture(M, N);
 
-    sgemmcalculator.calculate(M, N, K + pad, alpha, texture0, texture1, null, destTexture);
+    sgemmcalculator.calculate(M, N, K + pad, alpha, texture0, texture1, null, null, texture3);
 
     // retrieve data
     rawBuffer = gl.readData(M, N);
@@ -54,7 +54,7 @@ function sgemm(M, N, K, alpha, A, B, beta, C){
     // clean up
     gl.context.deleteTexture(texture0);
     gl.context.deleteTexture(texture1);
-    gl.context.deleteTexture(destTexture);
+    gl.context.deleteTexture(texture3);
 
     // return result
     return new Float32Array(rawBuffer);
@@ -80,12 +80,12 @@ function saxpy(N, a, X, Y){
     }
 
     // create input textures from data
-    var texture0 = gl.createInputTexture(1, N, texels0);
-    var texture1 = gl.createInputTexture(1, N, texels1);
+    var texture0 = gl.createDataTexture(1, N, texels0);
+    var texture1 = gl.createDataTexture(1, N, texels1);
 
-    var destTexture = gl.createDestinationTexture(1, N + pad);
+    var texture3 = gl.createOutputTexture(1, N + pad);
 
-    saxpycalculator.calculate(N + pad, a, texture0, texture1, destTexture);
+    saxpycalculator.calculate(N + pad, a, texture0, texture1, texture3);
 
     // retrieve data
     rawBuffer = gl.readData(1, N);
@@ -93,7 +93,7 @@ function saxpy(N, a, X, Y){
     // clean up
     gl.context.deleteTexture(texture0);
     gl.context.deleteTexture(texture1);
-    gl.context.deleteTexture(destTexture);
+    gl.context.deleteTexture(texture3);
 
     // return result
     return new Float32Array(rawBuffer);
