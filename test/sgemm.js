@@ -32,6 +32,8 @@ console.log("# highp support:         \t" + (weblas.gl.hasHighPrecision ? "YES" 
 console.log("# highp.precision:       \t" + JSON.stringify(weblas.gl.highp.precision));
 
 
+var matrixFiles = ['a.json', 'b.json', 'c.json'];
+
 function generateTestCase(prefix, alpha){
 	return function(t){
 		t.plan(1);
@@ -42,7 +44,12 @@ function generateTestCase(prefix, alpha){
 		var testDirectory = dataDirectory + prefix + '/';
 
 		// load matrices from files
-		weblas.test.load(testDirectory, function(err, a, b, c){
+		weblas.test.load(testDirectory, matrixFiles, function(err, matrices){
+
+			// matrices is an array which matches matrixFiles
+			var a = matrices[0],
+				b = matrices[1],
+				c = matrices[2];
 
 			if(!(a[0] && a[0].length && b && a[0].length == b.length
 				&& a.length == c.length && b[0].length == c[0].length ))
