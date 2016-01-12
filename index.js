@@ -18,14 +18,22 @@ module.exports = {
 	"test" : test
 };
 
+/*
+    TODO: Pipeline
+
+	load textures
+	pass to sgemmcalculator shader
+	run floatdecode shader
+	return extracted result
+ */
+
 // RGBA is the standard input/ouput texture
 var COMPONENTS_PER_TEXEL = 4;
 
 /* Wrap the GL calculation object in a (relatively) user friendly function that
 	accepts TypedArrays
 
-	* pack the data
-	* convert to textures in GPU memory
+	* convert the data to (padded) textures in GPU memory
 	* execute calculation
 	* read result into an array, and return
  */
@@ -99,12 +107,7 @@ function saxpy(N, a, X, Y){
 	return new Float32Array(rawBuffer);
 
 }
-/*
-	load textures
-	pass to sgemmcalculator shader
-	run floatdecode shader
-	return extracted result
- */
+
 function isFloat32Array(obj){
 	return Object.prototype.toString.call(obj) === "[object Float32Array]";
 }
