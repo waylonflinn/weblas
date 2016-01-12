@@ -1,69 +1,69 @@
 var WebGL = require("./lib/webgl"),
-    SGEMMCalculator = require("./lib/sgemmcalculator"),
-    SAXPYCalculator = require("./lib/saxpycalculator"),
-    test = require("./lib/test");
+	SGEMMCalculator = require("./lib/sgemmcalculator"),
+	SAXPYCalculator = require("./lib/saxpycalculator"),
+	test = require("./lib/test");
 
 
 
 var gl = new WebGL(),
-    sgemmcalculator = new SGEMMCalculator(gl),
-    saxpycalculator = new SAXPYCalculator(gl);
+	sgemmcalculator = new SGEMMCalculator(gl),
+	saxpycalculator = new SAXPYCalculator(gl);
 
 
 module.exports = {
-    "sgemm" : sgemm,
-    "saxpy" : saxpy,
-    "gl" : gl,
-    "util" : { "fromArray" : fromArray, "transpose" : transpose},
-    "test" : test
+	"sgemm" : sgemm,
+	"saxpy" : saxpy,
+	"gl" : gl,
+	"util" : { "fromArray" : fromArray, "transpose" : transpose},
+	"test" : test
 };
 
 // RGBA is the standard input/ouput texture
 var COMPONENTS_PER_TEXEL = 4;
 
 /* Wrap the GL calculation object in a (relatively) user friendly function that
-    accepts TypedArrays
+	accepts TypedArrays
 
-    * pack the data
-    * convert to textures in GPU memory
-    * execute calculation
-    * read result into an array, and return
+	* pack the data
+	* convert to textures in GPU memory
+	* execute calculation
+	* read result into an array, and return
  */
 function sgemm(M, N, K, alpha, A, B, beta, C){
 
-    // pack each matrix into a single RGBA texel array, with the second transposed
-    var texels0 = A,
-    	texels1;
+	// pack each matrix into a single RGBA texel array, with the second transposed
+	var texels0 = A,
+		texels1;
 
-    var rem = (K % COMPONENTS_PER_TEXEL),
-    	pad = rem == 0 ? 0 : COMPONENTS_PER_TEXEL - rem;
+	var rem = (K % COMPONENTS_PER_TEXEL),
+		pad = rem == 0 ? 0 : COMPONENTS_PER_TEXEL - rem;
 
-    texels1 = transpose(K, N, B);
+	texels1 = transpose(K, N, B);
 
-    // create input textures from data
-    var texture0 = gl.createDataTexture(M, K, texels0);
-    var texture1 = gl.createDataTexture(N, K, texels1);
+	// create input textures from data
+	var texture0 = gl.createDataTexture(M, K, texels0);
+	var texture1 = gl.createDataTexture(N, K, texels1);
 
-    var texture3 = gl.createOutputTexture(M, N);
+	var texture3 = gl.createOutputTexture(M, N);
 
-    sgemmcalculator.calculate(M, N, K + pad, alpha, texture0, texture1, null, null, texture3);
+	sgemmcalculator.calculate(M, N, K + pad, alpha, texture0, texture1, null, null, texture3);
 
-    // retrieve data
-    rawBuffer = gl.readData(M, N);
+	// retrieve data
+	rawBuffer = gl.readData(M, N);
 
-    // clean up
-    gl.context.deleteTexture(texture0);
-    gl.context.deleteTexture(texture1);
-    gl.context.deleteTexture(texture3);
+	// clean up
+	gl.context.deleteTexture(texture0);
+	gl.context.deleteTexture(texture1);
+	gl.context.deleteTexture(texture3);
 
-    // return result
-    return new Float32Array(rawBuffer);
+	// return result
+	return new Float32Array(rawBuffer);
 
 }
 
 function saxpy(N, a, X, Y){
 
-    var rawBuffer;
+	var rawBuffer;
 
 	var mod = (N % COMPONENTS_PER_TEXEL),
 		pad = mod == 0 ? 0 : COMPONENTS_PER_TEXEL - mod;
@@ -71,65 +71,66 @@ function saxpy(N, a, X, Y){
 	var texels0 = X,
 		texels1;
 
-    // TODO: special shader for constant Y
-    if(isFloat32Array(Y)){
-        texels1 = Y;
-    } else {
-        texels1 = new Float32Array(N);
-        texels1.fill(Y);
-    }
+	// TODO: special shader for constant Y
+	if(isFloat32Array(Y)){
+		texels1 = Y;
+	} else {
+		texels1 = new Float32Array(N);
+		texels1.fill(Y);
+	}
 
-    // create input textures from data
-    var texture0 = gl.createDataTexture(1, N, texels0);
-    var texture1 = gl.createDataTexture(1, N, texels1);
+	// create input textures from data
+	var texture0 = gl.createDataTexture(1, N, texels0);
+	var texture1 = gl.createDataTexture(1, N, texels1);
 
-    var texture3 = gl.createOutputTexture(1, N + pad);
+	var texture3 = gl.createOutputTexture(1, N + pad);
 
-    saxpycalculator.calculate(N + pad, a, texture0, texture1, texture3);
+	saxpycalculator.calculate(N + pad, a, texture0, texture1, texture3);
 
-    // retrieve data
-    rawBuffer = gl.readData(1, N);
+	// retrieve data
+	rawBuffer = gl.readData(1, N);
 
-    // clean up
-    gl.context.deleteTexture(texture0);
-    gl.context.deleteTexture(texture1);
-    gl.context.deleteTexture(texture3);
+	// clean up
+	gl.context.deleteTexture(texture0);
+	gl.context.deleteTexture(texture1);
+	gl.context.deleteTexture(texture3);
 
-    // return result
-    return new Float32Array(rawBuffer);
+	// return result
+	return new Float32Array(rawBuffer);
 
 }
 /*
-    load textures
-    pass to sgemmcalculator shader
-    run floatdecode shader
-    return extracted result
+	load textures
+	pass to sgemmcalculator shader
+	run floatdecode shader
+	return extracted result
  */
-function isFloat32Array(obj) { return Object.prototype.toString.call(obj) === "[object Float32Array]"; }
-
+function isFloat32Array(obj){
+	return Object.prototype.toString.call(obj) === "[object Float32Array]";
+}
 
 /*
 function saxpy(n, a, x, y){
-    var i = 0,
-        result = new Float32Array(n);
+	var i = 0,
+		result = new Float32Array(n);
 
-    // assert n = x.length
-    // assert a is scalar
-    // assert x is Float32Array
+	// assert n = x.length
+	// assert a is scalar
+	// assert x is Float32Array
 
-    if(isNumeric(y)){
-        // shortcut for scalar y
-        for(; i < n; i++){
-            result[i] = a * x[i] + y;
-        }
-    } else {
+	if(isNumeric(y)){
+		// shortcut for scalar y
+		for(; i < n; i++){
+			result[i] = a * x[i] + y;
+		}
+	} else {
 
-        for(; i < n; i++){
-            result[i] = a * x[i] + y[i];
-        }
-    }
+		for(; i < n; i++){
+			result[i] = a * x[i] + y[i];
+		}
+	}
 
-    return result;
+	return result;
 
 }*/
 
@@ -180,13 +181,13 @@ function fromArray(array, type, tranpose) {
 // tranpose a typed array in row major order, with the given row and column
 // numers
 function transpose(r, c, typedArray){
-    var result = new typedArray.constructor(r*c);
+	var result = new typedArray.constructor(r*c);
 
-    for(var i = 0; i < r; i++){
-        for(var j = 0; j < c; j++){
-            result[j * r + i] = typedArray[i * c + j];
-        }
-    }
+	for(var i = 0; i < r; i++){
+		for(var j = 0; j < c; j++){
+			result[j * r + i] = typedArray[i * c + j];
+		}
+	}
 
-    return result;
+	return result;
 }
