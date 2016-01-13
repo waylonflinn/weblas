@@ -44,7 +44,7 @@ def create_matrix(spec):
 if __name__ == '__main__':
 	arguments = docopt(__doc__, version='JSON Matrix Generator')
 
-	base_directory = arguments['<directory>'] + "/"
+	base_directory = os.path.join(arguments['<directory>'], '')
 	test_file = arguments['<spec.json>']
 
 	sys.path.insert(0, './' + base_directory)
@@ -54,7 +54,6 @@ if __name__ == '__main__':
 	with open(test_file, 'r') as f:
 		tests = json.load(f)
 
-	#sorted_tests = sorted(list(tests.items()), key = lambda test : test[0])
 
 	for i in range(len(tests)):
 
@@ -69,9 +68,9 @@ if __name__ == '__main__':
 			print("Skipping {0}".format(directory))
 			continue
 
-		all_exist = False
 		names = map(lambda i: default_names[i], range(len(options['in'])))
 
+		all_exist = False
 		for name in names:
 			all_exist = all_exist & os.path.exists(directory + name)
 

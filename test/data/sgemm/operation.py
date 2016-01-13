@@ -1,4 +1,4 @@
-"""SGEMM operation
+"""GEMM operation
 """
 import numpy as np
 

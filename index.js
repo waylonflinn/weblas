@@ -1,18 +1,26 @@
 var WebGL = require("./lib/webgl"),
 	SGEMMCalculator = require("./lib/sgemmcalculator"),
 	SAXPYCalculator = require("./lib/saxpycalculator"),
+    SSCALCalculator = require("./lib/sscalcalculator"),
 	test = require("./lib/test");
 
 
 
 var gl = new WebGL(),
 	sgemmcalculator = new SGEMMCalculator(gl),
-	saxpycalculator = new SAXPYCalculator(gl);
+	saxpycalculator = new SAXPYCalculator(gl),
+    sscalcalculator = new SSCALCalculator(gl);
 
 
 module.exports = {
-	"sgemm" : sgemm,
-	"saxpy" : saxpy,
+    // level one
+    "saxpy" : saxpy,
+    "sscal" : sscal,   // single precision matrix scale
+    // level two
+    // level three
+    "sgemm" : sgemm,   // single precision generalized matrix multiply
+    // extra
+    "sstd" : sstd,     // single precision Standard Score normalization
 	"gl" : gl,
 	"util" : { "fromArray" : fromArray, "transpose" : transpose},
 	"test" : test
@@ -27,8 +35,6 @@ module.exports = {
 	return extracted result
  */
 
-// RGBA is the standard input/ouput texture
-var COMPONENTS_PER_TEXEL = 4;
 
 /* Wrap the GL calculation object in a (relatively) user friendly function that
 	accepts TypedArrays
@@ -43,8 +49,8 @@ function sgemm(M, N, K, alpha, A, B, beta, C){
 	var texels0 = A,
 		texels1;
 
-	var rem = (K % COMPONENTS_PER_TEXEL),
-		pad = rem == 0 ? 0 : COMPONENTS_PER_TEXEL - rem;
+	var rem = (K % WebGL.COMPONENTS_PER_TEXEL),
+		pad = rem == 0 ? 0 : WebGL.COMPONENTS_PER_TEXEL - rem;
 
 	texels1 = transpose(K, N, B);
 
@@ -73,8 +79,8 @@ function saxpy(N, a, X, Y){
 
 	var rawBuffer;
 
-	var mod = (N % COMPONENTS_PER_TEXEL),
-		pad = mod == 0 ? 0 : COMPONENTS_PER_TEXEL - mod;
+	var mod = (N % WebGL.COMPONENTS_PER_TEXEL),
+		pad = mod == 0 ? 0 : WebGL.COMPONENTS_PER_TEXEL - mod;
 
 	var texels0 = X,
 		texels1;
@@ -111,7 +117,72 @@ function saxpy(N, a, X, Y){
 function isFloat32Array(obj){
 	return Object.prototype.toString.call(obj) === "[object Float32Array]";
 }
+/* a more general version of the BLAS Level 1 scale, that works on matrices
+   and includes an elementwise scalar addition
 
+   a * X + b
+   a - scalar
+   X - matrix (M x N)
+   b - scalar
+
+   to get the standard BLAS scal set M = 1 and b = 0
+
+   this function is generally only cost effective to use in a pipeline
+*/
+function sscal(M, N, a, X, b){
+
+	var rawBuffer;
+
+	var mod = (N % WebGL.COMPONENTS_PER_TEXEL),
+		pad = mod == 0 ? 0 : WebGL.COMPONENTS_PER_TEXEL - mod;
+
+    var texels0 = X;
+    var texture0 = gl.createDataTexture(M, N, texels0);
+
+	var texture3 = gl.createOutputTexture(M, N + pad);
+
+    // adjust the parameters (for inverse) and call the standard score normalization
+    sscalcalculator.calculate(M, N, a, texture0, b, texture3);
+
+	// retrieve data
+	rawBuffer = gl.readData(M, N);
+
+	// clean up
+	gl.context.deleteTexture(texture0);
+	gl.context.deleteTexture(texture3);
+
+	// return result
+	return new Float32Array(rawBuffer);
+}
+
+/* Calculate the Standard Score normalization (subtract mean
+   ,divide by standard deviation).
+ */
+function sstd(M, N, mu, sigma, X){
+
+	var rawBuffer;
+
+	var mod = (N % WebGL.COMPONENTS_PER_TEXEL),
+		pad = mod == 0 ? 0 : WebGL.COMPONENTS_PER_TEXEL - mod;
+
+    var texels0 = X;
+    var texture0 = gl.createDataTexture(M, N, texels0);
+
+	var texture3 = gl.createOutputTexture(M, N + pad);
+
+    // adjust the parameters (for inverse) and call the standard score normalization
+    sscalcalculator.calculate(M, N + pad, 1.0/sigma, texture0, -1.0 * mu/sigma, texture3);
+
+	// retrieve data
+	rawBuffer = gl.readData(M, N);
+
+	// clean up
+	gl.context.deleteTexture(texture0);
+	gl.context.deleteTexture(texture3);
+
+	// return result
+	return new Float32Array(rawBuffer);
+}
 /*
 function saxpy(n, a, x, y){
 	var i = 0,

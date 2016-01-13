@@ -3,4 +3,4 @@ node_modules
 __pycache__
 *.pyc
 
-test/data/sgemm/0*
+test/data/*/00*
