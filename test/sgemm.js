@@ -32,7 +32,7 @@ console.log("# highp support:         \t" + (weblas.gl.hasHighPrecision ? "YES" 
 console.log("# highp.precision:       \t" + JSON.stringify(weblas.gl.highp.precision));
 
 
-var matrixFiles = ['a.json', 'b.json', 'c.json'];
+var matrixFiles = ['a.json', 'b.json', 'out.json'];
 
 function generateTestCase(prefix, alpha){
 	return function(t){
@@ -84,14 +84,19 @@ loader.load(dataDirectory + testFile, function(err, config){
 	var suite = JSON.parse(config);
 
 	// suite configuration file uses directory name as key
-	for(directory in suite){
+	for(var i = 0; i < suite.length; i++){
 
-		var sizes = suite[directory]['sizes'];
+		directory = String("0000" + (i + 1)).slice(-4);
 
-		var m = sizes[0],
-			n = sizes[1],
-			k = sizes[2],
-			alpha = suite[directory]['alpha'] || 1.0;
+		var test = suite[i];
+		test['arg'] = test['arg'] || {};
+
+		var sizes = test['in'];
+
+		var m = sizes[0][0],
+			n = sizes[1][0],
+			k = sizes[0][1],
+			alpha = test['arg']['alpha'] || 1.0;
 
 		tape("sgemm: " + m + "x" + k + " . " + k + "x" + n, generateTestCase(directory, alpha));
 	}
