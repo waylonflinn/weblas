@@ -1,7 +1,8 @@
 var WebGL = require("./lib/webgl"),
 	SGEMMCalculator = require("./lib/sgemmcalculator"),
 	SAXPYCalculator = require("./lib/saxpycalculator"),
-    SSCALCalculator = require("./lib/sscalcalculator"),
+	SSCALCalculator = require("./lib/sscalcalculator"),
+	DownsampleCalculator = require("./lib/downsamplecalculator"),
 	test = require("./lib/test");
 
 
@@ -9,25 +10,27 @@ var WebGL = require("./lib/webgl"),
 var gl = new WebGL(),
 	sgemmcalculator = new SGEMMCalculator(gl),
 	saxpycalculator = new SAXPYCalculator(gl),
-    sscalcalculator = new SSCALCalculator(gl);
+	sscalcalculator = new SSCALCalculator(gl),
+	downsamplecalculator = new DownsampleCalculator(gl);
 
 
 module.exports = {
-    // level one
-    "saxpy" : saxpy,
-    "sscal" : sscal,   // single precision matrix scale
-    // level two
-    // level three
-    "sgemm" : sgemm,   // single precision generalized matrix multiply
-    // extra
-    "sstd" : sstd,     // single precision Standard Score normalization
+	// level one
+	"saxpy" : saxpy,
+	"sscal" : sscal,   // single precision matrix scale
+	// level two
+	// level three
+	"sgemm" : sgemm,   // single precision generalized matrix multiply
+	// extra
+	"sstd" : sstd,     // single precision Standard Score normalization
+	"downsample": downsample,
 	"gl" : gl,
 	"util" : { "fromArray" : fromArray, "transpose" : transpose},
 	"test" : test
 };
 
 /*
-    TODO: Pipeline
+	TODO: Pipeline
 
 	load textures
 	pass to sgemmcalculator shader
@@ -136,13 +139,13 @@ function sscal(M, N, a, X, b){
 	var mod = (N % WebGL.COMPONENTS_PER_TEXEL),
 		pad = mod == 0 ? 0 : WebGL.COMPONENTS_PER_TEXEL - mod;
 
-    var texels0 = X;
-    var texture0 = gl.createDataTexture(M, N, texels0);
+	var texels0 = X;
+	var texture0 = gl.createDataTexture(M, N, texels0);
 
 	var texture3 = gl.createOutputTexture(M, N + pad);
 
-    // adjust the parameters (for inverse) and call the standard score normalization
-    sscalcalculator.calculate(M, N, a, texture0, b, texture3);
+	// adjust the parameters (for inverse) and call the standard score normalization
+	sscalcalculator.calculate(M, N, a, texture0, b, texture3);
 
 	// retrieve data
 	rawBuffer = gl.readData(M, N);
@@ -165,13 +168,13 @@ function sstd(M, N, mu, sigma, X){
 	var mod = (N % WebGL.COMPONENTS_PER_TEXEL),
 		pad = mod == 0 ? 0 : WebGL.COMPONENTS_PER_TEXEL - mod;
 
-    var texels0 = X;
-    var texture0 = gl.createDataTexture(M, N, texels0);
+	var texels0 = X;
+	var texture0 = gl.createDataTexture(M, N, texels0);
 
 	var texture3 = gl.createOutputTexture(M, N + pad);
 
-    // adjust the parameters (for inverse) and call the standard score normalization
-    sscalcalculator.calculate(M, N + pad, 1.0/sigma, texture0, -1.0 * mu/sigma, texture3);
+	// adjust the parameters (for inverse) and call the standard score normalization
+	sscalcalculator.calculate(M, N + pad, 1.0/sigma, texture0, -1.0 * mu/sigma, texture3);
 
 	// retrieve data
 	rawBuffer = gl.readData(M, N);
@@ -182,6 +185,44 @@ function sstd(M, N, mu, sigma, X){
 
 	// return result
 	return new Float32Array(rawBuffer);
+}
+
+/* downsample an image (taking the max) for Pooling
+
+	M - rows in input
+	N - columns in input
+	c - channels in input
+	factor - the downsample factor (width of patch to sample)
+	stride - width between pooling regions
+	X - input image
+ */
+function downsample(M, N, channels, factor, stride, X){
+
+
+    // size of the fake third dimension, after packing into our texture
+    var c = Math.floor(channels / WebGL.COMPONENTS_PER_TEXEL);
+    //console.assert(((C * WebGL.COMPONENTS_PER_TEXEL) === channels), 'channel count must be a multiple of four');
+
+    var texels0 = X;
+
+    var texture0 = gl.createDataTexture(M, N * channels, X);
+
+    var N_out = Math.floor((N - factor) / stride) + 1;
+    var M_out = Math.floor((M - factor) / stride) + 1;
+
+    var texture3 = gl.createOutputTexture(M_out, N_out * channels);
+
+    downsamplecalculator.calculate(M, N, c, factor, stride, texture0, texture3);
+
+    // retrieve data
+    rawBuffer = gl.readData(M_out, N_out * channels);
+
+    // clean up
+    gl.context.deleteTexture(texture0);
+    gl.context.deleteTexture(texture3);
+
+    // return result
+    return new Float32Array(rawBuffer);
 }
 /*
 function saxpy(n, a, x, y){
