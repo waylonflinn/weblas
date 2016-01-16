@@ -20,6 +20,7 @@
     "tape": "^4.2.2"
   },
   "scripts": {
+    "data": "./test/data/generate.sh",
     "test": "browserify test/*.js | testling -x google-chrome",
     "build": "browserify index.js --s weblas > dist/weblas.js",
     "min": "browserify index.js --s weblas -d -p [minifyify --map ./weblas.map.json --output dist/weblas.map.json] > dist/weblas.js",
