@@ -91,11 +91,12 @@ loader.load(dataDirectory + testFile, function(err, config){
 		var test = suite[i];
 		test['arg'] = test['arg'] || {};
 
-		var sizes = test['in'];
+		var input = test['in'],
+			sizes = input['shape'];
 
-		var m = sizes[0][0],
-			n = sizes[1][0],
-			k = sizes[0][1],
+		var m = input[0]['shape'][0],
+			n = input[1]['shape'][1],
+			k = input[0]['shape'][1],
 			alpha = test['arg']['alpha'] || 1.0;
 
 		tape("sgemm: " + m + "x" + k + " . " + k + "x" + n, generateTestCase(directory, alpha));

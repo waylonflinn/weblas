@@ -166,10 +166,11 @@ loader.load(dataDirectory + testFile, function(err, config){
 		var test = suite[i];
 		test['arg'] = test['arg'] || {};
 
-		var sizes = test['in'];
+		var input = test['in'],
+			sizes = input['shape'];
 
-		var m = sizes[0][0],
-			n = sizes[0][1],
+		var m = input[0]['shape'][0],
+			n = input[0]['shape'][1],
 			a = test['arg']['a'] || 1.0,
 			b = test['arg']['b'] || 0.0;
 

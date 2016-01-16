@@ -33,13 +33,12 @@ default_names = ['a.json', 'b.json', 'c.json']
 
 def create_matrix(spec):
 
-	m = spec[0]
-	n = spec[1]
+	shape = spec['shape']
 
-	a = spec[2] if len(spec) > 2 else 1.0
-	b = spec[3] if len(spec) > 3 else 0.0
+	a = spec['a'] if 'a' in spec else 1.0
+	b = spec['b'] if 'b' in spec else 0.0
 
-	return (a * np.random.random_sample((m, n))) + b
+	return (a * np.random.random_sample(shape)) + b
 
 if __name__ == '__main__':
 	arguments = docopt(__doc__, version='JSON Matrix Generator')
