@@ -83,13 +83,13 @@ if __name__ == '__main__':
 				matrix = create_matrix(spec)
 				matrices.append(matrix)
 
-				json_matrix.write(directory + name, matrix)
+				json_matrix.write(directory + name, matrix.flatten())
 
 		arguments = options['arg'] if 'arg' in options else {}
 		out = operation.execute(arguments, matrices)
 
 		# run mutliplication
 		#os.system("./multiply.py {0}".format(number))
-		json_matrix.write(directory + "out.json", out)
+		json_matrix.write(directory + "out.json", out.flatten())
 
 		print("Created {0}".format(directory))

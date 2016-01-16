@@ -7,9 +7,6 @@ var tape = require('tape'),
 var RTOL = 1e-05,
 	ATOL = 1e-07;
 
-var dataDirectory = 'test/data/sscal/',
-	testFile = 'small.json';
-
 tape("sscal: 1x4", function(t){
 	t.plan(1);
 
@@ -109,13 +106,16 @@ tape("sscal: 1x7", function(t){
 
 });
 
+var dataDirectory = 'test/data/sscal/',
+	testFile = 'small.json';
+
 var matrixFiles = ['a.json', 'out.json'];
 
-function generateTestCase(prefix, a, b){
+function generateTestCase(prefix, m, n, a, b){
 	return function(t){
 		t.plan(1);
 
-		var X, C; // typed arrays
+		var X, expected; // typed arrays
 
 			// directory containing matrix data files for current test
 		var testDirectory = dataDirectory + prefix + '/';
@@ -127,17 +127,16 @@ function generateTestCase(prefix, a, b){
 			//console.log(matrices.length);
 			// matrices is an array which matches matrixFiles
 			var x = matrices[0],
-				c = matrices[1];
+				out = matrices[1];
 
-			if(!(x[0] && x[0].length && x.length == c.length &&
-				 x[0].length == c[0].length ))
+			if(!(x && x.length && x.length == m * n &&
+				 out, out.length && out.length == m * n)){
+
 				throw new Error("malformed data");
+			}
 
-			X = weblas.util.fromArray(x);
-			C = weblas.util.fromArray(c);
-
-			var m = x.length,
-				n = x[0].length;
+			X = new Float32Array(x);
+			expected = new Float32Array(out);
 
 			//console.log(m + "x" + k + " times " + k + "x" + n);
 
@@ -149,7 +148,7 @@ function generateTestCase(prefix, a, b){
 				return;
 			}
 
-			weblas.test.assert.allclose(t, result, C, null, RTOL, ATOL);
+			weblas.test.assert.allclose(t, result, expected, null, RTOL, ATOL);
 		});
 	};
 }
@@ -175,7 +174,8 @@ loader.load(dataDirectory + testFile, function(err, config){
 			b = test['arg']['b'] || 0.0;
 
 		//console.log("generating " + directory);
-		tape("sscal: " + m + "x" + n, generateTestCase(directory, a, b));
+		var testName = "sscal: " + m + "x" + n;
+		tape(testName, generateTestCase(directory, m, n, a, b));
 	}
 
 });

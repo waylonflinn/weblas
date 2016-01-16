@@ -34,11 +34,11 @@ console.log("# highp.precision:       \t" + JSON.stringify(weblas.gl.highp.preci
 
 var matrixFiles = ['a.json', 'b.json', 'out.json'];
 
-function generateTestCase(prefix, alpha){
+function generateTestCase(prefix, m, n, k, alpha){
 	return function(t){
 		t.plan(1);
 
-		var A, B, C; // typed arrays
+		var A, B, expected; // typed arrays
 
 			// directory containing matrix data files for current test
 		var testDirectory = dataDirectory + prefix + '/';
@@ -49,20 +49,20 @@ function generateTestCase(prefix, alpha){
 			// matrices is an array which matches matrixFiles
 			var a = matrices[0],
 				b = matrices[1],
-				c = matrices[2];
+				out = matrices[2];
 
-			if(!(a[0] && a[0].length && b && a[0].length == b.length
-				&& a.length == c.length && b[0].length == c[0].length ))
+			if(!(a && a.length && a.length == m * k &&
+				b && b.length && b.length == k * n &&
+				out && out.length && out.length == m * n)){
+
 				throw new Error("malformed data");
+			}
 
-			A = weblas.util.fromArray(a);
-			B = weblas.util.fromArray(b);
-			C = weblas.util.fromArray(c);
+			A = new Float32Array(a);
+			B = new Float32Array(b);
+			expected = new Float32Array(out);
 
-			var m = a.length,
-				k = b.length,
-				n = b[0].length,
-				beta = 0.0;
+			var beta = 0.0;
 
 			//console.log(m + "x" + k + " times " + k + "x" + n);
 
@@ -74,7 +74,7 @@ function generateTestCase(prefix, alpha){
 				return;
 			}
 
-			weblas.test.assert.allclose(t, result, C, null, RTOL, ATOL);
+			weblas.test.assert.allclose(t, result, expected, null, RTOL, ATOL);
 		});
 	};
 }
@@ -99,7 +99,8 @@ loader.load(dataDirectory + testFile, function(err, config){
 			k = input[0]['shape'][1],
 			alpha = test['arg']['alpha'] || 1.0;
 
-		tape("sgemm: " + m + "x" + k + " . " + k + "x" + n, generateTestCase(directory, alpha));
+		var testName = "sgemm: " + m + "x" + k + " . " + k + "x" + n;
+		tape(testName, generateTestCase(directory, m, n, k, alpha));
 	}
 
 });
