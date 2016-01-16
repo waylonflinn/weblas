@@ -4,8 +4,13 @@ GPU accelerated BLAS for your browser, no add-ons required. Performance [compara
 
 
 # Operations
-* saxpy - 32-bit Floating Point Vector Addition
-* sgemm - 32-bit Floating Point Matrix Multiply
+Our focus is on operations useful for neural networks and machine learning.
+Here's what we've got so far.
+
+* saxpy - Vector Addition
+* sscal - Matrix (and Vector) Scale (with addition)
+* sgemm - Matrix Multiply
+* sdwns - Matrix (and Image) Downsample
 
 Don't see what you need? Give a :+1: to an [existing issue](https://github.com/waylonflinn/weblas/issues?q=is%3Aissue+is%3Aopen+label%3Aoperation) or create a [new one](https://github.com/waylonflinn/weblas/issues)!
 
@@ -61,15 +66,20 @@ ln -s /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome /usr/local/
 ```
 
 ## Unit Tests
-Unit tests use data generated outside the browser (to verify correctness).
-Generating the data requires `python` and `numpy`.
+All operations have unit test coverage. Unit tests use data generated outside
+the browser (to verify correctness). Generating the data requires `python` and
+the modules in `requirements.txt`.
 
-With those installed, generate the data by running:
+With `pip` installed run:
 
 ```
-cd test/data/
-./generate small.json
-cd ../../
+pip install -r requirements.txt
+```
+
+Then, to generate the data, run:
+
+```
+npm run data
 ```
 
 Then, run the unit tests with:
