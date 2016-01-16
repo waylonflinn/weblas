@@ -23,7 +23,7 @@ module.exports = {
 	"sgemm" : sgemm,   // single precision generalized matrix multiply
 	// extra
 	"sstd" : sstd,     // single precision Standard Score normalization
-	"downsample": downsample,
+	"sdwns": sdwns,
 	"gl" : gl,
 	"util" : { "fromArray" : fromArray, "transpose" : transpose},
 	"test" : test
@@ -196,7 +196,7 @@ function sstd(M, N, mu, sigma, X){
 	stride - width between pooling regions
 	X - input image
  */
-function downsample(M, N, channels, factor, stride, X){
+function sdwns(M, N, channels, factor, stride, X){
 
 
     // size of the fake third dimension, after packing into our texture
