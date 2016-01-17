@@ -163,15 +163,15 @@ loader.load(dataDirectory + testFile, function(err, config){
 		directory = String("0000" + (i + 1)).slice(-4);
 
 		var test = suite[i];
-		test['arg'] = test['arg'] || {};
 
 		var input = test['in'],
-			sizes = input['shape'];
+			sizes = input['shape'],
+			arg = test['arg'] || {};
 
 		var m = input[0]['shape'][0],
 			n = input[0]['shape'][1],
-			a = test['arg']['a'] || 1.0,
-			b = test['arg']['b'] || 0.0;
+			a = (arg['a'] != null) ? arg['a'] : 1.0,
+			b = (arg['b'] != null) ? arg['b'] : 0.0;
 
 		//console.log("generating " + directory);
 		var testName = "sscal: " + m + "x" + n;
