@@ -2,6 +2,8 @@
 
 GPU accelerated BLAS for your browser, no add-ons required. Performance [comparable to native](https://github.com/waylonflinn/weblas/wiki).
 
+Currently includes over a hundred unit tests, which verify correctness on tens of millions
+of data points.
 
 # Operations
 Our focus is on operations useful for neural networks and machine learning.
