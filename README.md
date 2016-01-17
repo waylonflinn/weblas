@@ -12,7 +12,7 @@ Here's what we've got so far:
 * saxpy - Vector Addition
 * sscal - Matrix (and Vector) Scale (with addition)
 * sgemm - Matrix Multiply
-* sdwns - Matrix (and Image) Downsample
+* sdwns - Matrix (and Image) Downsample (for Max Pooling)
 * sclmp - Matrix clamp (for ReLU)
 
 Don't see what you need? Give a :+1: to an [existing issue](https://github.com/waylonflinn/weblas/issues?q=is%3Aissue+is%3Aopen+label%3Aoperation) or create a [new one](https://github.com/waylonflinn/weblas/issues)!
