@@ -3,6 +3,7 @@ var WebGL = require("./lib/webgl"),
 	SAXPYCalculator = require("./lib/saxpycalculator"),
 	SSCALCalculator = require("./lib/sscalcalculator"),
 	SDWNSCalculator = require("./lib/sdwnscalculator"),
+	SCLMPCalculator = require("./lib/sclmpcalculator"),
 	test = require("./lib/test");
 
 
@@ -11,7 +12,8 @@ var gl = new WebGL(),
 	sgemmcalculator = new SGEMMCalculator(gl),
 	saxpycalculator = new SAXPYCalculator(gl),
 	sscalcalculator = new SSCALCalculator(gl),
-	sdwnscalculator = new SDWNSCalculator(gl);
+	sdwnscalculator = new SDWNSCalculator(gl),
+	sclmpcalculator = new SCLMPCalculator(gl);
 
 
 module.exports = {
@@ -24,6 +26,7 @@ module.exports = {
 	// extra
 	"sstd" : sstd,     // single precision Standard Score normalization
 	"sdwns": sdwns,
+	"sclmp": sclmp,
 	"gl" : gl,
 	"util" : { "fromArray" : fromArray, "transpose" : transpose},
 	"test" : test
@@ -144,7 +147,6 @@ function sscal(M, N, a, X, b){
 
 	var texture3 = gl.createOutputTexture(M, N + pad);
 
-	// adjust the parameters (for inverse) and call the standard score normalization
 	sscalcalculator.calculate(M, N, a, texture0, b, texture3);
 
 	// retrieve data
@@ -199,30 +201,74 @@ function sstd(M, N, mu, sigma, X){
 function sdwns(M, N, channels, factor, stride, X){
 
 
-    // size of the fake third dimension, after packing into our texture
-    var c = Math.floor(channels / WebGL.COMPONENTS_PER_TEXEL);
-    //console.assert(((C * WebGL.COMPONENTS_PER_TEXEL) === channels), 'channel count must be a multiple of four');
+	// size of the fake third dimension, after packing into our texture
+	var c = Math.floor(channels / WebGL.COMPONENTS_PER_TEXEL);
+	//console.assert(((C * WebGL.COMPONENTS_PER_TEXEL) === channels), 'channel count must be a multiple of four');
 
-    var texels0 = X;
+	var texels0 = X;
 
-    var texture0 = gl.createDataTexture(M, N * channels, X);
+	var texture0 = gl.createDataTexture(M, N * channels, X);
 
-    var N_out = Math.floor((N - factor) / stride) + 1;
-    var M_out = Math.floor((M - factor) / stride) + 1;
+	var N_out = Math.floor((N - factor) / stride) + 1;
+	var M_out = Math.floor((M - factor) / stride) + 1;
 
-    var texture3 = gl.createOutputTexture(M_out, N_out * channels);
+	var texture3 = gl.createOutputTexture(M_out, N_out * channels);
 
-    sdwnscalculator.calculate(M, N, c, factor, stride, texture0, texture3);
+	sdwnscalculator.calculate(M, N, c, factor, stride, texture0, texture3);
 
-    // retrieve data
-    rawBuffer = gl.readData(M_out, N_out * channels);
+	// retrieve data
+	rawBuffer = gl.readData(M_out, N_out * channels);
 
-    // clean up
-    gl.context.deleteTexture(texture0);
-    gl.context.deleteTexture(texture3);
+	// clean up
+	gl.context.deleteTexture(texture0);
+	gl.context.deleteTexture(texture3);
 
-    // return result
-    return new Float32Array(rawBuffer);
+	// return result
+	return new Float32Array(rawBuffer);
+}
+/*  Elementwise clamp function for matrices on the interval [a, b]. Can also be
+	used for min or max, by passing Number.MIN_VALUE for the first parameter and
+	Number.MAX_VALUE for the second parameter, respectively.
+
+	Passing `null` for either of these parameters will default to it's
+	respective min or max value.
+
+	M - number of rows in X
+	N - number of columns in X
+	a - lower bound (inclusize)
+	b - upper bound (inclusive)
+	X - matrix
+
+   to get the standard BLAS scal set M = 1 and b = 0
+
+   this function is generally only cost effective to use in a pipeline
+*/
+function sclmp(M, N, a, b, X){
+
+	a = (a != null) ? a : Number.MIN_VALUE;
+	b = (b != null) ? b : Number.MAX_VALUE;
+
+	var rawBuffer;
+
+	var mod = (N % WebGL.COMPONENTS_PER_TEXEL),
+		pad = mod == 0 ? 0 : WebGL.COMPONENTS_PER_TEXEL - mod;
+
+	var texels0 = X;
+	var texture0 = gl.createDataTexture(M, N, texels0);
+
+	var texture3 = gl.createOutputTexture(M, N + pad);
+
+	sclmpcalculator.calculate(M, N, a, b, texture0, texture3);
+
+	// retrieve data
+	rawBuffer = gl.readData(M, N);
+
+	// clean up
+	gl.context.deleteTexture(texture0);
+	gl.context.deleteTexture(texture3);
+
+	// return result
+	return new Float32Array(rawBuffer);
 }
 /*
 function saxpy(n, a, x, y){
