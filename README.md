@@ -5,12 +5,13 @@ GPU accelerated BLAS for your browser, no add-ons required. Performance [compara
 
 # Operations
 Our focus is on operations useful for neural networks and machine learning.
-Here's what we've got so far.
+Here's what we've got so far:
 
 * saxpy - Vector Addition
 * sscal - Matrix (and Vector) Scale (with addition)
 * sgemm - Matrix Multiply
 * sdwns - Matrix (and Image) Downsample
+* sclmp - Matrix clamp (for ReLU)
 
 Don't see what you need? Give a :+1: to an [existing issue](https://github.com/waylonflinn/weblas/issues?q=is%3Aissue+is%3Aopen+label%3Aoperation) or create a [new one](https://github.com/waylonflinn/weblas/issues)!
 
