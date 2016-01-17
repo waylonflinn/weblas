@@ -2,7 +2,7 @@ var WebGL = require("./lib/webgl"),
 	SGEMMCalculator = require("./lib/sgemmcalculator"),
 	SAXPYCalculator = require("./lib/saxpycalculator"),
 	SSCALCalculator = require("./lib/sscalcalculator"),
-	DownsampleCalculator = require("./lib/downsamplecalculator"),
+	SDWNSCalculator = require("./lib/sdwnscalculator"),
 	test = require("./lib/test");
 
 
@@ -11,7 +11,7 @@ var gl = new WebGL(),
 	sgemmcalculator = new SGEMMCalculator(gl),
 	saxpycalculator = new SAXPYCalculator(gl),
 	sscalcalculator = new SSCALCalculator(gl),
-	downsamplecalculator = new DownsampleCalculator(gl);
+	sdwnscalculator = new SDWNSCalculator(gl);
 
 
 module.exports = {
@@ -212,7 +212,7 @@ function sdwns(M, N, channels, factor, stride, X){
 
     var texture3 = gl.createOutputTexture(M_out, N_out * channels);
 
-    downsamplecalculator.calculate(M, N, c, factor, stride, texture0, texture3);
+    sdwnscalculator.calculate(M, N, c, factor, stride, texture0, texture3);
 
     // retrieve data
     rawBuffer = gl.readData(M_out, N_out * channels);
