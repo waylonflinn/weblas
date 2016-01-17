@@ -1,0 +1,4 @@
+[	{"in": [{"shape": [55, 55, 96]}], "arg": {"factor": 3, "stride": 2}},
+	{"in": [{"shape": [27, 27, 256]}], "arg": {"factor": 3, "stride":2}},
+	{"in": [{"shape": [13, 13, 256]}], "arg": {"factor": 3, "stride":2}}
+]

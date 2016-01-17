@@ -1,5 +1,6 @@
 node_modules
 
 __pycache__
+*.pyc
 
-test/data/0*
+test/data/*/00*

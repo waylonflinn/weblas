@@ -1,49 +1,95 @@
 #!/usr/bin/env python
-"""Create data for the test suite described by the given specification
+"""Create data for the test suite described by the given specification.
+Deleting the file out.json in a subdirectory will cause it to be recreated
+with existing data and new "args". Deleting all files in a subdirectory will
+case all data to be recreated.
+
+	spec.json contains an array of objects, each object contains
+	"in" and "args" parameters
+	"in" is an array of arrays which define the size and contents of a matrix
+		[[M, N, a, b]] produces a single MxN matrix of numbers in [0, 1) and
+		scales it according to: a * X + b. uses `numpy.random.random_sample`
+
+	"args" is a dictionary of arguments to pass to the operation specified for
+	the test, along with an array of the input matrices.
+
+Implementing test data generation for a new operation involves two things:
+1. creation of a json spec
+2. implementing an operation file with a single function named execute
 
 Usage:
-	generate.py <spec.json>
+	generate.py <directory> <spec.json>
 """
 from docopt import docopt
 import os
+import sys
 import json
+import numpy as np
+import json_matrix
 
-import matrices
-import multiply
+
+# names to use for json files storing input matrices
+default_names = ['a.json', 'b.json', 'c.json']
+
+def create_matrix(spec):
+
+	shape = spec['shape']
+
+	a = spec['a'] if 'a' in spec else 1.0
+	b = spec['b'] if 'b' in spec else 0.0
+
+	return (a * np.random.random_sample(shape)) + b
 
 if __name__ == '__main__':
 	arguments = docopt(__doc__, version='JSON Matrix Generator')
 
+	base_directory = os.path.join(arguments['<directory>'], '')
 	test_file = arguments['<spec.json>']
+
+	sys.path.insert(0, './' + base_directory)
+
+	operation = __import__("operation")
 
 	with open(test_file, 'r') as f:
 		tests = json.load(f)
 
-	sorted_tests = sorted(list(tests.items()), key = lambda test : test[0])
 
-	for [number, options] in sorted_tests:
+	for i in range(len(tests)):
 
-		if os.path.exists(number):
-			# skip existing directories
-			print("Skipping {0}".format(number))
+		options = tests[i]
+		directory = base_directory + "{0:0>4}/".format(i + 1)
+
+		if not os.path.exists(directory):
+			os.makedirs(directory)
+
+		# if a result exists, skip this data set
+		if os.path.exists(directory + 'out.json'):
+			print("Skipping {0}".format(directory))
+			continue
+
+		names = map(lambda i: default_names[i], range(len(options['in'])))
+
+		all_exist = False
+		for name in names:
+			all_exist = all_exist & os.path.exists(directory + name)
+
+		if all_exist:
+			matrices = map(lambda name : json_matrix.read(directory + name), names)
 		else:
-			os.makedirs(number)
+			matrices = []
+			for i in range(len(names)):
+				name = names[i]
+				spec = options['in'][i]
+				matrix = create_matrix(spec)
+				matrices.append(matrix)
 
-			sizes = options['sizes']
+				json_matrix.write(directory + name, matrix.flatten())
 
-			m = sizes[0]
-			n = sizes[1]
-			k = sizes[2]
+		arguments = options['arg'] if 'arg' in options else {}
+		out = operation.execute(arguments, matrices)
 
-			a =  options['a'] if 'a' in options else 1.0
-			alpha = options['alpha'] if 'alpha' in options else 1.0
+		# run mutliplication
+		#os.system("./multiply.py {0}".format(number))
+		json_matrix.write(directory + "out.json", out.flatten())
 
-			# run matrix creation
-			#os.system("./matrices.py {0} {1} {2} {3}".format(m, n, k, number))
-			[A, B] = matrices.create_matrices(m, n, k, a, number)
-
-			# run mutliplication
-			#os.system("./multiply.py {0}".format(number))
-			multiply.create_matrix_multiply(number, alpha, A, B)
-
-			print("Created {0}".format(number))
+		print("Created {0}".format(directory))
