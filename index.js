@@ -7,7 +7,6 @@ var WebGL = require("./lib/webgl"),
 	test = require("./lib/test");
 
 
-
 var gl = new WebGL(),
 	sgemmcalculator = new SGEMMCalculator(gl),
 	saxpycalculator = new SAXPYCalculator(gl),
@@ -27,6 +26,7 @@ module.exports = {
 	"sstd" : sstd,     // single precision Standard Score normalization
 	"sdwns": sdwns,
 	"sclmp": sclmp,
+    // internals
 	"gl" : gl,
 	"util" : { "fromArray" : fromArray, "transpose" : transpose},
 	"test" : test
