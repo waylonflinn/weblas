@@ -5,7 +5,7 @@ coordinate spaces that show up here. These conventions help keep track of them.
 ### Matrix Space
 This is the space the matrix (or vector) lives in. It's the one you've seen in
 Linear Algebra and any time you use an Array. Indexing variables contain `int`s
-(usually zero indexed) and describe a row or column in the matrix.
+(usually starting at zero) and describe a row or column in the matrix.
 
 ```
 row, col
