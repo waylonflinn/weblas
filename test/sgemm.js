@@ -40,7 +40,7 @@ function generateTestCase(prefix, m, n, k, alpha){
 
 		var A, B, expected; // typed arrays
 
-			// directory containing matrix data files for current test
+		// directory containing matrix data files for current test
 		var testDirectory = dataDirectory + prefix + '/';
 
 		// load matrices from files
