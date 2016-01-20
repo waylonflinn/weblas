@@ -14,6 +14,7 @@ var gl = new WebGL(),
 	sdwnscalculator = new SDWNSCalculator(gl),
 	sclmpcalculator = new SCLMPCalculator(gl);
 
+var pipeline_sscal = new SSCALCalculator(gl, false);
 
 module.exports = {
 	// level one
@@ -27,7 +28,7 @@ module.exports = {
 	"sdwns": sdwns,
 	"sclmp": sclmp,
     // internals
-	"gl" : gl,
+	"gpu" : { "gl": gl, "sgemm": sgemmcalculator, "sscal" : pipeline_sscal.calculate.bind(pipeline_sscal)},
 	"util" : { "fromArray" : fromArray, "transpose" : transpose},
 	"test" : test
 };
