@@ -160,7 +160,6 @@ loader.load(dataDirectory + testFile, function(err, config){
 		var test = suite[i];
 
 		var input = test['in'],
-			sizes = input['shape'],
 			arg = test['arg'] || {};
 
 		var m = input[0]['shape'][0],
