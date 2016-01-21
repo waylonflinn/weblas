@@ -27,7 +27,7 @@ module.exports = {
 	"sstd" : sstd,     // single precision Standard Score normalization
 	"sdwns": sdwns,
 	"sclmp": sclmp,
-    // internals
+	// internals
 	"gpu" : { "gl": gl, "sgemm": sgemmcalculator, "sscal" : pipeline_sscal.calculate.bind(pipeline_sscal)},
 	"util" : { "fromArray" : fromArray, "transpose" : transpose},
 	"test" : test
@@ -52,9 +52,14 @@ module.exports = {
  */
 function sgemm(M, N, K, alpha, A, B, beta, C){
 
+	if(C != null && C.length != M){
+		throw new Error("Only vector C with length matching rows in A is currently supported.");
+	}
+
 	// pack each matrix into a single RGBA texel array, with the second transposed
 	var texels0 = A,
-		texels1;
+		texels1,
+		texels2 = C;
 
 	var rem = (K % WebGL.COMPONENTS_PER_TEXEL),
 		pad = rem == 0 ? 0 : WebGL.COMPONENTS_PER_TEXEL - rem;
@@ -64,10 +69,14 @@ function sgemm(M, N, K, alpha, A, B, beta, C){
 	// create input textures from data
 	var texture0 = gl.createDataTexture(M, K, texels0);
 	var texture1 = gl.createDataTexture(N, K, texels1);
+	var texture2 = null;
+	if(texels2 != null){
+		texture2 = gl.createDataTexture(1, M, texels2);
+	}
 
 	var texture3 = gl.createOutputTexture(M, N);
 
-	sgemmcalculator.calculate(M, N, K + pad, alpha, texture0, texture1, null, null, texture3);
+	sgemmcalculator.calculate(M, N, K + pad, alpha, texture0, texture1, beta, texture2, texture3);
 
 	// retrieve data
 	rawBuffer = gl.readData(M, N);
@@ -75,6 +84,9 @@ function sgemm(M, N, K, alpha, A, B, beta, C){
 	// clean up
 	gl.context.deleteTexture(texture0);
 	gl.context.deleteTexture(texture1);
+	if(texture2 != null){
+		gl.context.deleteTexture(texture2);
+	}
 	gl.context.deleteTexture(texture3);
 
 	// return result

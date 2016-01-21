@@ -81,6 +81,54 @@ function generateTestCase(prefix, m, n, k, alpha){
 	};
 }
 
+var extendedMatrixFiles = ['a.json', 'b.json', 'c.json', 'out.json'];
+
+function generateExtendedTestCase(prefix, m, n, k, alpha, beta){
+	return function(t){
+		t.plan(1);
+
+		var A, B, expected; // typed arrays
+
+		// directory containing matrix data files for current test
+		var testDirectory = dataDirectory + prefix + '/';
+
+		// load matrices from files
+		weblas.test.load(testDirectory, extendedMatrixFiles, function(err, matrices){
+
+			// matrices is an array which matches matrixFiles
+			var a = matrices[0],
+				b = matrices[1],
+				c = matrices[2],
+				out = matrices[3];
+
+			if(!(a && a.length && a.length == m * k &&
+				b && b.length && b.length == k * n &&
+				out && out.length && out.length == m * n)){
+
+				throw new Error("malformed data");
+			}
+
+			A = new Float32Array(a);
+			B = new Float32Array(b);
+			C = new Float32Array(c);
+			expected = new Float32Array(out);
+
+
+			//console.log(m + "x" + k + " times " + k + "x" + n);
+
+			try{
+				result = weblas.sgemm(m, n, k, alpha, A, B, beta, C);
+			}
+			catch(ex){
+				t.assert(false, ex);
+				return;
+			}
+
+			weblas.test.assert.allclose(t, result, expected, null, RTOL, ATOL);
+		});
+	};
+}
+
 loader.load(dataDirectory + testFile, function(err, config){
 
 	var suite = JSON.parse(config);
@@ -91,18 +139,22 @@ loader.load(dataDirectory + testFile, function(err, config){
 		directory = String("0000" + (i + 1)).slice(-4);
 
 		var test = suite[i];
-		test['arg'] = test['arg'] || {};
 
 		var input = test['in'],
-			sizes = input['shape'];
+			arg = test['arg'] || {};
 
 		var m = input[0]['shape'][0],
 			n = input[1]['shape'][1],
 			k = input[0]['shape'][1],
-			alpha = test['arg']['alpha'] || 1.0;
+			alpha = (arg['alpha'] != null) ? arg['alpha'] : 1.0,
+			beta = (arg['beta'] != null) ? arg['beta'] : 1.0;
 
 		var testName = "sgemm: " + m + "x" + k + " . " + k + "x" + n;
-		tape(testName, generateTestCase(directory, m, n, k, alpha));
+		if(input.length == 2){
+			tape(testName, generateTestCase(directory, m, n, k, alpha));
+		} else {
+			tape(testName, generateExtendedTestCase(directory, m, n, k, alpha, beta));
+		}
 	}
 
 });
