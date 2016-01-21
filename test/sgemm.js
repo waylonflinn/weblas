@@ -18,18 +18,20 @@ var RTOL = 1e-05,
 var dataDirectory = 'test/data/sgemm/',
 	testFile = 'small.json';
 
+var gl = weblas.gpu.gl;
+
 if(window)
 	console.log("# User Agent: " + window.navigator.userAgent);
 
-var debugInfo = weblas.gl.context.getExtension('WEBGL_debug_renderer_info');
+var debugInfo = weblas.gpu.gl.context.getExtension('WEBGL_debug_renderer_info');
 if(debugInfo)
-	console.log("# Renderer:              \t" + weblas.gl.context.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL));
+	console.log("# Renderer:              \t" + gl.context.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL));
 
-console.log("# OES_float_texture support: \t" + (weblas.gl.hasFloat ? "YES" : "NO"));
-console.log("# MAX_TEXTURE_SIZE:      \t" + weblas.gl.context.getParameter(weblas.gl.context.MAX_TEXTURE_SIZE));
-console.log("# MAX_RENDERBUFFER_SIZE: \t" + weblas.gl.context.getParameter(weblas.gl.context.MAX_RENDERBUFFER_SIZE));
-console.log("# highp support:         \t" + (weblas.gl.hasHighPrecision ? "YES" : "NO"));
-console.log("# highp.precision:       \t" + JSON.stringify(weblas.gl.highp.precision));
+console.log("# OES_float_texture support: \t" + (gl.hasFloat ? "YES" : "NO"));
+console.log("# MAX_TEXTURE_SIZE:      \t" + gl.context.getParameter(gl.context.MAX_TEXTURE_SIZE));
+console.log("# MAX_RENDERBUFFER_SIZE: \t" + gl.context.getParameter(gl.context.MAX_RENDERBUFFER_SIZE));
+console.log("# highp support:         \t" + (gl.hasHighPrecision ? "YES" : "NO"));
+console.log("# highp.precision:       \t" + JSON.stringify(gl.highp.precision));
 
 
 var matrixFiles = ['a.json', 'b.json', 'out.json'];
