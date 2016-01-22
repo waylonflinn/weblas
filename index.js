@@ -72,8 +72,7 @@ function sgemm(M, N, K, alpha, A, B, beta, C){
 		texture2 = gl.createDataTexture(1, N, texels2);
 	}
 
-	pad = gl.getPad(N);
-	var texture3 = gl.createOutputTexture(M, N + pad);
+	var texture3 = gl.createOutputTexture(M, N);
 
 	pad = gl.getPad(K);
 	sgemmcalculator.calculate(M, N, K + pad, alpha, texture0, texture1, beta, texture2, texture3);
@@ -98,8 +97,6 @@ function saxpy(N, a, X, Y){
 
 	var rawBuffer;
 
-	var mod = (N % WebGL.COMPONENTS_PER_TEXEL),
-		pad = mod == 0 ? 0 : WebGL.COMPONENTS_PER_TEXEL - mod;
 
 	var texels0 = X,
 		texels1;
@@ -116,8 +113,9 @@ function saxpy(N, a, X, Y){
 	var texture0 = gl.createDataTexture(1, N, texels0);
 	var texture1 = gl.createDataTexture(1, N, texels1);
 
-	var texture3 = gl.createOutputTexture(1, N + pad);
+	var texture3 = gl.createOutputTexture(1, N);
 
+    var pad = gl.getPad(N);
 	saxpycalculator.calculate(N + pad, a, texture0, texture1, texture3);
 
 	// retrieve data
@@ -152,13 +150,10 @@ function sscal(M, N, a, X, b){
 
 	var rawBuffer;
 
-	var mod = (N % WebGL.COMPONENTS_PER_TEXEL),
-		pad = mod == 0 ? 0 : WebGL.COMPONENTS_PER_TEXEL - mod;
-
 	var texels0 = X;
 	var texture0 = gl.createDataTexture(M, N, texels0);
 
-	var texture3 = gl.createOutputTexture(M, N + pad);
+	var texture3 = gl.createOutputTexture(M, N);
 
 	sscalcalculator.calculate(M, N, a, texture0, b, texture3);
 
@@ -180,16 +175,13 @@ function sstd(M, N, mu, sigma, X){
 
 	var rawBuffer;
 
-	var mod = (N % WebGL.COMPONENTS_PER_TEXEL),
-		pad = mod == 0 ? 0 : WebGL.COMPONENTS_PER_TEXEL - mod;
-
 	var texels0 = X;
 	var texture0 = gl.createDataTexture(M, N, texels0);
 
-	var texture3 = gl.createOutputTexture(M, N + pad);
+	var texture3 = gl.createOutputTexture(M, N);
 
 	// adjust the parameters (for inverse) and call the standard score normalization
-	sscalcalculator.calculate(M, N + pad, 1.0/sigma, texture0, -1.0 * mu/sigma, texture3);
+	sscalcalculator.calculate(M, N, 1.0/sigma, texture0, -1.0 * mu/sigma, texture3);
 
 	// retrieve data
 	rawBuffer = gl.readData(M, N);
@@ -263,13 +255,10 @@ function sclmp(M, N, a, b, X){
 
 	var rawBuffer;
 
-	var mod = (N % WebGL.COMPONENTS_PER_TEXEL),
-		pad = mod == 0 ? 0 : WebGL.COMPONENTS_PER_TEXEL - mod;
-
 	var texels0 = X;
 	var texture0 = gl.createDataTexture(M, N, texels0);
 
-	var texture3 = gl.createOutputTexture(M, N + pad);
+	var texture3 = gl.createOutputTexture(M, N);
 
 	sclmpcalculator.calculate(M, N, a, b, texture0, texture3);
 
