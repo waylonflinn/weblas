@@ -52,7 +52,7 @@ module.exports = {
  */
 function sgemm(M, N, K, alpha, A, B, beta, C){
 
-	if(C != null && C.length != M){
+	if(C != null && C.length != N){
 		throw new Error("Only vector C with length matching rows in A is currently supported.");
 	}
 
@@ -61,8 +61,6 @@ function sgemm(M, N, K, alpha, A, B, beta, C){
 		texels1,
 		texels2 = C;
 
-	var rem = (K % WebGL.COMPONENTS_PER_TEXEL),
-		pad = rem == 0 ? 0 : WebGL.COMPONENTS_PER_TEXEL - rem;
 
 	texels1 = transpose(K, N, B);
 
@@ -71,11 +69,13 @@ function sgemm(M, N, K, alpha, A, B, beta, C){
 	var texture1 = gl.createDataTexture(N, K, texels1);
 	var texture2 = null;
 	if(texels2 != null){
-		texture2 = gl.createDataTexture(1, M, texels2);
+		texture2 = gl.createDataTexture(1, N, texels2);
 	}
 
-	var texture3 = gl.createOutputTexture(M, N);
+	pad = gl.getPad(N);
+	var texture3 = gl.createOutputTexture(M, N + pad);
 
+	pad = gl.getPad(K);
 	sgemmcalculator.calculate(M, N, K + pad, alpha, texture0, texture1, beta, texture2, texture3);
 
 	// retrieve data
