@@ -74,8 +74,7 @@ function sgemm(M, N, K, alpha, A, B, beta, C){
 
 	var texture3 = gl.createOutputTexture(M, N);
 
-	pad = gl.getPad(K);
-	sgemmcalculator.calculate(M, N, K + pad, alpha, texture0, texture1, beta, texture2, texture3);
+	sgemmcalculator.calculate(M, N, K, alpha, texture0, texture1, beta, texture2, texture3);
 
 	// retrieve data
 	rawBuffer = gl.readData(M, N);
@@ -115,8 +114,7 @@ function saxpy(N, a, X, Y){
 
 	var texture3 = gl.createOutputTexture(1, N);
 
-    var pad = gl.getPad(N);
-	saxpycalculator.calculate(N + pad, a, texture0, texture1, texture3);
+	saxpycalculator.calculate(N, a, texture0, texture1, texture3);
 
 	// retrieve data
 	rawBuffer = gl.readData(1, N);
