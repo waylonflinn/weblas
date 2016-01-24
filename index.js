@@ -30,6 +30,7 @@ module.exports = {
 	"sclmp": sclmp,
 	// internals
 	"gpu" : {	"gl": gl,
+	 			"sgemm": pipeline_sgemm.calculate.bind(pipeline_sgemm),
 				"sscal" : pipeline_sscal.calculate.bind(pipeline_sscal),
 				"encode" : gl.encode.bind(gl)
 			},
