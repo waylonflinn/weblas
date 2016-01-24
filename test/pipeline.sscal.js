@@ -96,7 +96,7 @@ loader.load(dataDirectory + testFile, function(err, config){
 			b = (arg['b'] != null) ? arg['b'] : 0.0;
 
 		//console.log("a: " + a + "; b: " + b);
-		var testName = "sscal: " + m + "x" + n;
+		var testName = "pipeline.sscal: " + m + "x" + n;
 		tape(testName, generateTestCase(directory, m, n, a, b));
 	}
 
