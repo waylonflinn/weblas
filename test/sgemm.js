@@ -16,7 +16,7 @@ var RTOL = 1e-05,
 	ATOL = 1e-12;
 
 var dataDirectory = 'test/data/sgemm/',
-	testFile = 'small.json';
+	testFile = 'medium.json';
 
 var gl = weblas.gpu.gl;
 
@@ -153,6 +153,7 @@ loader.load(dataDirectory + testFile, function(err, config){
 		if(input.length == 2){
 			tape(testName, generateTestCase(directory, m, n, k, alpha));
 		} else {
+			testName += " + 1x" + n; 
 			tape(testName, generateExtendedTestCase(directory, m, n, k, alpha, beta));
 		}
 	}
