@@ -1,6 +1,6 @@
 {
   "name": "weblas",
-  "version": "0.8.0",
+  "version": "0.9.0",
   "description": "GPU accelerated BLAS for node and the browser",
   "main": "index.js",
   "directories": {
@@ -10,6 +10,7 @@
     "dist": "dist"
   },
   "dependencies": {
+    "glslify": "^5.0.2"
   },
   "devDependencies": {
     "minifyify": "^7.1.0",
@@ -25,6 +26,9 @@
     "build": "browserify index.js --s weblas > dist/weblas.js",
     "min": "browserify index.js --s weblas -d -p [minifyify --map ./weblas.map.json --output dist/weblas.map.json] > dist/weblas.js",
     "benchmark": "browserify benchmark/*.js | testling -x 'google-chrome --enable-benchmarking'"
+  },
+  "browserify": {
+    "transform": ["glslify"]
   },
   "repository": {
     "type": "git",
