@@ -15,6 +15,7 @@ var gl = new WebGL(),
 	sclmpcalculator = new SCLMPCalculator(gl);
 
 var pipeline_sscal = new SSCALCalculator(gl, false),
+	pipeline_sclmp = new SCLMPCalculator(gl, false),
 	pipeline_sgemm = new SGEMMCalculator(gl, false);
 
 module.exports = {
@@ -32,6 +33,7 @@ module.exports = {
 	"gpu" : {	"gl": gl,
 	 			"sgemm": pipeline_sgemm.calculate.bind(pipeline_sgemm),
 				"sscal" : pipeline_sscal.calculate.bind(pipeline_sscal),
+				"sclmp" : pipeline_sclmp.calculate.bind(pipeline_sclmp),
 				"encode" : gl.encode.bind(gl)
 			},
 	"util" : { "fromArray" : fromArray, "transpose" : transpose},
