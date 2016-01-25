@@ -46,8 +46,8 @@ void main(void) {
 			}
 
 			vec2 coords = vec2(x + z, y);
-	        vec4 x_v = texture2D(X, coords);
-	        currentMax = max(currentMax, x_v);
+			vec4 x_v = texture2D(X, coords);
+			currentMax = max(currentMax, x_v);
 
 			x += (deltaX * c);
 		}
