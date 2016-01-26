@@ -16,6 +16,7 @@ var gl = new WebGL(),
 
 var pipeline_sscal = new SSCALCalculator(gl, false),
 	pipeline_sclmp = new SCLMPCalculator(gl, false),
+	pipeline_sdwns = new SDWNSCalculator(gl, false),
 	pipeline_sgemm = new SGEMMCalculator(gl, false);
 
 module.exports = {
@@ -34,6 +35,7 @@ module.exports = {
 	 			"sgemm": pipeline_sgemm.calculate.bind(pipeline_sgemm),
 				"sscal" : pipeline_sscal.calculate.bind(pipeline_sscal),
 				"sclmp" : pipeline_sclmp.calculate.bind(pipeline_sclmp),
+				"sdwns" : pipeline_sdwns.calculate.bind(pipeline_sdwns),
 				"encode" : gl.encode.bind(gl)
 			},
 	"util" : { "fromArray" : fromArray, "transpose" : transpose},
@@ -211,10 +213,6 @@ function sstd(M, N, mu, sigma, X){
 function sdwns(M, N, channels, factor, stride, X){
 
 
-	// size of the fake third dimension, after packing into our texture
-	var c = Math.floor(channels / WebGL.COMPONENTS_PER_TEXEL);
-	//console.assert(((C * WebGL.COMPONENTS_PER_TEXEL) === channels), 'channel count must be a multiple of four');
-
 	var texels0 = X;
 
 	var texture0 = gl.createDataTexture(M, N * channels, X);
@@ -224,7 +222,7 @@ function sdwns(M, N, channels, factor, stride, X){
 
 	var texture3 = gl.createOutputTexture(M_out, N_out * channels);
 
-	sdwnscalculator.calculate(M, N, c, factor, stride, texture0, texture3);
+	sdwnscalculator.calculate(M, N, channels, factor, stride, texture0, texture3);
 
 	// retrieve data
 	rawBuffer = gl.readData(M_out, N_out * channels);
