@@ -211,7 +211,8 @@ function generateTestCase(prefix, m, n, channels, factor, stride){
 				out = matrices[1];
 
 			if(!(x.length == m * n * channels &&
-				out.length == ((m - factor) / stride + 1) * ((n - factor) / stride + 1) * channels )){
+				out.length == (Math.floor((m - factor) / stride) + 1) *
+							(Math.floor((n - factor) / stride) + 1) * channels ){
 
 				var message = "malformed data.";
 				message += "expected {0} got {1}".format(m * n * channels, x.length);

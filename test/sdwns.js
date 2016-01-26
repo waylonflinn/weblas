@@ -131,9 +131,9 @@ function generateTestCase(prefix, m, n, channels, factor, stride){
 			// matrices is an array which matches matrixFiles
 			var x = matrices[0],
 				c = matrices[1];
-
 			if(!(x.length == m * n * channels &&
-				c.length == ((m - factor) / stride + 1) * ((n - factor) / stride + 1) * channels )){
+				c.length == (Math.floor((m - factor) / stride) + 1) *
+							(Math.floor((n - factor) / stride) + 1) * channels ){
 
 				var message = "malformed data.";
 				message += "expected {0} got {1}".format(m * n * channels, x.length);
