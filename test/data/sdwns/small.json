@@ -5,5 +5,6 @@
 	{"in": [{"shape": [56, 56, 96]}], "arg": {"factor": 3, "stride": 2}},
 	{"in": [{"shape": [57, 57, 96]}], "arg": {"factor": 3, "stride": 2}},
 	{"in": [{"shape": [58, 58, 96]}], "arg": {"factor": 3, "stride": 2}},
-	{"in": [{"shape": [59, 59, 96]}], "arg": {"factor": 3, "stride": 2}}
+	{"in": [{"shape": [59, 59, 96]}], "arg": {"factor": 3, "stride": 2}},
+	{"in": [{"shape": [59, 59, 4]}], "arg": {"factor": 3, "stride": 2}}
 ]
