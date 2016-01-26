@@ -66,8 +66,8 @@ function generateTestCase(prefix, m, n, k, alpha){
 
 			var beta = 0.0;
 
-		    var texture0 = weblas.gpu.gl.createDataTexture(m, k, A),
-		        texture1 = weblas.gpu.gl.createDataTexture(n, k, weblas.util.transpose(k, n, B)),
+			var texture0 = weblas.gpu.gl.createDataTexture(m, k, A),
+				texture1 = weblas.gpu.gl.createDataTexture(n, k, weblas.util.transpose(k, n, B)),
 				texture3 = weblas.gpu.gl.createDataTexture(m, n, null);
 
 			//console.log(m + "x" + k + " times " + k + "x" + n);
@@ -80,8 +80,13 @@ function generateTestCase(prefix, m, n, k, alpha){
 				// float extraction
 				weblas.gpu.encode(m, n, texture3, out);
 
-			    result = new Float32Array(weblas.gpu.gl.readData(m, n));
+				result = new Float32Array(weblas.gpu.gl.readData(m, n));
 				//console.log(result.slice(0, 6));
+
+				weblas.gpu.gl.context.deleteTexture(texture0);
+				weblas.gpu.gl.context.deleteTexture(texture1);
+				weblas.gpu.gl.context.deleteTexture(texture3);
+				weblas.gpu.gl.context.deleteTexture(out);
 
 			}
 			catch(ex){
@@ -178,7 +183,7 @@ loader.load(dataDirectory + testFile, function(err, config){
 		if(input.length == 2){
 			tape(testName, generateTestCase(directory, m, n, k, alpha));
 		} else {
-			testName += " + 1x" + n; 
+			testName += " + 1x" + n;
 			tape(testName, generateExtendedTestCase(directory, m, n, k, alpha, beta));
 		}
 	}

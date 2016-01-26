@@ -64,6 +64,9 @@ function generateTestCase(prefix, m, n, a, b){
 				result = new Float32Array(weblas.gpu.gl.readData(m, n));
 				//console.log(result.slice(0, 6));
 
+				weblas.gpu.gl.context.deleteTexture(texture0);
+				weblas.gpu.gl.context.deleteTexture(texture3);
+				weblas.gpu.gl.context.deleteTexture(out);
 			}
 			catch(ex){
 				t.assert(false, ex);

@@ -28,6 +28,10 @@ tape("pipeline.sclmp: 1x4", function(t){
 		weblas.gpu.encode(m, n, texture3, out);
 
 		result = new Float32Array(weblas.gpu.gl.readData(m, n));
+		
+		weblas.gpu.gl.context.deleteTexture(texture0);
+		weblas.gpu.gl.context.deleteTexture(texture3);
+		weblas.gpu.gl.context.deleteTexture(out);
 	}
 	catch(ex){
 		t.assert(false, ex);

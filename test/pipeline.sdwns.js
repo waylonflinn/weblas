@@ -32,6 +32,10 @@ tape("pipeline.sdwns: 2 x 2 x 4", function(t){
 		weblas.gpu.encode(M_out, N_out * channels, texture3, out);
 
 		result = new Float32Array(weblas.gpu.gl.readData(M_out, N_out * channels));
+
+		weblas.gpu.gl.context.deleteTexture(texture0);
+		weblas.gpu.gl.context.deleteTexture(texture3);
+		weblas.gpu.gl.context.deleteTexture(out);
 	}
 	catch(ex){
 		t.assert(false, ex);
