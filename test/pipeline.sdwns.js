@@ -188,8 +188,10 @@ tape("pipeline.sdwns: 2 x 2 x 8", function(t){
 
 });
 
+var dataDirectory = 'test/data/sdwns/',
+	testFile = 'small.json';
+
 var matrixFiles = ['a.json', 'out.json'];
-var dataDirectory = 'test/data/sdwns/';
 
 function generateTestCase(prefix, m, n, channels, factor, stride){
 
@@ -238,6 +240,7 @@ function generateTestCase(prefix, m, n, channels, factor, stride){
 				weblas.gpu.encode(M_out, N_out * channels, texture3, out);
 
 				result = new Float32Array(weblas.gpu.gl.readData(M_out, N_out * channels));
+
 			}
 			catch(ex){
 				t.assert(false, ex);
@@ -258,8 +261,6 @@ tape("sdwns: 13 x 13 x 256", manualTestCase("0003", 13, 13, 256, 3, 2));
 */
 
 
-var dataDirectory = 'test/data/sdwns/',
-	testFile = 'small.json';
 
 loader.load(dataDirectory + testFile, function(err, config){
 
