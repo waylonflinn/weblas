@@ -5,7 +5,7 @@ varying vec2      outTex;	// texture coords of row/column to calculate
 uniform sampler2D X;		// texture with data from padded A
 uniform int       factor; // width of image patch
 uniform float     stride; // width between image patches
-uniform float     c; 		// number of channels
+uniform float     c; 	  // number of channels
 uniform float     M;
 uniform float     N;
 uniform float     N_out;
@@ -21,16 +21,16 @@ void main(void) {
 	// get the implied row and column from .y and .x of passed (output)
 	// texture coordinate and translate to input texture space.
 	float row_p = floor(outTex.y * M_out);   // row on output texture (pixel space)
-	float col_p = floor(outTex.x * N_out/4.0); // column on output texture (pixel space)
-	float vcol_p = floor(col_p / c);   // virtual column on output texture (pixel space)
-	float vchannel_p = mod(col_p, c); // virtual channel on output texture
+	float col_p = outTex.x * N_out; // column on output texture (pixel space)
+	float vcol_p = floor(col_p / c);   // virtual column on input texture (pixel space)
+	float vchannel_p = floor(mod(col_p, c)); // virtual channel on input texture
 
 
 	const float min = -1.0e+08;
 	vec4 currentMax = vec4(min, min, min, min);
 
 	float deltaY = 1.0/M;
-	float deltaX = 4.0/N;
+	float deltaX = 1.0/N;
 	float y = ((row_p * stride) + 0.5)*deltaY; // position of input row
 	float x;
 	float z = vchannel_p * deltaX;
