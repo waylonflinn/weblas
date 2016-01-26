@@ -51,7 +51,11 @@ if __name__ == '__main__':
 	operation = __import__("operation")
 
 	with open(test_file, 'r') as f:
-		tests = json.load(f)
+		try:
+			tests = json.load(f)
+		except Exception as e:
+			print("Couldn't parse JSON configuration file: {0}".format(e.message))
+			sys.exit(1)
 
 
 	for i in range(len(tests)):
