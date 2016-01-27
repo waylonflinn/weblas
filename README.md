@@ -1,12 +1,13 @@
 ![logo](weblas.png)
 
-GPU accelerated BLAS for your browser, no add-ons required. Performance [comparable to native](https://github.com/waylonflinn/weblas/wiki).
+GPU accelerated BLAS for your browser, no add-ons required. Javascript numerical
+computing with performance [comparable to native](https://github.com/waylonflinn/weblas/wiki).
 
 Currently includes hundreds of unit tests, which verify correctness on tens of millions
 of data points.
 
 # Operations
-Our focus is on operations useful for neural networks and machine learning.
+Our focus is on numerical operations useful for neural networks and machine learning.
 Here's what we've got so far:
 
 * saxpy - Vector Addition
