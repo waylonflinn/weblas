@@ -30,7 +30,7 @@ void main(void) {
 	float col = (col_t * float(N + pad) - 2.0); // index of first element in pixel (matrix space)
 	sum_v.r = alpha * dot_rowcol(row_t, (col + 0.5)/float(N), A, B_t, K);
 	// in the padding region?
-	if(col_t * float(N + pad) > float(N) ) {
+	if((col + 4.0) > float(N) ) {
 		// pad
 		if(pad < 3){
 			sum_v.g = alpha * dot_rowcol(row_t, (col + 1.5)/float(N), A, B_t, K);
