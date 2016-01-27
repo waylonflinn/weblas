@@ -24,7 +24,13 @@ var matrixFiles = ['a.json', 'out.json'];
 
 function generateTestCase(prefix, m, n, a, b){
 	return function(t){
-		t.plan(1);
+		var pad = weblas.gpu.gl.getPad(n);
+		if(pad == 0){
+			t.plan(1);
+		} else {
+			t.plan(2);
+		}
+
 
 		var X, expected; // typed arrays
 
@@ -64,8 +70,6 @@ function generateTestCase(prefix, m, n, a, b){
 				result = new Float32Array(weblas.gpu.gl.readData(m, n));
 				//console.log(result.slice(0, 6));
 
-				weblas.gpu.gl.context.deleteTexture(texture0);
-				weblas.gpu.gl.context.deleteTexture(texture3);
 				weblas.gpu.gl.context.deleteTexture(out);
 			}
 			catch(ex){
@@ -74,6 +78,30 @@ function generateTestCase(prefix, m, n, a, b){
 			}
 
 			weblas.test.assert.allclose(t, result, expected, null, RTOL, ATOL);
+
+			if(pad > 0){
+				var padded;
+
+				try{
+					padded = weblas.test.padData(m, n, pad, expected);
+					out = weblas.gpu.gl.createOutputTexture(m, n + pad);
+
+					// float extraction
+					weblas.gpu.encode(m, n + pad, texture3, out);
+					result = new Float32Array(weblas.gpu.gl.readData(m, n + pad));
+
+					weblas.gpu.gl.context.deleteTexture(out);
+				}
+				catch(ex){
+					t.assert(false, ex);
+				}
+
+				weblas.test.assert.allclose(t, result, padded, null, RTOL, ATOL);
+			}
+
+
+			weblas.gpu.gl.context.deleteTexture(texture0);
+			weblas.gpu.gl.context.deleteTexture(texture3);
 		});
 	};
 }
@@ -99,7 +127,7 @@ loader.load(dataDirectory + testFile, function(err, config){
 			b = (arg['b'] != null) ? arg['b'] : 0.0;
 
 		//console.log("a: " + a + "; b: " + b);
-		var testName = "pipeline.sscal: " + m + "x" + n;
+		var testName = "pipeline.sscal: " + m + "x" + n + "; . " + a + " + " + b;
 		tape(testName, generateTestCase(directory, m, n, a, b));
 	}
 
