@@ -1,7 +1,6 @@
 ![logo](weblas.png)
 
-GPU accelerated BLAS for your browser, no add-ons required. Javascript numerical
-computing with performance [comparable to native](https://github.com/waylonflinn/weblas/wiki).
+GPU accelerated Javascript. Numerical computing in your browser with performance [comparable to native](https://github.com/waylonflinn/weblas/wiki).
 
 Currently includes hundreds of unit tests, which verify correctness on tens of millions
 of data points.
