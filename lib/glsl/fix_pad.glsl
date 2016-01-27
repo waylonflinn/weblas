@@ -1,5 +1,5 @@
 // set pad values to 0.0, if in padded region of output texture
-void fix_pad(vec4 v, int pad){
+void fix_pad(inout vec4 v, int pad){
 	v.a = 0.0;
 	if(pad == 2){
 		v.b = 0.0;
