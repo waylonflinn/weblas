@@ -6,5 +6,11 @@
 	{"in": [{"shape": [57, 57, 96]}], "arg": {"factor": 3, "stride": 2}},
 	{"in": [{"shape": [58, 58, 96]}], "arg": {"factor": 3, "stride": 2}},
 	{"in": [{"shape": [59, 59, 96]}], "arg": {"factor": 3, "stride": 2}},
+	{"in": [{"shape": [60, 60, 96]}], "arg": {"factor": 3, "stride": 2}},
+	{"in": [{"shape": [61, 61, 96]}], "arg": {"factor": 3, "stride": 2}},
+	{"in": [{"shape": [62, 62, 96]}], "arg": {"factor": 3, "stride": 2}},
+	{"in": [{"shape": [63, 63, 96]}], "arg": {"factor": 3, "stride": 2}},
+	{"in": [{"shape": [64, 64, 96]}], "arg": {"factor": 3, "stride": 2}},
+	{"in": [{"shape": [65, 65, 96]}], "arg": {"factor": 3, "stride": 2}},
 	{"in": [{"shape": [59, 59, 4]}], "arg": {"factor": 3, "stride": 2}}
 ]
