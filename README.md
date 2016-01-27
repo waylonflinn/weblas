@@ -9,7 +9,6 @@ of data points.
 Our focus is on numerical operations useful for neural networks and machine learning.
 Here's what we've got so far:
 
-* saxpy - Vector Addition
 * sscal - Matrix (and Vector) Scale (with addition)
 * sgemm - Matrix Multiply
 * sdwns - Matrix (and Image) Downsample (for Max Pooling)
