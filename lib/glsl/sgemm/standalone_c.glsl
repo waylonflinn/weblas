@@ -28,7 +28,10 @@ void main(void) {
 	float row_t = outTex.y;
 	float col_t = outTex.x;
 	vec4 c_vec = texture2D(C, vec2(col_t, 0.5));
-	int channel = int(mod(col_t * float(N + pad), 4.0 ));
+
+	// should be -0.5, but that subtly breaks at zero
+	float col = col_t * float(N + pad); // index of first element in pixel (matrix space)
+	int channel = int(mod(col, 4.0 ));
 	float c = select_index(c_vec, channel);
 
 	// sum row x col for the passed pixel
