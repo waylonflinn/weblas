@@ -88,9 +88,6 @@ function generateTestCase(prefix, m, n, k, alpha){
 				result = new Float32Array(weblas.gpu.gl.readData(m, n));
 				//console.log(result.slice(0, 6));
 
-				weblas.gpu.gl.context.deleteTexture(texture0);
-				weblas.gpu.gl.context.deleteTexture(texture1);
-				weblas.gpu.gl.context.deleteTexture(texture3);
 				weblas.gpu.gl.context.deleteTexture(out);
 
 			}
@@ -111,6 +108,8 @@ function generateTestCase(prefix, m, n, k, alpha){
 					// float extraction
 					weblas.gpu.encode(m, n + pad, texture3, out);
 					result = new Float32Array(weblas.gpu.gl.readData(m, n + pad));
+
+					weblas.gpu.gl.context.deleteTexture(out);
 				}
 				catch(ex){
 					t.assert(false, ex);
@@ -118,6 +117,10 @@ function generateTestCase(prefix, m, n, k, alpha){
 
 				weblas.test.assert.allclose(t, result, padded, null, RTOL, ATOL);
 			}
+
+			weblas.gpu.gl.context.deleteTexture(texture0);
+			weblas.gpu.gl.context.deleteTexture(texture1);
+			weblas.gpu.gl.context.deleteTexture(texture3);
 		});
 	};
 }
