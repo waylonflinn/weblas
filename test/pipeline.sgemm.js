@@ -38,7 +38,12 @@ var matrixFiles = ['a.json', 'b.json', 'out.json'];
 
 function generateTestCase(prefix, m, n, k, alpha){
 	return function(t){
-		t.plan(1);
+		var pad = weblas.gpu.gl.getPad(n);
+		if(pad == 0){
+			t.plan(1);
+		} else {
+			t.plan(2);
+		}
 
 		var A, B, expected; // typed arrays
 
@@ -95,6 +100,24 @@ function generateTestCase(prefix, m, n, k, alpha){
 			}
 
 			weblas.test.assert.allclose(t, result, expected, null, RTOL, ATOL);
+
+			if(pad > 0){
+				var padded;
+
+				try{
+					padded = weblas.test.padData(m, n, pad, expected);
+					out = weblas.gpu.gl.createOutputTexture(m, n + pad);
+
+					// float extraction
+					weblas.gpu.encode(m, n + pad, texture3, out);
+					result = new Float32Array(weblas.gpu.gl.readData(m, n + pad));
+				}
+				catch(ex){
+					t.assert(false, ex);
+				}
+
+				weblas.test.assert.allclose(t, result, padded, null, RTOL, ATOL);
+			}
 		});
 	};
 }
@@ -103,7 +126,12 @@ var extendedMatrixFiles = ['a.json', 'b.json', 'c.json', 'out.json'];
 
 function generateExtendedTestCase(prefix, m, n, k, alpha, beta){
 	return function(t){
-		t.plan(1);
+		var pad = weblas.gpu.gl.getPad(n);
+		if(pad == 0){
+			t.plan(1);
+		} else {
+			t.plan(2);
+		}
 
 		var A, B, expected; // typed arrays
 
@@ -155,6 +183,24 @@ function generateExtendedTestCase(prefix, m, n, k, alpha, beta){
 			}
 
 			weblas.test.assert.allclose(t, result, expected, null, RTOL, ATOL);
+
+			if(pad > 0){
+				var padded;
+
+				try{
+					padded = weblas.test.padData(m, n, pad, expected);
+					out = weblas.gpu.gl.createOutputTexture(m, n + pad);
+
+					// float extraction
+					weblas.gpu.encode(m, n + pad, texture3, out);
+					result = new Float32Array(weblas.gpu.gl.readData(m, n + pad));
+				}
+				catch(ex){
+					t.assert(false, ex);
+				}
+
+				weblas.test.assert.allclose(t, result, padded, null, RTOL, ATOL);
+			}
 		});
 	};
 }
