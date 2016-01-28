@@ -27,7 +27,7 @@ void main(void) {
 	float col = (col_t * float(N + pad) - 2.0); // index of first element in pixel (matrix space)
 	sum_v.r = alpha * dot_rowcol(row_t, (col + 0.5)/float(N), A, B_t, K);
 	// is last element in pixel past row length?
-	if((col + 4.0) > float(N) ) {
+	if(pad > 0 && (col + 4.0) > float(N) ) {
 		// compute elements in padded region
 		if(pad < 3){
 			sum_v.g = alpha * dot_rowcol(row_t, (col + 1.5)/float(N), A, B_t, K);

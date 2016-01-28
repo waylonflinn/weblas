@@ -25,7 +25,7 @@ void main(void) {
 	vec4 sum_v = (a * x) + b;
 
 	// fix padded region
-	if(col + 4.0 > float(N) ) {
+	if(pad > 0 && col + 4.0 > float(N) ) {
 		fix_pad(sum_v, pad);
 	}
 

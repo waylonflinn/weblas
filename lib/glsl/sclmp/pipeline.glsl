@@ -25,7 +25,7 @@ void main(void) {
 	vec4 val_v = clamp(x, a, b);
 
 	// is last element in pixel past row length?
-	if((col + 4.0) > float(N) ) {
+	if(pad > 0 && (col + 4.0) > float(N) ) {
 		// fix elements in padded region
 		fix_pad(val_v, pad);
 	}
