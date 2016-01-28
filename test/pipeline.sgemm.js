@@ -18,21 +18,6 @@ var RTOL = 1e-05,
 var dataDirectory = 'test/data/sgemm/',
 	testFile = 'medium.json';
 
-var gl = weblas.gpu.gl;
-
-if(window)
-	console.log("# User Agent: " + window.navigator.userAgent);
-
-var debugInfo = weblas.gpu.gl.context.getExtension('WEBGL_debug_renderer_info');
-if(debugInfo)
-	console.log("# Renderer:              \t" + gl.context.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL));
-
-console.log("# OES_float_texture support: \t" + (gl.hasFloat ? "YES" : "NO"));
-console.log("# MAX_TEXTURE_SIZE:      \t" + gl.context.getParameter(gl.context.MAX_TEXTURE_SIZE));
-console.log("# MAX_RENDERBUFFER_SIZE: \t" + gl.context.getParameter(gl.context.MAX_RENDERBUFFER_SIZE));
-console.log("# highp support:         \t" + (gl.hasHighPrecision ? "YES" : "NO"));
-console.log("# highp.precision:       \t" + JSON.stringify(gl.highp.precision));
-
 
 var matrixFiles = ['a.json', 'b.json', 'out.json'];
 
@@ -179,6 +164,8 @@ function generateExtendedTestCase(prefix, m, n, k, alpha, beta){
 				weblas.gpu.encode(m, n, texture3, out);
 
 			    result = new Float32Array(weblas.gpu.gl.readData(m, n));
+
+				weblas.gpu.gl.context.deleteTexture(out);
 			}
 			catch(ex){
 				t.assert(false, ex);
@@ -197,13 +184,21 @@ function generateExtendedTestCase(prefix, m, n, k, alpha, beta){
 					// float extraction
 					weblas.gpu.encode(m, n + pad, texture3, out);
 					result = new Float32Array(weblas.gpu.gl.readData(m, n + pad));
+
+					weblas.gpu.gl.context.deleteTexture(out);
 				}
 				catch(ex){
 					t.assert(false, ex);
+					return;
 				}
 
 				weblas.test.assert.allclose(t, result, padded, null, RTOL, ATOL);
 			}
+
+			weblas.gpu.gl.context.deleteTexture(texture0);
+			weblas.gpu.gl.context.deleteTexture(texture1);
+			weblas.gpu.gl.context.deleteTexture(texture2);
+			weblas.gpu.gl.context.deleteTexture(texture3);
 		});
 	};
 }
