@@ -42,15 +42,6 @@ module.exports = {
 	"test" : test
 };
 
-/*
-	TODO: Pipeline
-
-	load textures
-	pass to sgemmcalculator shader
-	run floatdecode shader
-	return extracted result
- */
-
 
 /* Wrap the GL calculation object in a (relatively) user friendly function that
 	accepts TypedArrays
