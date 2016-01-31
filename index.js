@@ -1,23 +1,18 @@
-var WebGL = require("./lib/webgl"),
-	SGEMMCalculator = require("./lib/sgemmcalculator"),
-	SAXPYCalculator = require("./lib/saxpycalculator"),
-	SSCALCalculator = require("./lib/sscalcalculator"),
-	SDWNSCalculator = require("./lib/sdwnscalculator"),
-	SCLMPCalculator = require("./lib/sclmpcalculator"),
+var globals = require('./lib/globals'),
 	test = require("./lib/test");
 
 
-var gl = new WebGL(),
-	sgemmcalculator = new SGEMMCalculator(gl),
-	saxpycalculator = new SAXPYCalculator(gl),
-	sscalcalculator = new SSCALCalculator(gl),
-	sdwnscalculator = new SDWNSCalculator(gl),
-	sclmpcalculator = new SCLMPCalculator(gl);
+var gl = globals.gl,
+	sgemmcalculator = globals.sgemmcalculator,
+	saxpycalculator = globals.saxpycalculator,
+	sscalcalculator = globals.sscalcalculator,
+	sdwnscalculator = globals.sdwnscalculator,
+	sclmpcalculator = globals.sclmpcalculator;
 
-var pipeline_sscal = new SSCALCalculator(gl, false),
-	pipeline_sclmp = new SCLMPCalculator(gl, false),
-	pipeline_sdwns = new SDWNSCalculator(gl, false),
-	pipeline_sgemm = new SGEMMCalculator(gl, false);
+var pipeline_sscal = globals.pipeline_sscal,
+	pipeline_sclmp = globals.pipeline_sclmp,
+	pipeline_sdwns = globals.pipeline_sdwns,
+	pipeline_sgemm = globals.pipeline_sgemm;
 
 module.exports = {
 	// level one
@@ -136,7 +131,7 @@ function isFloat32Array(obj){
    and includes an elementwise scalar addition
 
    a * X + b
-   
+
    a - multiplicative scalar
    b - additive scalar
    X - matrix (M x N)
