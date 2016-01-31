@@ -11,12 +11,12 @@ tape("sscal: 1x4", function(t){
 	t.plan(1);
 
 	var a = 2.0,
+		b = 1.5,
 		x = new Float32Array([1.0, 1.0, 1.0, 1.0]),
-		y = 1.5,
 		expected = new Float32Array([3.5, 3.5, 3.5, 3.5]);
 
 	try{
-		result = weblas.sscal(1, 4, a, x, y);
+		result = weblas.sscal(1, 4, a, b, x);
 	}
 	catch(ex){
 		t.assert(false, ex);
@@ -30,12 +30,12 @@ tape("sscal: 1x3", function(t){
 	t.plan(1);
 
 	var a = 2.0,
+		b = 1.5,
 		x = new Float32Array([1.0, 2.0, 3.0]),
-		y = 1.5,
 		expected = new Float32Array([3.5, 5.5, 7.5]);
 
 	try{
-		result = weblas.sscal(1, 3, a, x, y);
+		result = weblas.sscal(1, 3, a, b, x);
 	}
 	catch(ex){
 		t.assert(false, ex);
@@ -50,12 +50,12 @@ tape("sscal: 1x4", function(t){
 	t.plan(1);
 
 	var a = 2.0,
+		b = 1.5,
 		x = new Float32Array([1.0, 2.0, 3.0, 4.0]),
-		y = 1.5,
 		expected = new Float32Array([3.5, 5.5, 7.5, 9.5]);
 
 	try{
-		result = weblas.sscal(1, 4, a, x, y);
+		result = weblas.sscal(1, 4, a, b, x);
 	}
 	catch(ex){
 		t.assert(false, ex);
@@ -70,12 +70,12 @@ tape("sscal: 1x5", function(t){
 	t.plan(1);
 
 	var a = 3.2,
+		b = 5.6,
 		x = new Float32Array([1.0, 3.0, 2.0, 4.0, 7.0]),
-		y = 5.6,
 		expected = new Float32Array([8.8, 15.2, 12.0, 18.4, 28.0]);
 
 	try{
-		result = weblas.sscal(1, 5, a, x, y);
+		result = weblas.sscal(1, 5, a, b, x);
 	}
 	catch(ex){
 		t.assert(false, ex);
@@ -90,12 +90,12 @@ tape("sscal: 1x7", function(t){
 	t.plan(1);
 
 	var a = 3.2,
+		b = 5.6,
 		x = new Float32Array([1.0, 3.0, 2.0, 4.0, 7.0, 9.0, 11.0]),
-		y = 5.6,
 		expected = new Float32Array([8.8, 15.2, 12.0, 18.4, 28.0, 34.4, 40.8]);
 
 	try{
-		result = weblas.sscal(1, 7, a, x, y);
+		result = weblas.sscal(1, 7, a, b, x);
 	}
 	catch(ex){
 		t.assert(false, ex);
@@ -141,7 +141,7 @@ function generateTestCase(prefix, m, n, a, b){
 			//console.log(m + "x" + k + " times " + k + "x" + n);
 
 			try{
-				result = weblas.sscal(m, n, a, X, b);
+				result = weblas.sscal(m, n, a, b, X);
 			}
 			catch(ex){
 				t.assert(false, ex);

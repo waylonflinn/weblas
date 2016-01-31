@@ -136,15 +136,16 @@ function isFloat32Array(obj){
    and includes an elementwise scalar addition
 
    a * X + b
-   a - scalar
+   
+   a - multiplicative scalar
+   b - additive scalar
    X - matrix (M x N)
-   b - scalar
 
    to get the standard BLAS scal set M = 1 and b = 0
 
    this function is generally only cost effective to use in a pipeline
 */
-function sscal(M, N, a, X, b){
+function sscal(M, N, a, b, X){
 
 	var rawBuffer;
 
@@ -153,7 +154,7 @@ function sscal(M, N, a, X, b){
 
 	var texture3 = gl.createOutputTexture(M, N);
 
-	sscalcalculator.calculate(M, N, a, texture0, b, texture3);
+	sscalcalculator.calculate(M, N, a, b, texture0, texture3);
 
 	// retrieve data
 	rawBuffer = gl.readData(M, N);
@@ -179,7 +180,7 @@ function sstd(M, N, mu, sigma, X){
 	var texture3 = gl.createOutputTexture(M, N);
 
 	// adjust the parameters (for inverse) and call the standard score normalization
-	sscalcalculator.calculate(M, N, 1.0/sigma, texture0, -1.0 * mu/sigma, texture3);
+	sscalcalculator.calculate(M, N, 1.0/sigma, -1.0 * mu/sigma, texture0, texture3);
 
 	// retrieve data
 	rawBuffer = gl.readData(M, N);

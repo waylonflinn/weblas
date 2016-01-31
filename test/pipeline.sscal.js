@@ -60,7 +60,7 @@ function generateTestCase(prefix, m, n, a, b){
 			//console.log(m + "x" + k + " times " + k + "x" + n);
 
 			try{
-				weblas.gpu.sscal(m, n, a, texture0, b, texture3);
+				weblas.gpu.sscal(m, n, a, b, texture0, texture3);
 
 				var out = weblas.gpu.gl.createOutputTexture(m, n);
 
