@@ -15,32 +15,21 @@ tape("pipeline.sdwns: 2 x 2 x 4", function(t){
 		expected = new Float32Array([	1.0, 2.0, 1.0, 1.0 ]);
 
 	var m = 2, n = 2, channels = 4, factor = 2, stride = 2;
+
+	var t0 = new weblas.pipeline.Tensor([m, n * channels], X),
+		t3;
+
 	try{
 
-		var N_out = Math.floor((n - factor) / stride) + 1;
-		var M_out = Math.floor((m - factor) / stride) + 1;
+		t3 = weblas.pipeline.sdwns(channels, factor, stride, t0);
 
-		var texture0 = weblas.gpu.gl.createDataTexture(m, n * channels, X),
-			texture3 = weblas.gpu.gl.createDataTexture(M_out, N_out * channels, null);
-
-		weblas.gpu.sdwns(m, n, channels, factor, stride, texture0, texture3);
-
-
-		var out = weblas.gpu.gl.createOutputTexture(M_out, N_out * channels);
-
-		// float extraction
-		weblas.gpu.encode(M_out, N_out * channels, texture3, out);
-
-		result = new Float32Array(weblas.gpu.gl.readData(M_out, N_out * channels));
-
-		weblas.gpu.gl.context.deleteTexture(texture0);
-		weblas.gpu.gl.context.deleteTexture(texture3);
-		weblas.gpu.gl.context.deleteTexture(out);
+		result = t3.transfer();
 	}
 	catch(ex){
 		t.assert(false, ex);
 		return;
 	}
+	t3.delete();
 
 	weblas.test.assert.allclose(t, result, expected, null, RTOL, ATOL);
 
@@ -55,29 +44,22 @@ tape("pipeline.sdwns: 2 x 2 x 4", function(t){
 		expected = new Float32Array([	1.0, 2.0, 1.0, 1.0 ]);
 
 	var m = 2, n = 2, channels = 4, factor = 2, stride = 2;
+
+	var t0 = new weblas.pipeline.Tensor([m, n * channels], X),
+		t3;
+
 	try{
 
-		var N_out = Math.floor((n - factor) / stride) + 1;
-		var M_out = Math.floor((m - factor) / stride) + 1;
+		t3 = weblas.pipeline.sdwns(channels, factor, stride, t0);
 
-		var texture0 = weblas.gpu.gl.createDataTexture(m, n * channels, X),
-			texture3 = weblas.gpu.gl.createDataTexture(M_out, N_out * channels, null);
-
-		weblas.gpu.sdwns(m, n, channels, factor, stride, texture0, texture3);
-
-
-		var out = weblas.gpu.gl.createOutputTexture(M_out, N_out * channels);
-
-		// float extraction
-		weblas.gpu.encode(M_out, N_out * channels, texture3, out);
-
-		result = new Float32Array(weblas.gpu.gl.readData(M_out, N_out * channels));
+		result = t3.transfer();
 
 	}
 	catch(ex){
 		t.assert(false, ex);
 		return;
 	}
+	t3.delete();
 
 	weblas.test.assert.allclose(t, result, expected, null, RTOL, ATOL);
 
@@ -92,29 +74,22 @@ tape("pipeline.sdwns: 2 x 2 x 4", function(t){
 		expected = new Float32Array([	1.0, 2.0, 1.0, 1.0 ]);
 
 	var m = 2, n = 2, channels = 4, factor = 2, stride = 2;
+
+	var t0 = new weblas.pipeline.Tensor([m, n * channels], X),
+		t3;
+
 	try{
 
-		var N_out = Math.floor((n - factor) / stride) + 1;
-		var M_out = Math.floor((m - factor) / stride) + 1;
+		t3 = weblas.pipeline.sdwns(channels, factor, stride, t0);
 
-		var texture0 = weblas.gpu.gl.createDataTexture(m, n * channels, X),
-			texture3 = weblas.gpu.gl.createDataTexture(M_out, N_out * channels, null);
-
-		weblas.gpu.sdwns(m, n, channels, factor, stride, texture0, texture3);
-
-
-		var out = weblas.gpu.gl.createOutputTexture(M_out, N_out * channels);
-
-		// float extraction
-		weblas.gpu.encode(M_out, N_out * channels, texture3, out);
-
-		result = new Float32Array(weblas.gpu.gl.readData(M_out, N_out * channels));
+		result = t3.transfer();
 
 	}
 	catch(ex){
 		t.assert(false, ex);
 		return;
 	}
+	t3.delete();
 
 	weblas.test.assert.allclose(t, result, expected, null, RTOL, ATOL);
 
@@ -129,28 +104,21 @@ tape("pipeline.sdwns: 2 x 2 x 4", function(t){
 		expected = new Float32Array([	1.0, 2.0, 1.0, 1.0 ]);
 
 	var m = 2, n = 2, channels = 4, factor = 2, stride = 2;
+
+	var t0 = new weblas.pipeline.Tensor([m, n * channels], X),
+		t3;
+
 	try{
 
-		var N_out = Math.floor((n - factor) / stride) + 1;
-		var M_out = Math.floor((m - factor) / stride) + 1;
+		t3 = weblas.pipeline.sdwns(channels, factor, stride, t0);
 
-		var texture0 = weblas.gpu.gl.createDataTexture(m, n * channels, X),
-			texture3 = weblas.gpu.gl.createDataTexture(M_out, N_out * channels, null);
-
-		weblas.gpu.sdwns(m, n, channels, factor, stride, texture0, texture3);
-
-
-		var out = weblas.gpu.gl.createOutputTexture(M_out, N_out * channels);
-
-		// float extraction
-		weblas.gpu.encode(M_out, N_out * channels, texture3, out);
-
-		result = new Float32Array(weblas.gpu.gl.readData(M_out, N_out * channels));
+		result = t3.transfer();
 	}
 	catch(ex){
 		t.assert(false, ex);
 		return;
 	}
+	t3.delete();
 
 	weblas.test.assert.allclose(t, result, expected, null, RTOL, ATOL);
 
@@ -164,22 +132,15 @@ tape("pipeline.sdwns: 2 x 2 x 8", function(t){
 		expected = new Float32Array([	1.0, 1.0, 1.0, 1.0, 1.0, 2.0, 1.0, 1.0  ]);
 
 	var m = 2, n = 2, channels = 8, factor = 2, stride = 2;
+
+	var t0 = new weblas.pipeline.Tensor([m, n * channels], X),
+		t3;
+
 	try{
 
-		var N_out = Math.floor((n - factor) / stride) + 1;
-		var M_out = Math.floor((m - factor) / stride) + 1;
+		t3 = weblas.pipeline.sdwns(channels, factor, stride, t0);
 
-		var texture0 = weblas.gpu.gl.createDataTexture(m, n * channels, X),
-			texture3 = weblas.gpu.gl.createDataTexture(M_out, N_out * channels, null);
-
-		weblas.gpu.sdwns(m, n, channels, factor, stride, texture0, texture3);
-
-		var out = weblas.gpu.gl.createOutputTexture(M_out, N_out * channels);
-
-		// float extraction
-		weblas.gpu.encode(M_out, N_out * channels, texture3, out);
-
-		result = new Float32Array(weblas.gpu.gl.readData(M_out, N_out * channels));
+		result = t3.transfer();
 
 		//console.log(result);
 	}
@@ -187,6 +148,7 @@ tape("pipeline.sdwns: 2 x 2 x 8", function(t){
 		t.assert(false, ex);
 		return;
 	}
+	t0.delete();
 
 	weblas.test.assert.allclose(t, result, expected, null, RTOL, ATOL);
 
@@ -229,21 +191,14 @@ function generateTestCase(prefix, m, n, channels, factor, stride){
 			X = new Float32Array(x);
 			expected = new Float32Array(out);
 
+			var t0 = new weblas.pipeline.Tensor([m, n * channels], X),
+				t3;
+
 			try{
-				var N_out = Math.floor((n - factor) / stride) + 1;
-				var M_out = Math.floor((m - factor) / stride) + 1;
 
-				var texture0 = weblas.gpu.gl.createDataTexture(m, n * channels, X),
-					texture3 = weblas.gpu.gl.createDataTexture(M_out, N_out * channels, null);
+				t3 = weblas.pipeline.sdwns(channels, factor, stride, t0);
 
-				weblas.gpu.sdwns(m, n, channels, factor, stride, texture0, texture3);
-
-				var out = weblas.gpu.gl.createOutputTexture(M_out, N_out * channels);
-
-				// float extraction
-				weblas.gpu.encode(M_out, N_out * channels, texture3, out);
-
-				result = new Float32Array(weblas.gpu.gl.readData(M_out, N_out * channels));
+				result = t3.transfer();
 
 			}
 			catch(ex){

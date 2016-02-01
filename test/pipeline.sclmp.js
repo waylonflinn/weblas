@@ -15,28 +15,20 @@ tape("pipeline.sclmp: 1x4", function(t){
 		expected = new Float32Array([2.0, 2.0, 2.0, 2.0]);
 
 	var m = 1, n = 4, b = null;
-	var texture0 = weblas.gpu.gl.createDataTexture(m, n, X),
-		texture3 = weblas.gpu.gl.createDataTexture(m, n, null);
+	var t0 = new weblas.pipeline.Tensor([m, n], X),
+		t3;
 
 	try{
+		t3 = weblas.pipeline.sclmp(a, b, t0);
 
-		weblas.gpu.sclmp(m, n, a, b, texture0, texture3);
-
-		var out = weblas.gpu.gl.createOutputTexture(m, n);
-
-		// float extraction
-		weblas.gpu.encode(m, n, texture3, out);
-
-		result = new Float32Array(weblas.gpu.gl.readData(m, n));
-		
-		weblas.gpu.gl.context.deleteTexture(texture0);
-		weblas.gpu.gl.context.deleteTexture(texture3);
-		weblas.gpu.gl.context.deleteTexture(out);
+		result = t3.transfer();
 	}
 	catch(ex){
 		t.assert(false, ex);
 		return;
 	}
+
+	t0.delete();
 
 	weblas.test.assert.allclose(t, result, expected, null, RTOL, ATOL);
 
@@ -49,24 +41,19 @@ tape("pipeline.sclmp: 1x3", function(t){
 		expected = new Float32Array([1.5, 2.0, 3.0]);
 
 	var m = 1, n = 3, b = null;
-	var texture0 = weblas.gpu.gl.createDataTexture(m, n, X),
-		texture3 = weblas.gpu.gl.createDataTexture(m, n, null);
+	var t0 = new weblas.pipeline.Tensor([m, n], X),
+		t3;
 
 	try{
+		t3 = weblas.pipeline.sclmp(a, b, t0);
 
-		weblas.gpu.sclmp(m, n, a, b, texture0, texture3);
-
-		var out = weblas.gpu.gl.createOutputTexture(m, n);
-
-		// float extraction
-		weblas.gpu.encode(m, n, texture3, out);
-
-		result = new Float32Array(weblas.gpu.gl.readData(m, n));
+		result = t3.transfer();
 	}
 	catch(ex){
 		t.assert(false, ex);
 		return;
 	}
+	t0.delete();
 
 	weblas.test.assert.allclose(t, result, expected, null, RTOL, ATOL);
 
@@ -80,19 +67,20 @@ tape("pipeline.sclmp: 1x3 (padding)", function(t){
 		expected = new Float32Array([1.5, 2.0, 3.0]);
 
 	var m = 1, n = 3, b = null;
-	var texture0 = weblas.gpu.gl.createDataTexture(m, n, X),
-		texture3 = weblas.gpu.gl.createDataTexture(m, n, null);
+	var t0 = new weblas.pipeline.Tensor([m, n], X),
+		t3;
 
 	try{
+		t3 = weblas.pipeline.sclmp(a, b, t0);
 
-		weblas.gpu.sclmp(m, n, a, b, texture0, texture3);
+		result = t3.transfer(true);
 
 		var pad = weblas.gpu.gl.getPad(n);
 
 		var out = weblas.gpu.gl.createOutputTexture(m, n + pad);
 
 		// float extraction
-		weblas.gpu.encode(m, n + pad, texture3, out);
+		weblas.gpu.encode(m, n + pad, t3.texture, out);
 
 		var padded = new Float32Array(n + pad); // new array of specified length filled with zeros
 		padded.set(expected);
@@ -102,6 +90,8 @@ tape("pipeline.sclmp: 1x3 (padding)", function(t){
 		t.assert(false, ex);
 		return;
 	}
+	t0.delete();
+	t3.delete();
 
 	weblas.test.assert.allclose(t, result, padded, null, RTOL, ATOL);
 
@@ -115,24 +105,19 @@ tape("pipeline.sclmp: 1x4", function(t){
 		expected = new Float32Array([1.0, 2.0, 3.0, 4.0]);
 
 	var m = 1, n = 4, b = null;
-	var texture0 = weblas.gpu.gl.createDataTexture(m, n, X),
-		texture3 = weblas.gpu.gl.createDataTexture(m, n, null);
+	var t0 = new weblas.pipeline.Tensor([m, n], X),
+		t3;
 
 	try{
+		t3 = weblas.pipeline.sclmp(a, b, t0);
 
-		weblas.gpu.sclmp(m, n, a, b, texture0, texture3);
-
-		var out = weblas.gpu.gl.createOutputTexture(m, n);
-
-		// float extraction
-		weblas.gpu.encode(m, n, texture3, out);
-
-		result = new Float32Array(weblas.gpu.gl.readData(m, n));
+		result = t3.transfer();
 	}
 	catch(ex){
 		t.assert(false, ex);
 		return;
 	}
+	t0.delete();
 
 	weblas.test.assert.allclose(t, result, expected, null, RTOL, ATOL);
 
@@ -146,24 +131,19 @@ tape("pipeline.sclmp: 1x5", function(t){
 		expected = new Float32Array([2.2, 3.0, 2.2, 4.0, 7.0]);
 
 	var m = 1, n = 5, b = null;
-	var texture0 = weblas.gpu.gl.createDataTexture(m, n, X),
-		texture3 = weblas.gpu.gl.createDataTexture(m, n, null);
+	var t0 = new weblas.pipeline.Tensor([m, n], X),
+		t3;
 
 	try{
+		t3 = weblas.pipeline.sclmp(a, b, t0);
 
-		weblas.gpu.sclmp(m, n, a, b, texture0, texture3);
-
-		var out = weblas.gpu.gl.createOutputTexture(m, n);
-
-		// float extraction
-		weblas.gpu.encode(m, n, texture3, out);
-
-		result = new Float32Array(weblas.gpu.gl.readData(m, n));
+		result = t3.transfer();
 	}
 	catch(ex){
 		t.assert(false, ex);
 		return;
 	}
+	t0.delete();
 
 	weblas.test.assert.allclose(t, result, expected, null, RTOL, ATOL);
 
@@ -177,19 +157,20 @@ tape("pipeline.sclmp: 1x5 (padded)", function(t){
 		expected = new Float32Array([2.2, 3.0, 2.2, 4.0, 7.0]);
 
 	var m = 1, n = 5, b = null;
-	var texture0 = weblas.gpu.gl.createDataTexture(m, n, X),
-		texture3 = weblas.gpu.gl.createDataTexture(m, n, null);
+	var t0 = new weblas.pipeline.Tensor([m, n], X),
+		t3;
 
 	try{
+		t3 = weblas.pipeline.sclmp(a, b, t0);
 
-		weblas.gpu.sclmp(m, n, a, b, texture0, texture3);
+		result = t3.transfer(true);
 
 		var pad = weblas.gpu.gl.getPad(n);
 
 		var out = weblas.gpu.gl.createOutputTexture(m, n + pad);
 
 		// float extraction
-		weblas.gpu.encode(m, n + pad, texture3, out);
+		weblas.gpu.encode(m, n + pad, t3.texture, out);
 
 		var padded = new Float32Array(n + pad); // new array of specified length filled with zeros
 		padded.set(expected);
@@ -212,24 +193,19 @@ tape("pipeline.sclmp: 1x7", function(t){
 		expected = new Float32Array([0.0, 3.0, 2.0, 0.0, 7.0, 0.0, 11.0]);
 
 	var m = 1, n = 7, b = null;
-	var texture0 = weblas.gpu.gl.createDataTexture(m, n, X),
-		texture3 = weblas.gpu.gl.createDataTexture(m, n, null);
+	var t0 = new weblas.pipeline.Tensor([m, n], X),
+		t3;
 
 	try{
+		t3 = weblas.pipeline.sclmp(a, b, t0);
 
-		weblas.gpu.sclmp(m, n, a, b, texture0, texture3);
-
-		var out = weblas.gpu.gl.createOutputTexture(m, n);
-
-		// float extraction
-		weblas.gpu.encode(m, n, texture3, out);
-
-		result = new Float32Array(weblas.gpu.gl.readData(m, n));
+		result = t3.transfer();
 	}
 	catch(ex){
 		t.assert(false, ex);
 		return;
 	}
+	t0.delete();
 
 	weblas.test.assert.allclose(t, result, expected, null, RTOL, ATOL);
 
@@ -243,19 +219,21 @@ tape("pipeline.sclmp: 1x7 (padded)", function(t){
 		expected = new Float32Array([0.0, 3.0, 2.0, 0.0, 7.0, 0.0, 11.0]);
 
 	var m = 1, n = 7, b = null;
-	var texture0 = weblas.gpu.gl.createDataTexture(m, n, X),
-		texture3 = weblas.gpu.gl.createDataTexture(m, n, null);
+
+	var t0 = new weblas.pipeline.Tensor([m, n], X),
+		t3;
 
 	try{
+		t3 = weblas.pipeline.sclmp(a, b, t0);
 
-		weblas.gpu.sclmp(m, n, a, b, texture0, texture3);
+		result = t3.transfer(true);
 
 		var pad = weblas.gpu.gl.getPad(n);
 
 		var out = weblas.gpu.gl.createOutputTexture(m, n + pad);
 
 		// float extraction
-		weblas.gpu.encode(m, n + pad, texture3, out);
+		weblas.gpu.encode(m, n + pad, t3.texture, out);
 
 		var padded = new Float32Array(n + pad); // new array of specified length filled with zeros
 		padded.set(expected);
@@ -309,20 +287,13 @@ function generateTestCase(prefix, m, n, a, b){
 			X = new Float32Array(x);
 			expected = new Float32Array(out);
 
-
-			var texture0 = weblas.gpu.gl.createDataTexture(m, n, X),
-				texture3 = weblas.gpu.gl.createDataTexture(m, n, null);
+			var t0 = new weblas.pipeline.Tensor([m, n], X),
+				t3;
 
 			try{
+				t3 = weblas.pipeline.sclmp(a, b, t0);
 
-				weblas.gpu.sclmp(m, n, a, b, texture0, texture3);
-
-				var out = weblas.gpu.gl.createOutputTexture(m, n);
-
-				// float extraction
-				weblas.gpu.encode(m, n, texture3, out);
-
-				result = new Float32Array(weblas.gpu.gl.readData(m, n));
+				result = t3.transfer(true);
 
 			}
 			catch(ex){
@@ -333,6 +304,7 @@ function generateTestCase(prefix, m, n, a, b){
 			weblas.test.assert.allclose(t, result, expected, null, RTOL, ATOL);
 
 			if(pad > 0){
+				// use internals to check that texture is padded correctly
 				var padded;
 
 				try{
@@ -340,7 +312,7 @@ function generateTestCase(prefix, m, n, a, b){
 					out = weblas.gpu.gl.createOutputTexture(m, n + pad);
 
 					// float extraction
-					weblas.gpu.encode(m, n + pad, texture3, out);
+					weblas.gpu.encode(m, n + pad, t3.texture, out);
 					result = new Float32Array(weblas.gpu.gl.readData(m, n + pad));
 				}
 				catch(ex){
@@ -349,6 +321,10 @@ function generateTestCase(prefix, m, n, a, b){
 
 				weblas.test.assert.allclose(t, result, padded, null, RTOL, ATOL);
 			}
+
+			t0.delete();
+			t3.delete();
+
 		});
 	};
 }
