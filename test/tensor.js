@@ -16,10 +16,8 @@ tape("Tensor.transpose: 3 x 3", function(t){
 									  2.0,  6.0,  10.0,
 									  3.0,  7.0,  11.0]);
 
-	var M = 3,
-		N = 3;
-
-	var t0 = new weblas.pipeline.Tensor([M, N], x),
+	var M = 3, N = 3,
+		t0 = new weblas.pipeline.Tensor([M, N], x),
 		t1;
 
 	try{
@@ -68,10 +66,8 @@ tape("Tensor.transpose: 3 x 4", function(t){
 									  3.0,  7.0,  11.0,
 									  4.0,  8.0,  12.0]);
 
-	var M = 3,
-		N = 4;
-
-	var t0 = new weblas.pipeline.Tensor([M, N], x),
+	var M = 3, N = 4,
+		t0 = new weblas.pipeline.Tensor([M, N], x),
 		t1;
 
 	try{
@@ -181,7 +177,7 @@ function generateTestCase(prefix, M, N){
 				}
 
 				weblas.test.assert.allclose(t, result, padded, null, RTOL, ATOL);
-				t1.delete();	
+				t1.delete();
 			}
 		});
 	};
