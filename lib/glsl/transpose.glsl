@@ -21,10 +21,10 @@ void main(void) {
 	float col = (col_t * float(N + npad) - 2.0); // index of first element in pixel (matrix space)
 
 	// get rows in the input, each containing one element in the output
-	vec4 row_1 = texture2D(A, vec2((row_t * float(M))/float(N + npad), (col + 0.5)/float(N)));
-	vec4 row_2 = texture2D(A, vec2((row_t * float(M))/float(N + npad), (col + 1.5)/float(N)));
-	vec4 row_3 = texture2D(A, vec2((row_t * float(M))/float(N + npad), (col + 2.5)/float(N)));
-	vec4 row_4 = texture2D(A, vec2((row_t * float(M))/float(N + npad), (col + 3.5)/float(N)));
+	vec4 row_1 = texture2D(A, vec2((row_t * float(M))/float(M + mpad), (col + 0.5)/float(N)));
+	vec4 row_2 = texture2D(A, vec2((row_t * float(M))/float(M + mpad), (col + 1.5)/float(N)));
+	vec4 row_3 = texture2D(A, vec2((row_t * float(M))/float(M + mpad), (col + 2.5)/float(N)));
+	vec4 row_4 = texture2D(A, vec2((row_t * float(M))/float(M + mpad), (col + 3.5)/float(N)));
 
 	// package into output vector
 	int channel = int(mod(row_t * float(M), 4.0 ));
