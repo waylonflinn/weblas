@@ -53,24 +53,18 @@ function generateTestCase(prefix, m, n, a, b){
 			X = new Float32Array(x);
 			expected = new Float32Array(out);
 
-
-			var texture0 = weblas.gpu.gl.createDataTexture(m, n, X),
-				texture3 = weblas.gpu.gl.createDataTexture(m, n, null);
+			var t0 = new weblas.pipeline.Tensor([m, n], X),
+				t3;
 
 			//console.log(m + "x" + k + " times " + k + "x" + n);
 
 			try{
-				weblas.gpu.sscal(m, n, a, b, texture0, texture3);
+				t3 = weblas.pipeline.sscal(a, b, t0);
 
-				var out = weblas.gpu.gl.createOutputTexture(m, n);
 
-				// float extraction
-				weblas.gpu.encode(m, n, texture3, out);
+				result = t3.transfer(true);
 
-				result = new Float32Array(weblas.gpu.gl.readData(m, n));
 				//console.log(result.slice(0, 6));
-
-				weblas.gpu.gl.context.deleteTexture(out);
 			}
 			catch(ex){
 				t.assert(false, ex);
@@ -80,6 +74,7 @@ function generateTestCase(prefix, m, n, a, b){
 			weblas.test.assert.allclose(t, result, expected, null, RTOL, ATOL);
 
 			if(pad > 0){
+				// use internals to check that texture is padded correctly
 				var padded;
 
 				try{
@@ -87,7 +82,7 @@ function generateTestCase(prefix, m, n, a, b){
 					out = weblas.gpu.gl.createOutputTexture(m, n + pad);
 
 					// float extraction
-					weblas.gpu.encode(m, n + pad, texture3, out);
+					weblas.gpu.encode(m, n + pad, t3.texture, out);
 					result = new Float32Array(weblas.gpu.gl.readData(m, n + pad));
 
 					weblas.gpu.gl.context.deleteTexture(out);
@@ -100,8 +95,8 @@ function generateTestCase(prefix, m, n, a, b){
 			}
 
 
-			weblas.gpu.gl.context.deleteTexture(texture0);
-			weblas.gpu.gl.context.deleteTexture(texture3);
+			t0.delete();
+			t3.delete();
 		});
 	};
 }

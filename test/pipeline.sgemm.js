@@ -54,26 +54,18 @@ function generateTestCase(prefix, m, n, k, alpha){
 			B = new Float32Array(b);
 			expected = new Float32Array(out);
 
-			var beta = 0.0;
-
-			var texture0 = weblas.gpu.gl.createDataTexture(m, k, A),
-				texture1 = weblas.gpu.gl.createDataTexture(n, k, weblas.util.transpose(k, n, B)),
-				texture3 = weblas.gpu.gl.createDataTexture(m, n, null);
+			var t0 = new weblas.pipeline.Tensor([m, k], A),
+				t1 = new weblas.pipeline.Tensor([n, k], weblas.util.transpose(k, n, B)),
+				t3;
 
 			//console.log(m + "x" + k + " times " + k + "x" + n);
 
 			try{
-				weblas.gpu.sgemm(m, n, k, alpha, texture0, texture1, null, null, texture3);
+				t3 = weblas.pipeline.sgemm(alpha, t0, t1, null, null);
 
-				var out = weblas.gpu.gl.createOutputTexture(m, n);
-
-				// float extraction
-				weblas.gpu.encode(m, n, texture3, out);
-
-				result = new Float32Array(weblas.gpu.gl.readData(m, n));
+				// get the result, but retain the texture (for padding check)
+				result = t3.transfer(true);
 				//console.log(result.slice(0, 6));
-
-				weblas.gpu.gl.context.deleteTexture(out);
 
 			}
 			catch(ex){
@@ -84,6 +76,7 @@ function generateTestCase(prefix, m, n, k, alpha){
 			weblas.test.assert.allclose(t, result, expected, null, RTOL, ATOL);
 
 			if(pad > 0){
+				// use internals to check that texture is padded correctly
 				var padded;
 
 				try{
@@ -91,7 +84,7 @@ function generateTestCase(prefix, m, n, k, alpha){
 					out = weblas.gpu.gl.createOutputTexture(m, n + pad);
 
 					// float extraction
-					weblas.gpu.encode(m, n + pad, texture3, out);
+					weblas.gpu.encode(m, n + pad, t3.texture, out);
 					result = new Float32Array(weblas.gpu.gl.readData(m, n + pad));
 
 					weblas.gpu.gl.context.deleteTexture(out);
@@ -103,9 +96,9 @@ function generateTestCase(prefix, m, n, k, alpha){
 				weblas.test.assert.allclose(t, result, padded, null, RTOL, ATOL);
 			}
 
-			weblas.gpu.gl.context.deleteTexture(texture0);
-			weblas.gpu.gl.context.deleteTexture(texture1);
-			weblas.gpu.gl.context.deleteTexture(texture3);
+			t0.delete();
+			t1.delete();
+			t3.delete();
 		});
 	};
 }
@@ -147,25 +140,18 @@ function generateExtendedTestCase(prefix, m, n, k, alpha, beta){
 			C = new Float32Array(c);
 			expected = new Float32Array(out);
 
-
-		    var texture0 = weblas.gpu.gl.createDataTexture(m, k, A),
-		        texture1 = weblas.gpu.gl.createDataTexture(n, k, weblas.util.transpose(k, n, B)),
-				texture2 = weblas.gpu.gl.createDataTexture(1, n, C),
-				texture3 = weblas.gpu.gl.createDataTexture(m, n, null);
+			var t0 = new weblas.pipeline.Tensor([m, k], A),
+				t1 = new weblas.pipeline.Tensor([n, k], weblas.util.transpose(k, n, B)),
+				t2 = new weblas.pipeline.Tensor([1, n], C),
+				t3;
 
 			//console.log(m + "x" + k + " times " + k + "x" + n);
 
 			try{
-				weblas.gpu.sgemm(m, n, k, alpha, texture0, texture1, beta, texture2, texture3);
+				t3 = weblas.pipeline.sgemm(alpha, t0, t1, beta, t2);
 
-				var out = weblas.gpu.gl.createOutputTexture(m, n);
-
-				// float extraction
-				weblas.gpu.encode(m, n, texture3, out);
-
-			    result = new Float32Array(weblas.gpu.gl.readData(m, n));
-
-				weblas.gpu.gl.context.deleteTexture(out);
+				// get the result, but retain the texture (for padding check)
+				result = t3.transfer(true);
 			}
 			catch(ex){
 				t.assert(false, ex);
@@ -182,7 +168,7 @@ function generateExtendedTestCase(prefix, m, n, k, alpha, beta){
 					out = weblas.gpu.gl.createOutputTexture(m, n + pad);
 
 					// float extraction
-					weblas.gpu.encode(m, n + pad, texture3, out);
+					weblas.gpu.encode(m, n + pad, t3.texture, out);
 					result = new Float32Array(weblas.gpu.gl.readData(m, n + pad));
 
 					weblas.gpu.gl.context.deleteTexture(out);
@@ -195,10 +181,10 @@ function generateExtendedTestCase(prefix, m, n, k, alpha, beta){
 				weblas.test.assert.allclose(t, result, padded, null, RTOL, ATOL);
 			}
 
-			weblas.gpu.gl.context.deleteTexture(texture0);
-			weblas.gpu.gl.context.deleteTexture(texture1);
-			weblas.gpu.gl.context.deleteTexture(texture2);
-			weblas.gpu.gl.context.deleteTexture(texture3);
+			t0.delete();
+			t1.delete();
+			t2.delete();
+			t3.delete();
 		});
 	};
 }

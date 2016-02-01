@@ -1,18 +1,18 @@
 var globals = require('./lib/globals'),
+	pipeline = require("./lib/pipeline"),
+	SGEMMCalculator = require("./lib/sgemmcalculator"),
+	SAXPYCalculator = require("./lib/saxpycalculator"),
+	SSCALCalculator = require("./lib/sscalcalculator"),
+	SDWNSCalculator = require("./lib/sdwnscalculator"),
+	SCLMPCalculator = require("./lib/sclmpcalculator"),
 	test = require("./lib/test");
 
-
 var gl = globals.gl,
-	sgemmcalculator = globals.sgemmcalculator,
-	saxpycalculator = globals.saxpycalculator,
-	sscalcalculator = globals.sscalcalculator,
-	sdwnscalculator = globals.sdwnscalculator,
-	sclmpcalculator = globals.sclmpcalculator;
-
-var pipeline_sscal = globals.pipeline_sscal,
-	pipeline_sclmp = globals.pipeline_sclmp,
-	pipeline_sdwns = globals.pipeline_sdwns,
-	pipeline_sgemm = globals.pipeline_sgemm;
+	sgemmcalculator = new SGEMMCalculator(gl),
+	saxpycalculator = new SAXPYCalculator(gl),
+	sscalcalculator = new SSCALCalculator(gl),
+	sdwnscalculator = new SDWNSCalculator(gl),
+	sclmpcalculator = new SCLMPCalculator(gl);
 
 module.exports = {
 	// level one
@@ -25,12 +25,14 @@ module.exports = {
 	"sstd" : sstd,     // single precision Standard Score normalization
 	"sdwns": sdwns,
 	"sclmp": sclmp,
+	// pipeline
+	"pipeline" : pipeline,
 	// internals
 	"gpu" : {	"gl": gl,
-	 			"sgemm": pipeline_sgemm.calculate.bind(pipeline_sgemm),
-				"sscal" : pipeline_sscal.calculate.bind(pipeline_sscal),
-				"sclmp" : pipeline_sclmp.calculate.bind(pipeline_sclmp),
-				"sdwns" : pipeline_sdwns.calculate.bind(pipeline_sdwns),
+	 			"sgemm": pipeline.sgemmcalculator.calculate.bind(pipeline.sgemmcalculator),
+				"sscal" : pipeline.sscalcalculator.calculate.bind(pipeline.sscalcalculator),
+				"sclmp" : pipeline.sclmpcalculator.calculate.bind(pipeline.sclmpcalculator),
+				"sdwns" : pipeline.sdwnscalculator.calculate.bind(pipeline.sdwnscalculator),
 				"encode" : gl.encode.bind(gl)
 			},
 	"util" : { "fromArray" : fromArray, "transpose" : transpose},
