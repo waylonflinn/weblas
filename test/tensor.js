@@ -207,3 +207,90 @@ loader.load(dataDirectory + testFile, function(err, config){
 	}
 
 });
+
+
+tape("Tensor.reshape: 4 x 8", function(t){
+	t.plan(1);
+
+	var x = new Float32Array([ 1.0,  2.0,  3.0,  4.0,  5.0,  6.0,  7.0,  8.0,
+							   9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0,
+							  17.0, 18.0, 19.0, 20.0, 21.0, 22.0, 23.0, 24.0,
+							  25.0, 26.0, 27.0, 28.0, 29.0, 30.0, 31.0, 32.0]),
+		expected = new Float32Array([ 1.0,  2.0,  3.0,  4.0,
+			  						  5.0,  6.0,  7.0,  8.0,
+									  9.0, 10.0, 11.0, 12.0,
+									 13.0, 14.0, 15.0, 16.0,
+									 17.0, 18.0, 19.0, 20.0,
+									 21.0, 22.0, 23.0, 24.0,
+									 25.0, 26.0, 27.0, 28.0,
+									 29.0, 30.0, 31.0, 32.0]);
+
+	var M = 4, N = 8,
+		M2 = 8, N2 = 4,
+		t0 = new weblas.pipeline.Tensor([M, N], x),
+		t1;
+
+	try{
+		// when tranposing texture for t0 is deleted by default
+		t1 = t0.reshape([M2, N2]);
+		// when transfering texture for t1 is deleted by default
+		var result = t1.transfer();
+	}
+	catch(ex){
+		t.assert(false, ex);
+		return;
+	}
+
+	weblas.test.assert.allclose(t, result, expected, null, RTOL, ATOL);
+});
+
+tape("Tensor.reshape: 3 x 4", function(t){
+	t.plan(2);
+
+	var x = new Float32Array([ 1.0,  2.0,  3.0,  4.0,
+							   5.0,  6.0,  7.0,  8.0,
+							   9.0, 10.0, 11.0, 12.0]),
+		expected = new Float32Array([ 1.0,  2.0,  3.0,
+									  4.0,  5.0,  6.0,
+									  7.0,  8.0,  9.0,
+									 10.0, 11.0, 12.0]);
+
+	var M = 3, N = 4,
+		M2 = 4, N2 = 3,
+		t0 = new weblas.pipeline.Tensor([M, N], x),
+		t1;
+
+	try{
+		// when tranposing texture for t0 is deleted by default
+		t1 = t0.reshape([M2, N2]);
+		// when transfering texture for t1 is deleted by default
+		var result = t1.transfer(true);
+	}
+	catch(ex){
+		t.assert(false, ex);
+		return;
+	}
+
+	weblas.test.assert.allclose(t, result, expected, null, RTOL, ATOL);
+
+	// use internals to check that texture is padded correctly
+	var pad = 1,
+		padded;
+
+	try{
+		padded = weblas.test.padData(M2, N2, pad, expected);
+		out = weblas.gpu.gl.createOutputTexture(M2, N2 + pad);
+
+		// float extraction
+		weblas.gpu.encode(M2, N2 + pad, t1.texture, out);
+		result = new Float32Array(weblas.gpu.gl.readData(M2, N2 + pad));
+
+		weblas.gpu.gl.context.deleteTexture(out);
+	}
+	catch(ex){
+		t.assert(false, ex);
+	}
+
+	weblas.test.assert.allclose(t, result, padded, null, RTOL, ATOL);
+	t1.delete();
+});
