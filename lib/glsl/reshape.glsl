@@ -18,6 +18,16 @@ uniform float     pad_in;	// column padding in input
 #pragma glslify: select_index = require(./select_index)
 #pragma glslify: fix_pad = require(./fix_pad)
 
+// translate a linear index into x, y coordinates for a matrix
+vec2 linear_index_coords(float linear_index, float row_length){
+	vec2 coords_p;
+
+	coords_p.x = floor(mod(linear_index + 0.5, row_length)); // column in input
+	coords_p.y = floor((linear_index + 0.5) / row_length); // row in input containing current element in pixel
+
+	return coords_p;
+}
+
 void main(void) {
 
 	// get the implied row and column from .y and .x of passed (output)
@@ -27,78 +37,51 @@ void main(void) {
 	float col_t = outTex.x;
 
 	float row = floor(row_t * M);
-	//float col_0 = (col_t * (N + pad) - 2.0); // index of first element in pixel (matrix space)
-	float col_0 = floor((col_t * (N + pad))/4.0)*4.0; // index of first element in pixel (matrix space)
+	float col_0 = (col_t * (N + pad) - 2.0); // index of first element in pixel (matrix space)
+	//float col_0 = floor(col_t * (N + pad)/4.0)*4.0; // index of first element in pixel (matrix space)
 	float lin_index_0 = row * N + col_0; // linearized index of first element in pixel in output
 
-	float row_in_0 = floor(lin_index_0 / N_in); // row in input containing first element in pixel
-	float col_in_0 = floor(mod(lin_index_0, N_in)); // column in input containing first element in pixel
-	float row_in_3 = floor((lin_index_0 + 3.0) / N_in); // row in input containing last element in pixel
-	float col_in_3 = floor(mod((lin_index_0 + 3.0), N_in)); // column in input containing last element in pixel
+	int input_count = 0;
+	vec4 pixel_in = vec4(0.0, 0.0, 0.0, 0.0);
+	vec4 result = vec4(0.0, 0.0, 0.0, 0.0);
+	vec2 coords_p = linear_index_coords(lin_index_0, N_in);
+	vec2 ncoords_p;
+	int current_pixel_index = int(mod(coords_p.x, 4.0));
 
-	// get the pixel in the input containing the first element in the output
-	vec4 pixel_0 = texture2D(A, vec2((col_in_0 + 2.0)/(N_in + pad_in), (row_in_0 + 0.5)/M_in));
-	vec4 pixel;
+	pixel_in = texture2D(A, vec2((coords_p.x + 0.5)/(N_in + pad_in), (coords_p.y + 0.5)/M_in));
 
-	int channel_in_0 = int(mod(col_in_0, 4.0)); // channel in input of first element in pixel
-	int channel_in_3 = int(mod(col_in_3, 4.0));// channel in input of last element in pixel
+	// go through input pixels until we're done
+	for(int i = 0; i < 4; i++){
+		if(input_count >= 4) break;
 
-	// are we spanning the whole pixel?
-	if(channel_in_0 == 0 && channel_in_3 == 3){
-		// yes, use it directly for the output
-		pixel = pixel_0;
-	} else {
-		// no, get the next pixel, and extract what we need
-		// get the pixel in the input containing the last (fourth) element in the output
-		vec4 pixel_3 = texture2D(A, vec2((col_in_3 + 2.0)/(N_in + pad_in), (row_in_3 + 0.5)/M_in));
-
-		int pixel_3_len = channel_in_0;
-
-		// are we in the padded (input) region?
-		if(pad_in > 0.0 && col_in_0 + 4.0 > N_in){
-			pixel_3_len = pixel_3_len + int(pad_in);
+		// are we on a new pixel?
+		ncoords_p = linear_index_coords(lin_index_0 + float(input_count), N_in);
+		if(floor(coords_p.x/4.0) != floor(ncoords_p.x/4.0) || coords_p.y != ncoords_p.y){
+			coords_p = ncoords_p;
+			pixel_in = texture2D(A, vec2((coords_p.x + 0.5)/(N_in + pad_in), (coords_p.y + 0.5)/M_in));
+			current_pixel_index = 0;
 		}
 
-		if(channel_in_0 == 1){
-			pixel.rgb = pixel_0.gba;
-		} else if(channel_in_0 == 2){
-			pixel.rg = pixel_0.ba;
-		} else { // channel_in_0 == 3
-			pixel.r = pixel_0.a;
-		}
-
-		if(channel_in_3 == 0){
-			if(pixel_3_len == 3){
-				pixel.gba = pixel_3.rgb;
-			} else if(pixel_3_len == 2){
-				pixel.ba = pixel_3.rg;
-			} else {
-				pixel.a = pixel_3.r;
-			}
-		} else if(channel_in_3 == 1){
-			if(pixel_3_len == 3){
-				pixel.gba = pixel_3.gba;
-			} else if(pixel_3_len == 2){
-				pixel.ba = pixel_3.gb;
-			} else {
-				pixel.a = pixel_3.g;
-			}
-		} else if(channel_in_3 == 2){
-			if(pixel_3_len == 2){
-				pixel.ba = pixel_3.ba;
-			} else {
-				pixel.a = pixel_3.b;
-			}
+		if(input_count == 0){
+			result.r = select_index(pixel_in, current_pixel_index);
+		} else if(input_count == 1){
+			result.g = select_index(pixel_in, current_pixel_index);
+		} else if(input_count == 2){
+			result.b = select_index(pixel_in, current_pixel_index);
 		} else {
-			pixel.a = pixel_3.a;
+			result.a = select_index(pixel_in, current_pixel_index);
 		}
+
+		input_count++;
+		current_pixel_index++;
 	}
 
 	// are we in the padded (output) region?
-	if(pad > 0.0 && col_0 + 4.0 > N ) {
-		fix_pad(pixel, int(pad));
+	if(pad > 0.0 && col_0 + 3.5 > N ) {
+		fix_pad(result, int(pad));
 	}
 
+
 	//gl_FragColor = vec4(channel, 0., 0., 0.);
-	gl_FragColor = pixel;
+	gl_FragColor = result;
 }
