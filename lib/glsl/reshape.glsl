@@ -41,7 +41,6 @@ void main(void) {
 	//float col_0 = floor(col_t * (N + pad)/4.0)*4.0; // index of first element in pixel (matrix space)
 	float lin_index_0 = row * N + col_0; // linearized index of first element in pixel in output
 
-	int input_count = 0;
 	vec4 pixel_in = vec4(0.0, 0.0, 0.0, 0.0);
 	vec4 result = vec4(0.0, 0.0, 0.0, 0.0);
 	vec2 coords = linear_index_coords(lin_index_0, N_in);
@@ -50,29 +49,27 @@ void main(void) {
 
 	pixel_in = texture2D(A, vec2((coords.x + 0.5)/(N_in + pad_in), (coords.y + 0.5)/M_in));
 
-	// go through input pixels until we're done
+	// go through channels for current output pixel
 	for(int i = 0; i < 4; i++){
-		if(input_count >= 4) break;
 
-		// are we on a new pixel?
-		ncoords = linear_index_coords(lin_index_0 + float(input_count), N_in);
+		// are we on a new input pixel?
+		ncoords = linear_index_coords(lin_index_0 + float(i), N_in);
 		if(floor(coords.x/4.0) != floor(ncoords.x/4.0) || coords.y != ncoords.y){
 			coords = ncoords;
 			pixel_in = texture2D(A, vec2((coords.x + 0.5)/(N_in + pad_in), (coords.y + 0.5)/M_in));
 			current_pixel_index = 0;
 		}
 
-		if(input_count == 0){
+		if(i == 0){
 			result.r = select_index(pixel_in, current_pixel_index);
-		} else if(input_count == 1){
+		} else if(i == 1){
 			result.g = select_index(pixel_in, current_pixel_index);
-		} else if(input_count == 2){
+		} else if(i == 2){
 			result.b = select_index(pixel_in, current_pixel_index);
 		} else {
 			result.a = select_index(pixel_in, current_pixel_index);
 		}
 
-		input_count++;
 		current_pixel_index++;
 	}
 
