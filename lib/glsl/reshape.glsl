@@ -78,7 +78,5 @@ void main(void) {
 		fix_pad(result, int(pad));
 	}
 
-
-	//gl_FragColor = vec4(channel, 0., 0., 0.);
 	gl_FragColor = result;
 }
