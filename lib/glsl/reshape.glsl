@@ -20,12 +20,12 @@ uniform float     pad_in;	// column padding in input
 
 // translate a linear index into x, y coordinates for a matrix
 vec2 linear_index_coords(float linear_index, float row_length){
-	vec2 coords_p;
+	vec2 coords;
 
-	coords_p.x = floor(mod(linear_index + 0.5, row_length)); // column in input
-	coords_p.y = floor((linear_index + 0.5) / row_length); // row in input containing current element in pixel
+	coords.x = floor(mod(linear_index + 0.5, row_length)); // column
+	coords.y = floor((linear_index + 0.5) / row_length); // row
 
-	return coords_p;
+	return coords;
 }
 
 void main(void) {
@@ -44,21 +44,21 @@ void main(void) {
 	int input_count = 0;
 	vec4 pixel_in = vec4(0.0, 0.0, 0.0, 0.0);
 	vec4 result = vec4(0.0, 0.0, 0.0, 0.0);
-	vec2 coords_p = linear_index_coords(lin_index_0, N_in);
-	vec2 ncoords_p;
-	int current_pixel_index = int(mod(coords_p.x, 4.0));
+	vec2 coords = linear_index_coords(lin_index_0, N_in);
+	vec2 ncoords;
+	int current_pixel_index = int(mod(coords.x, 4.0));
 
-	pixel_in = texture2D(A, vec2((coords_p.x + 0.5)/(N_in + pad_in), (coords_p.y + 0.5)/M_in));
+	pixel_in = texture2D(A, vec2((coords.x + 0.5)/(N_in + pad_in), (coords.y + 0.5)/M_in));
 
 	// go through input pixels until we're done
 	for(int i = 0; i < 4; i++){
 		if(input_count >= 4) break;
 
 		// are we on a new pixel?
-		ncoords_p = linear_index_coords(lin_index_0 + float(input_count), N_in);
-		if(floor(coords_p.x/4.0) != floor(ncoords_p.x/4.0) || coords_p.y != ncoords_p.y){
-			coords_p = ncoords_p;
-			pixel_in = texture2D(A, vec2((coords_p.x + 0.5)/(N_in + pad_in), (coords_p.y + 0.5)/M_in));
+		ncoords = linear_index_coords(lin_index_0 + float(input_count), N_in);
+		if(floor(coords.x/4.0) != floor(ncoords.x/4.0) || coords.y != ncoords.y){
+			coords = ncoords;
+			pixel_in = texture2D(A, vec2((coords.x + 0.5)/(N_in + pad_in), (coords.y + 0.5)/M_in));
 			current_pixel_index = 0;
 		}
 
