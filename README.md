@@ -2,12 +2,12 @@
 
 GPU accelerated Javascript. Numerical computing in your browser with performance [comparable to native](https://github.com/waylonflinn/weblas/wiki).
 
-Currently includes hundreds of unit tests, which verify correctness on tens of millions
+Currently includes hundreds of unit tests, which verify correctness on hundreds of millions
 of data points.
 
 # Operations
 Our focus is on numerical operations useful for neural networks and machine learning.
-Here's what we've got so far:
+So far, we've got 32-bit versions of each of these:
 
 * sscal - Matrix (and Vector) Scale (with addition)
 * sgemm - Matrix Multiply
@@ -43,14 +43,42 @@ var M = h1,
 	K = h2; // must match w1
 
 var alpha = 1.0;
-var beta = 0.0;  // not yet implemented
-var C = {};      // not yet implemented
+var beta = 0.0;
+var C = new Float32Array(w2)      // specialized for neural net bias calculation
 
 // result will contain matrix multiply of A x B (times alpha)
 result = weblas.sgemm(M, N, K, alpha, A, B, beta, C);
 
 </script>
 ```
+
+## Pipeline Mode
+Pipeline mode gives (sometimes very large) increases in performance by leaving
+data in GPU memory. Benchmarks show performance comparable to native GPU execution
+is possible on neural network forward pass (example coming soon).
+
+Here's a basic example:
+```javascript
+// create Tensor containers for interacting directly with GPU memory
+var t0 = weblas.pipeline.Tensor([M, K], data0);
+// second matrix must be transposed
+var t1 = weblas.pipeline.Tensor([N, K], weblas.util.transpose(K, N, data1));
+var t2 = weblas.pipeline.Tensor([1, N], data2);
+var alpha = 1.0;
+var beta = 0.5;
+
+/* NOTE: pipeline.sgemm takes a transpose matrix in the
+  second slot (t1 here)
+  (this requirement allows for improved performance)
+ */
+var t3 = weblas.pipeline.sgemm(alpha, t0, t1, beta, t2);
+
+// result is a Float32Array
+var result = t3.transfer();
+```
+
+More information can be found on the wiki [Pipeline](https://github.com/waylonflinn/weblas/wiki/Pipeline)
+page.
 
 # Testing
 Unit tests and benchmarks both require `browserify` and `testling`.
@@ -60,11 +88,6 @@ Install with:
 ```
 npm install -g browserify
 npm install -g testling
-```
-
-on OS X, you also need to symlink to chrome:
-```
-ln -s /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome /usr/local/bin/google-chrome
 ```
 
 ## Unit Tests
