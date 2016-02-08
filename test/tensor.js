@@ -111,7 +111,7 @@ var dataDirectory = 'test/data/sscal/',
 
 var gl = weblas.gpu.gl;
 
-var matrixFiles = ['a.json'];
+var matrixFiles = ['a.arr'];
 
 function generateTestCase(prefix, M, N){
 	return function(t){
@@ -131,14 +131,13 @@ function generateTestCase(prefix, M, N){
 		weblas.test.load(testDirectory, matrixFiles, function(err, matrices){
 
 			// matrices is an array which matches matrixFiles
-			var x = matrices[0];
+			var X = matrices[0];
 
-			if(!(x && x.length && x.length == M * N)){
+			if(!(X && X.length && X.length == M * N)){
 
 				throw new Error("malformed data");
 			}
 
-			X = new Float32Array(x);
 			expected = weblas.util.transpose(M, N, X);
 
 			var t0 = new weblas.pipeline.Tensor([M, N], X),
@@ -313,14 +312,13 @@ function generateReshapeTestCase(prefix, M, N){
 		weblas.test.load(testDirectory, matrixFiles, function(err, matrices){
 
 			// matrices is an array which matches matrixFiles
-			var x = matrices[0];
+			var X = matrices[0];
 
-			if(!(x && x.length && x.length == M * N)){
+			if(!(X && X.length && X.length == M * N)){
 
 				throw new Error("malformed data");
 			}
-
-			X = new Float32Array(x);
+			
 			expected = X;
 
 			var t0 = new weblas.pipeline.Tensor([M, N], X),

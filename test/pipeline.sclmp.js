@@ -252,7 +252,7 @@ var dataDirectory = 'test/data/sclmp/',
 
 var gl = weblas.gpu.gl;
 
-var matrixFiles = ['a.json', 'out.json'];
+var matrixFiles = ['a.arr', 'out.arr'];
 
 function generateTestCase(prefix, m, n, a, b){
 	return function(t){
@@ -275,17 +275,14 @@ function generateTestCase(prefix, m, n, a, b){
 
 			//console.log(matrices.length);
 			// matrices is an array which matches matrixFiles
-			var x = matrices[0],
-				out = matrices[1];
+			var X = matrices[0],
+				expected = matrices[1];
 
-			if(!(x && x.length && x.length == m * n &&
-				 out, out.length && out.length == m * n)){
+			if(!(X && X.length && X.length == m * n &&
+				 expected, expected.length && expected.length == m * n)){
 
 				throw new Error("malformed data");
 			}
-
-			X = new Float32Array(x);
-			expected = new Float32Array(out);
 
 			var t0 = new weblas.pipeline.Tensor([m, n], X),
 				t3;

@@ -157,7 +157,7 @@ tape("pipeline.sdwns: 2 x 2 x 8", function(t){
 var dataDirectory = 'test/data/sdwns/',
 	testFile = 'small.json';
 
-var matrixFiles = ['a.json', 'out.json'];
+var matrixFiles = ['a.arr', 'out.arr'];
 
 function generateTestCase(prefix, m, n, channels, factor, stride){
 
@@ -175,21 +175,19 @@ function generateTestCase(prefix, m, n, channels, factor, stride){
 
 			//console.log(matrices.length);
 			// matrices is an array which matches matrixFiles
-			var x = matrices[0],
-				out = matrices[1];
+			var X = matrices[0],
+				expected = matrices[1];
 
-			if(!(x.length == m * n * channels &&
-				out.length == (Math.floor((m - factor) / stride) + 1) *
+			if(!(X.length == m * n * channels &&
+				expected.length == (Math.floor((m - factor) / stride) + 1) *
 							  (Math.floor((n - factor) / stride) + 1) * channels )){
 
 				var message = "malformed data.";
-				message += "expected {0} got {1}".format(m * n * channels, x.length);
+				message += "expected {0} got {1}".format(m * n * channels, X.length);
 
 				throw new Error(message);
 			}
 
-			X = new Float32Array(x);
-			expected = new Float32Array(out);
 
 			var t0 = new weblas.pipeline.Tensor([m, n * channels], X),
 				t3;

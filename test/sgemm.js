@@ -16,7 +16,7 @@ var RTOL = 1e-05,
 	ATOL = 1e-12;
 
 var dataDirectory = 'test/data/sgemm/',
-	testFile = 'medium.json';
+	testFile = 'small.json';
 
 var gl = weblas.gpu.gl;
 
@@ -34,7 +34,7 @@ console.log("# highp support:         \t" + (gl.hasHighPrecision ? "YES" : "NO")
 console.log("# highp.precision:       \t" + JSON.stringify(gl.highp.precision));
 
 
-var matrixFiles = ['a.json', 'b.json', 'out.json'];
+var matrixFiles = ['a.arr', 'b.arr', 'out.arr'];
 
 function generateTestCase(prefix, m, n, k, alpha){
 	return function(t){
@@ -49,20 +49,16 @@ function generateTestCase(prefix, m, n, k, alpha){
 		weblas.test.load(testDirectory, matrixFiles, function(err, matrices){
 
 			// matrices is an array which matches matrixFiles
-			var a = matrices[0],
-				b = matrices[1],
-				out = matrices[2];
+			var A = matrices[0],
+				B = matrices[1],
+				expected = matrices[2];
 
-			if(!(a && a.length && a.length == m * k &&
-				b && b.length && b.length == k * n &&
-				out && out.length && out.length == m * n)){
+			if(!(A && A.length && A.length == m * k &&
+				B && B.length && B.length == k * n &&
+				expected && expected.length && expected.length == m * n)){
 
 				throw new Error("malformed data");
 			}
-
-			A = new Float32Array(a);
-			B = new Float32Array(b);
-			expected = new Float32Array(out);
 
 			var beta = 0.0;
 
@@ -81,13 +77,13 @@ function generateTestCase(prefix, m, n, k, alpha){
 	};
 }
 
-var extendedMatrixFiles = ['a.json', 'b.json', 'c.json', 'out.json'];
+var extendedMatrixFiles = ['a.arr', 'b.arr', 'c.arr', 'out.arr'];
 
 function generateExtendedTestCase(prefix, m, n, k, alpha, beta){
 	return function(t){
 		t.plan(1);
 
-		var A, B, expected; // typed arrays
+		var A, B, C, expected; // typed arrays
 
 		// directory containing matrix data files for current test
 		var testDirectory = dataDirectory + prefix + '/';
@@ -96,22 +92,17 @@ function generateExtendedTestCase(prefix, m, n, k, alpha, beta){
 		weblas.test.load(testDirectory, extendedMatrixFiles, function(err, matrices){
 
 			// matrices is an array which matches matrixFiles
-			var a = matrices[0],
-				b = matrices[1],
-				c = matrices[2],
-				out = matrices[3];
+			var A = matrices[0],
+				B = matrices[1],
+				C = matrices[2],
+				expected = matrices[3];
 
-			if(!(a && a.length && a.length == m * k &&
-				b && b.length && b.length == k * n &&
-				out && out.length && out.length == m * n)){
+			if(!(A && A.length && A.length == m * k &&
+				B && B.length && B.length == k * n &&
+				expected && expected.length && expected.length == m * n)){
 
 				throw new Error("malformed data");
 			}
-
-			A = new Float32Array(a);
-			B = new Float32Array(b);
-			C = new Float32Array(c);
-			expected = new Float32Array(out);
 
 
 			//console.log(m + "x" + k + " times " + k + "x" + n);
@@ -153,7 +144,7 @@ loader.load(dataDirectory + testFile, function(err, config){
 		if(input.length == 2){
 			tape(testName, generateTestCase(directory, m, n, k, alpha));
 		} else {
-			testName += " + 1x" + n; 
+			testName += " + 1x" + n;
 			tape(testName, generateExtendedTestCase(directory, m, n, k, alpha, beta));
 		}
 	}

@@ -110,7 +110,7 @@ tape("sdwns: 2 x 2 x 8", function(t){
 
 });
 
-var matrixFiles = ['a.json', 'out.json'];
+var matrixFiles = ['a.arr', 'out.arr'];
 var dataDirectory = 'test/data/sdwns/';
 
 function generateTestCase(prefix, m, n, channels, factor, stride){
@@ -129,10 +129,10 @@ function generateTestCase(prefix, m, n, channels, factor, stride){
 
 			//console.log(matrices.length);
 			// matrices is an array which matches matrixFiles
-			var x = matrices[0],
-				c = matrices[1];
-			if(!(x.length == m * n * channels &&
-				c.length == (Math.floor((m - factor) / stride) + 1) *
+			var X = matrices[0],
+				C = matrices[1];
+			if(!(X.length == m * n * channels &&
+				C.length == (Math.floor((m - factor) / stride) + 1) *
 							(Math.floor((n - factor) / stride) + 1) * channels )){
 
 				var message = "malformed data.";
@@ -140,9 +140,6 @@ function generateTestCase(prefix, m, n, channels, factor, stride){
 
 				throw new Error(message);
 			}
-
-			X = new Float32Array(x);
-			C = new Float32Array(c);
 
 
 			//console.log(m + "x" + k + " times " + k + "x" + n);

@@ -25,11 +25,11 @@ import os
 import sys
 import json
 import numpy as np
-import json_matrix
+import binary_matrix
 
 
 # names to use for json files storing input matrices
-default_names = ['a.json', 'b.json', 'c.json']
+default_names = ['a.arr', 'b.arr', 'c.arr']
 
 def create_matrix(spec):
 
@@ -67,7 +67,7 @@ if __name__ == '__main__':
 			os.makedirs(directory)
 
 		# if a result exists, skip this data set
-		if os.path.exists(directory + 'out.json'):
+		if os.path.exists(directory + 'out.arr'):
 			print("Skipping {0}".format(directory))
 			continue
 
@@ -78,7 +78,7 @@ if __name__ == '__main__':
 			all_exist = all_exist & os.path.exists(directory + name)
 
 		if all_exist:
-			matrices = map(lambda name : json_matrix.read(directory + name), names)
+			matrices = map(lambda name : binary_matrix.read(directory + name), names)
 		else:
 			matrices = []
 			for i in range(len(names)):
@@ -87,13 +87,13 @@ if __name__ == '__main__':
 				matrix = create_matrix(spec)
 				matrices.append(matrix)
 
-				json_matrix.write(directory + name, matrix.flatten())
+				binary_matrix.write(directory + name, matrix.flatten())
 
 		arguments = options['arg'] if 'arg' in options else {}
 		out = operation.execute(arguments, matrices)
 
 		# run mutliplication
 		#os.system("./multiply.py {0}".format(number))
-		json_matrix.write(directory + "out.json", out.flatten())
+		binary_matrix.write(directory + "out.arr", out.flatten())
 
 		print("Created {0}".format(directory))

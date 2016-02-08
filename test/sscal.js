@@ -109,7 +109,7 @@ tape("sscal: 1x7", function(t){
 var dataDirectory = 'test/data/sscal/',
 	testFile = 'small.json';
 
-var matrixFiles = ['a.json', 'out.json'];
+var matrixFiles = ['a.arr', 'out.arr'];
 
 function generateTestCase(prefix, m, n, a, b){
 	return function(t){
@@ -124,19 +124,21 @@ function generateTestCase(prefix, m, n, a, b){
 		// load matrices from files
 		weblas.test.load(testDirectory, matrixFiles, function(err, matrices){
 
+			if(err){
+				console.log(err);
+				return;
+			}
+
 			//console.log(matrices.length);
 			// matrices is an array which matches matrixFiles
-			var x = matrices[0],
-				out = matrices[1];
+			var X = matrices[0],
+				expected = matrices[1];
 
-			if(!(x && x.length && x.length == m * n &&
-				 out, out.length && out.length == m * n)){
+			if(!(X && X.length && X.length == m * n &&
+				 expected, expected.length && expected.length == m * n)){
 
 				throw new Error("malformed data");
 			}
-
-			X = new Float32Array(x);
-			expected = new Float32Array(out);
 
 			//console.log(m + "x" + k + " times " + k + "x" + n);
 
