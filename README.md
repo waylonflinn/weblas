@@ -90,10 +90,21 @@ npm install -g browserify
 npm install -g testling
 ```
 
-## OS Specific
-If the tests won't run, try this (it restores the default npm browser setting)
+
+## OS Setup
+If the tests won't run, try this (it restores the default [npm browser setting](https://docs.npmjs.com/misc/config#browser))
+
+### OSX
 ```
 npm config set browser open
+```
+### Linux
+```
+npm config set browser xdg-open
+```
+### Windows
+```
+npm config set browser start
 ```
 
 
