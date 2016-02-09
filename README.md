@@ -90,6 +90,13 @@ npm install -g browserify
 npm install -g testling
 ```
 
+## OS Specific
+If the tests won't run, try this (it restores the default npm browser setting)
+```
+npm config set browser open
+```
+
+
 ## Unit Tests
 All operations have unit test coverage. Unit tests use data generated outside
 the browser (to verify correctness). Generating the data requires `python` and
