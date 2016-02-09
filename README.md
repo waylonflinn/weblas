@@ -113,29 +113,30 @@ Then, run the unit tests with:
 npm test
 ```
 
+### OS Setup
+If the tests won't run, try this (it restores the default [npm browser setting](https://docs.npmjs.com/misc/config#browser))
+
+#### OSX
+```
+npm config set browser open
+```
+#### Linux
+```
+npm config set browser xdg-open
+```
+#### Windows
+```
+npm config set browser start
+```
+
+
 ## Benchmarks
 After installing `browserify` and `testling`, run the benchmarks with:
 ```
 npm run benchmark
 ```
 
-## OS Setup
-If the tests won't run, try this (it restores the default [npm browser setting](https://docs.npmjs.com/misc/config#browser))
-
-### OSX
-```
-npm config set browser open
-```
-### Linux
-```
-npm config set browser xdg-open
-```
-### Windows
-```
-npm config set browser start
-```
-
-## results
+### results
 weblas@0.6.0
 
 ```
