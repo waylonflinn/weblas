@@ -91,23 +91,6 @@ npm install -g testling
 ```
 
 
-## OS Setup
-If the tests won't run, try this (it restores the default [npm browser setting](https://docs.npmjs.com/misc/config#browser))
-
-### OSX
-```
-npm config set browser open
-```
-### Linux
-```
-npm config set browser xdg-open
-```
-### Windows
-```
-npm config set browser start
-```
-
-
 ## Unit Tests
 All operations have unit test coverage. Unit tests use data generated outside
 the browser (to verify correctness). Generating the data requires `python` and
@@ -134,6 +117,22 @@ npm test
 After installing `browserify` and `testling`, run the benchmarks with:
 ```
 npm run benchmark
+```
+
+## OS Setup
+If the tests won't run, try this (it restores the default [npm browser setting](https://docs.npmjs.com/misc/config#browser))
+
+### OSX
+```
+npm config set browser open
+```
+### Linux
+```
+npm config set browser xdg-open
+```
+### Windows
+```
+npm config set browser start
 ```
 
 ## results
