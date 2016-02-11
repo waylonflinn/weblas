@@ -54,8 +54,8 @@ result = weblas.sgemm(M, N, K, alpha, A, B, beta, C);
 
 ## Pipeline Mode
 Pipeline mode gives (sometimes very large) increases in performance by leaving
-data in GPU memory. Benchmarks show performance comparable to native GPU execution
-is possible on neural network forward pass ([Demo here](http://waylonflinn.github.io/DeepBeliefSDK/)).
+data in GPU memory. A demo illustrating performance on a deep neural net can be
+found [here](http://waylonflinn.github.io/DeepBeliefSDK/).
 
 Here's a basic example:
 ```javascript
