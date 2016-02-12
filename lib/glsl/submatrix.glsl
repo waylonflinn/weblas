@@ -10,6 +10,7 @@ uniform float     offset;
 
 
 #pragma glslify: fix_pad = require(./fix_pad)
+#pragma glslify: join_pixels = require(./join_pixels)
 
 
 void main(void) {
@@ -22,27 +23,20 @@ void main(void) {
 	float col = (col_t * (N + pad) - 2.0); // index of first element in pixel (output matrix space)
 
 	vec4 x;
-	float pixel_part = mod(offset, 4.0);
-	// are we in the middle of an input pixel?
-	if(offset == 0.0 || pixel_part == 0.0){
-		// no, take the whole thing
-		x = texture2D( X, vec2((col + 2.0 + offset - pixel_part) / (N_in + pad_in) , row_t));
-	} else {
-		// yes, straddle pixels
-		vec4 x0, x1;
-		x0 = texture2D( X, vec2((col + 2.0 + offset - pixel_part) / (N_in + pad_in) , row_t));
-		x1 = texture2D( X, vec2((col + 6.0 + offset - pixel_part) / (N_in + pad_in) , row_t));
+	float channel = mod(offset, 4.0); // channel in the input of first element in output
 
-		if(pixel_part == 1.0){
-			x.rgb = x0.gba;
-			x.a = x1.r;
-		} else if(pixel_part == 2.0){
-			x.rg = x0.ba;
-			x.ba = x1.rg;
-		} else if(pixel_part == 3.0){
-			x.r = x0.a;
-			x.gba = x1.rgb;
-		}
+	// are we at the beggining of an input pixel?
+	if(offset == 0.0 || channel == 0.0){
+		// yes, select the whole thing
+		x = texture2D( X, vec2((col + 2.0 + offset - channel) / (N_in + pad_in) , row_t));
+	} else {
+		// no, select parts from two pixels
+		vec4 x0, x1;
+		x0 = texture2D( X, vec2((col + 2.0 + offset - channel) / (N_in + pad_in) , row_t));
+		x1 = texture2D( X, vec2((col + 6.0 + offset - channel) / (N_in + pad_in) , row_t));
+
+		join_pixels(x, x0, x1, channel);
+
 	}
 
 	// fix padded region
