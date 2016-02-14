@@ -15,6 +15,7 @@ uniform float     pad_in;
 
 #pragma glslify: select_index = require(../select_index)
 #pragma glslify: linear_index_coords = require(../linear_index_coords)
+#pragma glslify: fix_pad = require(../fix_pad)
 
 void main(void) {
 
@@ -80,6 +81,11 @@ void main(void) {
 
 		channel_in++;
 		offset_in.x -= 1.0;
+	}
+
+	// fix padded region
+	if(pad > 0.0 && col_0 + 4.0 > N ) {
+		fix_pad(result, int(pad));
 	}
 
 
