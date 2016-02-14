@@ -42,7 +42,6 @@ function generateTestCase(prefix, m, n, channels, factor, stride){
 				throw new Error(message);
 			}
 
-
 			var t0 = new weblas.pipeline.Tensor([m, n * channels], X),
 				t3;
 
@@ -51,7 +50,6 @@ function generateTestCase(prefix, m, n, channels, factor, stride){
 				t3 = weblas.pipeline.slokn(channels, factor, stride, t0);
 
 				result = t3.transfer();
-				console.log(result.slice(0, 16));
 
 			}
 			catch(ex){

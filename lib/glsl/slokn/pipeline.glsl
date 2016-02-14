@@ -10,10 +10,20 @@ uniform float     N;
 uniform float     pad;
 uniform float     M_in;
 uniform float     N_in;
-uniform float     channels;
+uniform float     C;       // number of channels in input
 uniform float     pad_in;
 
-#pragma glslify: join_pixels = require(../join_pixels)
+#pragma glslify: select_index = require(../select_index)
+
+// translate a linear index into x, y coordinates for a matrix
+vec2 linear_index_coords(float linear_index, float row_length){
+	vec2 coords;
+
+	coords.x = floor(mod(linear_index + 0.5, row_length)); // column
+	coords.y = floor((linear_index + 0.5) / row_length); // row
+
+	return coords;
+}
 
 void main(void) {
 
@@ -23,39 +33,65 @@ void main(void) {
 	float col_t = outTex.x;
 
 	// row corresponds to patch
-	float row = floor(row_t * M);
+	float row = floor(row_t * M) + 0.5;
 	// column corresponds to placement in patch
 	float col_0 = floor(col_t * (N + pad) - 1.5); // index of first element in output pixel (matrix space)
 
-	// p_x = patches across
-	float col_patch = floor(mod(row, N_p));
-	float row_patch = floor(row / N_p);
-	float col_in_0 = col_patch * stride; // column index of top left element in patch
-	float row_in_0 = row_patch * stride; // row index of " "
+	// N_p = patches across
+	float col_patch = floor(mod(row, N_p)); // column index in grid of patches
+	float row_patch = floor(row / N_p); // row index in grid of patches
+	float col_in_0 = col_patch * stride * C; // input column index of top left element in patch
+	float row_in_0 = row_patch * stride; // input row index of " "
 
-	float patch_col = floor(mod(col_0, factor * channels)); // index of column inside patch
-	float patch_row = floor(col_0 / (factor * channels)); // index of row inside patch
+	vec4 pixel_in;
+	vec4 result = vec4(0.0, 0.0, 0.0, 0.0);
+	vec2 coords = linear_index_coords(col_0, factor * C); // coords inside patch
+	vec2 ncoords;
+	int channel_in = int(mod(col_in_0 + coords.x, 4.0));
+	vec2 scale_in = vec2(1.0/(N_in + pad_in), 1.0/M_in); // scale from matrix to input texture coords
+	vec2 offset_in = vec2(col_in_0 + 2.0 - float(channel_in), row_in_0 + 0.5); // offset into patch (and pixel)
 
-	float col_in = col_in_0 + patch_col; // column in input
-	float row_in = row_in_0 + patch_row; // row in input
+	const vec2 pixel_scale = vec2(1.0/4.0, 1.0); // scale from matrix to pixel coords
 
-	//float col_in = row * stride +
+	pixel_in = texture2D(X, (coords + offset_in) * scale_in);
 
-	vec4 x;
-	float channel = mod(col_in, 4.0); // channel in the input of first element in output
+	// go through channels for current output pixel
+	for(int channel = 0; channel < 4; channel++){
 
-	// are we at the beggining of an input pixel?
-	if(channel == 0.0){
-		// yes, select the whole thing
-		x = texture2D(X, vec2((col_in + 2.0) / (N_in + pad_in), (row_in + 0.5) / M_in));
-	} else {
-		// no, select parts from two pixels
-		vec4 x0 = texture2D(X, vec2((col_in + 2.0 - channel) / (N_in + pad_in), (row_in + 0.5) / M_in));
-		vec4 x1 = texture2D(X, vec2((col_in + 6.0 - channel) / (N_in + pad_in), (row_in + 0.5) / M_in));
+		// are we on a new input pixel?
+		ncoords = linear_index_coords(col_0 + float(channel), factor * C);
 
-		join_pixels(x, x0, x1, channel);
+		// does this patch extend past the input texture?
+		if((col_in_0 + ncoords.x + 0.5) > (N_in + pad_in) || row_in_0 + ncoords.y + 0.5 > M_in){
+			// yes, create a virtual pixel
+			coords = ncoords;
+			offset_in.x += float(channel_in);
+			channel_in = 0;
+			pixel_in = vec4(0.0, 0.0, 0.0, 0.0);
+		} else if(floor(ncoords * pixel_scale) != floor(coords * pixel_scale)){
+			// no, get the get the next real pixel
+			coords = ncoords;
+			offset_in.x += float(channel_in);
+			channel_in = 0;
+			pixel_in = texture2D(X, (coords + offset_in) * scale_in);
+		}
+
+
+		if(channel == 0){
+			result.r = select_index(pixel_in, channel_in);
+		} else if(channel == 1){
+			result.g = select_index(pixel_in, channel_in);
+		} else if(channel == 2){
+			result.b = select_index(pixel_in, channel_in);
+		} else {
+			result.a = select_index(pixel_in, channel_in);
+		}
+
+		channel_in++;
+		offset_in.x -= 1.0;
 	}
 
-	//gl_FragColor = vec4(col_in, row_in, channel, N_p);
-	gl_FragColor = x;
+
+	//gl_FragColor = vec4(row_in_0, col_in_0, channel_in, N_p);
+	gl_FragColor = result;
 }
