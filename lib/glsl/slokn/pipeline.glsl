@@ -4,6 +4,7 @@ varying vec2      outTex;  // texture coords of row/column to calculate
 uniform sampler2D X;       // texture with data from padded A
 uniform float     factor;  // width of image patch
 uniform float     stride;  // width between image patches
+uniform float     margin;
 uniform float     N_p;     // patches across
 uniform float     M;
 uniform float     N;
@@ -32,8 +33,8 @@ void main(void) {
 	// N_p = patches across
 	float col_patch = floor(mod(row, N_p)); // column index in grid of patches
 	float row_patch = floor(row / N_p); // row index in grid of patches
-	float col_in_0 = col_patch * stride * C; // input column index of top left element in patch
-	float row_in_0 = row_patch * stride; // input row index of " "
+	float col_in_0 = (col_patch * stride - margin) * C; // input column index of top left element in patch
+	float row_in_0 = row_patch * stride - margin; // input row index of " "
 
 	vec4 pixel_in;
 	vec4 result = vec4(0.0, 0.0, 0.0, 0.0);
@@ -53,8 +54,9 @@ void main(void) {
 		// are we on a new input pixel?
 		ncoords = linear_index_coords(col_0 + float(channel), factor * C);
 
-		// does this patch extend past the input texture?
-		if((col_in_0 + ncoords.x + 0.5) > (N_in + pad_in) || row_in_0 + ncoords.y + 0.5 > M_in){
+		// are we in the margin or outside the input texture?
+		if((col_in_0 + ncoords.x + 0.5 < 0.0) || (row_in_0 + ncoords.y + 0.5 < 0.0) ||
+		   (col_in_0 + ncoords.x + 0.5) > (N_in) || row_in_0 + ncoords.y + 0.5 > M_in){
 			// yes, create a virtual pixel
 			coords = ncoords;
 			offset_in.x += float(channel_in);

@@ -13,10 +13,10 @@ var dataDirectory = 'test/data/slokn/',
 
 var matrixFiles = ['a.arr', 'out.arr'];
 
-function generateTestCase(prefix, M, N, channels, factor, stride){
+function generateTestCase(prefix, M, N, channels, factor, stride, margin){
 
 	return function(t){
-		var pad = weblas.gpu.gl.getPad(N);
+		var pad = weblas.gpu.gl.getPad(factor * factor * channels);
 		if(pad == 0){
 			t.plan(1);
 		} else {
@@ -32,17 +32,28 @@ function generateTestCase(prefix, M, N, channels, factor, stride){
 		// load matrices from files
 		weblas.test.load(testDirectory, matrixFiles, function(err, matrices){
 
-			//console.log(matrices.length);
+			if(err){
+				console.log(err);
+				return;
+			}
+
+			//console.log(M, N, channels);
 			// matrices is an array which matches matrixFiles
 			var X = matrices[0],
 				expected = matrices[1];
+			var M_out = (Math.ceil((M - factor) / stride) + 1) *
+						(Math.ceil((N - factor) / stride) + 1);
+			var N_out = factor * factor * channels;
 
-			if(!(X.length == m * n * channels &&
-				expected.length == (Math.ceil((M - factor) / stride) + 1) *
-							  (Math.ceil((N - factor) / stride) + 1) * factor * factor * channels )){
+			if(margin > 0){
+				M_out = (Math.ceil((M + (2 * margin) - factor) / stride) + 1) *
+						(Math.ceil((N + (2 * margin) - factor) / stride) + 1);
+			}
+			if(!(X.length == M * N * channels &&
+				expected.length ==  M_out * N_out)){
 
 				var message = "malformed data.";
-				message += "expected {0} got {1}".format(M * N * channels, X.length);
+				message += "expected {0} and {1} got {2} and {3}".format(M * N * channels, M_out * N_out, X.length, expected.length);
 
 				throw new Error(message);
 			}
@@ -52,16 +63,16 @@ function generateTestCase(prefix, M, N, channels, factor, stride){
 
 			try{
 
-				t3 = weblas.pipeline.slokn(channels, factor, stride, t0);
+				t3 = weblas.pipeline.slokn(channels, factor, stride, margin, t0);
 
 			}
 			catch(ex){
 				t.assert(false, ex);
 				return;
 			}
-			
+
 			result = t3.transfer(true);
-			testWithPad(t, M, N, pad, result, expected, t3.texture, RTOL, ATOL);
+			testWithPad(t, t3.shape[0], t3.shape[1], pad, result, expected, t3.texture, RTOL, ATOL);
 			t3.delete();
 
 
@@ -111,10 +122,33 @@ var m = 224,
 	factor = 11,
 	stride = 4;
 
-var directory = "0001";
-
 var testName = "pipeline.slokn: " + m + "x" + n + "x" + channels;
-tape(testName, generateTestCase(directory, m, n, channels, factor, stride));
+tape(testName, generateTestCase("0001", m, n, channels, factor, stride));
+tape(testName, generateTestCase("0002", m, n, channels, factor, stride));
+tape(testName, generateTestCase("0003", m, n, channels, factor, stride));
+
+var margin = 0;
+m = 31;
+n = 31;
+channels = 48;
+factor = 5;
+stride = 1;
+
+/*
+N_p = 1484;
+N_p = 72;
+*/
+testName = "pipeline.slokn: " + m + "x" + n + "x" + channels;
+tape(testName, generateTestCase("0004", m, n, channels, factor, stride, margin));
+tape(testName, generateTestCase("0005", m, n, channels, factor, stride, margin));
+
+var margin = 2;
+m = 27;
+n = 27;
+channels = 48;
+testName = "pipeline.slokn: " + m + "x" + n + "x" + channels + " + " + margin;
+tape(testName, generateTestCase("0006", m, n, channels, factor, stride, margin));
+
 /*
 loader.load(dataDirectory + testFile, function(err, config){
 
