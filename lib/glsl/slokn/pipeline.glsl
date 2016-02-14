@@ -14,16 +14,7 @@ uniform float     C;       // number of channels in input
 uniform float     pad_in;
 
 #pragma glslify: select_index = require(../select_index)
-
-// translate a linear index into x, y coordinates for a matrix
-vec2 linear_index_coords(float linear_index, float row_length){
-	vec2 coords;
-
-	coords.x = floor(mod(linear_index + 0.5, row_length)); // column
-	coords.y = floor((linear_index + 0.5) / row_length); // row
-
-	return coords;
-}
+#pragma glslify: linear_index_coords = require(../linear_index_coords)
 
 void main(void) {
 
