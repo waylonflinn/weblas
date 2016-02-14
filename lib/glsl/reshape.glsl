@@ -45,32 +45,36 @@ void main(void) {
 	vec4 result = vec4(0.0, 0.0, 0.0, 0.0);
 	vec2 coords = linear_index_coords(lin_index_0, N_in);
 	vec2 ncoords;
-	int current_pixel_index = int(mod(coords.x, 4.0));
+	int channel_in = int(mod(coords.x, 4.0));
 
-	pixel_in = texture2D(A, vec2((coords.x + 0.5)/(N_in + pad_in), (coords.y + 0.5)/M_in));
+	vec2 scale_in = vec2(1.0/(N_in + pad_in), 1.0/M_in); // scale from matrix to input texture coords
+	vec2 offset_in = vec2(0.5, 0.5); // move away from edge of pixel
+	const vec2 pixel_scale = vec2(1.0/4.0, 1.0); // scale from matrix to pixel coords
+
+	pixel_in = texture2D(A, (coords + offset_in) * scale_in);
 
 	// go through channels for current output pixel
-	for(int i = 0; i < 4; i++){
+	for(int channel = 0; channel < 4; channel++){
 
 		// are we on a new input pixel?
-		ncoords = linear_index_coords(lin_index_0 + float(i), N_in);
-		if(floor(coords.x/4.0) != floor(ncoords.x/4.0) || coords.y != ncoords.y){
+		ncoords = linear_index_coords(lin_index_0 + float(channel), N_in);
+		if(floor(ncoords * pixel_scale) != floor(coords * pixel_scale)){
 			coords = ncoords;
-			pixel_in = texture2D(A, vec2((coords.x + 0.5)/(N_in + pad_in), (coords.y + 0.5)/M_in));
-			current_pixel_index = 0;
+			pixel_in = texture2D(A, (coords + offset_in) * scale_in);
+			channel_in = 0;
 		}
 
-		if(i == 0){
-			result.r = select_index(pixel_in, current_pixel_index);
-		} else if(i == 1){
-			result.g = select_index(pixel_in, current_pixel_index);
-		} else if(i == 2){
-			result.b = select_index(pixel_in, current_pixel_index);
+		if(channel == 0){
+			result.r = select_index(pixel_in, channel_in);
+		} else if(channel == 1){
+			result.g = select_index(pixel_in, channel_in);
+		} else if(channel == 2){
+			result.b = select_index(pixel_in, channel_in);
 		} else {
-			result.a = select_index(pixel_in, current_pixel_index);
+			result.a = select_index(pixel_in, channel_in);
 		}
 
-		current_pixel_index++;
+		channel_in++;
 	}
 
 	// are we in the padded (output) region?
