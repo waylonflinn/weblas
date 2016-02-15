@@ -33,8 +33,8 @@ void main(void) {
 	// N_p = patches across
 	float col_patch = floor(mod(row, N_p)); // column index in grid of patches
 	float row_patch = floor(row / N_p); // row index in grid of patches
-	float col_in_0 = (col_patch * stride - margin) * C; // input column index of top left element in patch
-	float row_in_0 = row_patch * stride - margin; // input row index of " "
+	float col_in_0 = (col_patch * stride - margin) * C; // input column index of left element in patch
+	float row_in_0 = row_patch * stride - margin; // input row index of top element in patch
 
 	vec4 pixel_in;
 	vec4 result = vec4(0.0, 0.0, 0.0, 0.0);
@@ -58,9 +58,6 @@ void main(void) {
 		if((col_in_0 + ncoords.x + 0.5 < 0.0) || (row_in_0 + ncoords.y + 0.5 < 0.0) ||
 		   (col_in_0 + ncoords.x + 0.5) > (N_in) || row_in_0 + ncoords.y + 0.5 > M_in){
 			// yes, create a virtual pixel
-			coords = ncoords;
-			offset_in.x += float(channel_in);
-			channel_in = 0;
 			pixel_in = vec4(0.0, 0.0, 0.0, 0.0);
 		} else if(floor(ncoords * pixel_scale) != floor(coords * pixel_scale)){
 			// no, get the get the next real pixel
