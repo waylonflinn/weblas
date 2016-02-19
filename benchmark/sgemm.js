@@ -14,7 +14,7 @@ function createBenchmark(M, N, K){
 	// default to square matrices, if only one length is provided
 	N = N || M;
 	K = K || M;
-	var name = M + "x" + K + " . " + K + "x" + N;
+	var name = "sgemm: " + M + "x" + K + " . " + K + "x" + N;
 
 	var b = new Benchmark(name, function(){
 			result = weblas.sgemm(M, N, K, alpha, A, B, beta, null);
@@ -41,8 +41,9 @@ function createBenchmark(M, N, K){
 
         	fail++;
         } else {
+			var gflops = this.hz * 2 * M * N * K / 1e9;
 
-			var info = Benchmark.formatNumber(this.hz.toFixed(this.hz < 100 ? 2 : 0)) + ' ops/sec ' +
+			var info = Benchmark.formatNumber(gflops.toFixed(3)) + ' GFlops/sec ' +
 				' ' + pm + this.stats.rme.toFixed(2) + '% ' +
 	         	' n = ' + size +
 	        	' ' + mu + " = " + (this.stats.mean * 1000).toFixed(0) + 'ms';
