@@ -1,33 +1,50 @@
 var Benchmark = require('benchmark'),
-	tape = require('tape'),
 	weblas = require('../index');
+
+//console.log(weblas);
 
 var suite = new Benchmark.Suite();
 
 var pass = 0,
 	fail = 0;
 
+
 function createBenchmark(M, N, K){
 
-	var alpha, A, B, beta, C;
+	//var sgemm = weblas.pipeline.sgemm;
 
 	// default to square matrices, if only one length is provided
 	N = N || M;
 	K = K || M;
-	var name = "sgemm: " + M + "x" + K + " . " + K + "x" + N;
+	var name = "pipeline.sgemm: " + M + "x" + K + " . " + K + "x" + N;
 
-	var b = new Benchmark(name, function(){
-			result = weblas.sgemm(M, N, K, alpha, A, B, beta, null);
+	var bm = new Benchmark(name, function(){
+		try{
+			result = this.sgemm(this.alpha, this.t0, this.t1, null, null)
+		} catch (err){
+			console.log("exception");
+			console.log(err.message);
+		}
 	})// add listeners
 	.on('start', function(event){
-		var a = weblas.test.randomArray(M, K);
+
+		a = weblas.test.randomArray(M, K);
 		A = weblas.util.fromArray(a);
-		var b = weblas.test.randomArray(K, N);
+		b = weblas.test.randomArray(N, K);
 		B = weblas.util.fromArray(b);
+
+		this.alpha = 1;
+		this.t0 = new weblas.pipeline.Tensor([M, K], A);
+		this.t1 = new weblas.pipeline.Tensor([N, K], B);
+		this.sgemm = weblas.pipeline.sgemm;
+
 	})
 	.on('cycle', function(event) {
 	})
 	.on('complete', function(event) {
+
+		this.t0.delete();
+		this.t1.delete();
 
 		var pm = '\xb1',
 			mu = '\xb5'
@@ -58,7 +75,7 @@ function createBenchmark(M, N, K){
 
 	});
 
-	return b;
+	return bm;
 }
 
 console.log("TAP version 13");
