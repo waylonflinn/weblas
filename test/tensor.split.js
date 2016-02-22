@@ -68,106 +68,6 @@ tape("Tensor.split: 8 x 8", function(t){
 
 
 
-function generateSplitTestCase(prefix, M, N){
-	return function(t){
-		var pad = weblas.gpu.gl.getPad(N / 2);
-		if(pad == 0){
-			t.plan(2);
-		} else {
-			t.plan(4);
-		}
-
-		var X, expected; // typed arrays
-
-		// directory containing matrix data files for current test
-		var testDirectory = dataDirectory + prefix + '/';
-
-		// load matrices from files
-		weblas.test.load(testDirectory, matrixFiles, function(err, matrices){
-
-			if(err){
-				t.error(err);
-				t.notOk(false, "skipping second test");
-
-				if(pad != 0){
-					t.notOk(false, "skipping padding test");
-					t.notOk(false, "skipping padding test");
-				}
-
-				return;
-			}
-
-			// matrices is an array which matches matrixFiles
-			var X = matrices[0];
-
-			if(!(X && X.length && X.length == M * N)){
-
-				throw new Error("malformed data");
-			}
-
-			var t0 = new weblas.pipeline.Tensor([M, N], X),
-				t1, t2;
-
-			var result, expected;
-			try{
-				// when splitting texture for t0 is deleted by default
-				submatrices = t0.split( N / 2);
-				t1 = submatrices[0];
-				t2 = submatrices[1];
-			}
-			catch(ex){
-				t.error(ex);
-				return;
-			}
-
-			result = t1.transfer(true);
-			expected = weblas.test.submatrix(N, M, N / 2, 0, X);
-
-			testWithPad(t, M, N / 2, pad, result, expected, t1.texture, RTOL, ATOL);
-			t1.delete();
-
-
-			result = t2.transfer(true);
-			expected = weblas.test.submatrix(N, M, N / 2, N / 2, X);
-
-			testWithPad(t, M, N / 2, pad, result, expected, t2.texture, RTOL, ATOL);
-
-			t2.delete();
-
-		});
-	};
-}
-
-
-loader.load(dataDirectory + testFile, function(err, config){
-
-	var suite = JSON.parse(config);
-
-	// suite configuration file uses directory name as key
-	for(var i = 0; i < suite.length; i++){
-
-		directory = String("0000" + (i + 1)).slice(-4);
-
-		var test = suite[i];
-
-		var input = test['in'],
-			sizes = input['shape'],
-			arg = test['arg'] || {};
-
-		var m = input[0]['shape'][0],
-			n = input[0]['shape'][1];
-
-		if(n % 2 !== 0)
-			continue;
-
-		//console.log("a: " + a + "; b: " + b);
-		var testName = "Tensor.split: " + m + "x" + n;
-		tape(testName, generateSplitTestCase(directory, m, n));
-	}
-
-});
-
-
 function testWithPad(t,  M, N, pad, result, expected, texture, RTOL, ATOL){
 
 	weblas.test.assert.allclose(t, result, expected, null, RTOL, ATOL);
@@ -193,4 +93,91 @@ function testWithPad(t,  M, N, pad, result, expected, texture, RTOL, ATOL){
 
 		weblas.test.assert.allclose(t, result, padded, null, RTOL, ATOL);
 	}
+}
+
+var matrixFiles = ['a.arr', 'a0.arr', 'a1.arr'];
+
+var m = 27,
+	n = 27,
+	channels = 96;
+var testDirectory = "./test/data/split/" + "0001" + '/';
+
+//console.log("a: " + a + "; b: " + b);
+var testName = "Tensor.split: " + m + "x" + n + "x" + channels;
+tape(testName, generateSplitTestCase(testDirectory, m, n * channels, channels));
+
+
+testDirectory = "./test/data/split/" + "0002" + '/';
+var testName = "Tensor.split: " + m + "x" + n + "x" + channels;
+tape(testName, generateSplitTestCase(testDirectory, m, n * channels, channels));
+
+m = 13;
+n = 13;
+channels = 384;
+testDirectory = "./test/data/split/" + "0003" + '/';
+var testName = "Tensor.split: " + m + "x" + n + "x" + channels;
+tape(testName, generateSplitTestCase(testDirectory, m, n * channels, channels));
+
+m = 13;
+n = 13;
+channels = 384;
+testDirectory = "./test/data/split/" + "0004" + '/';
+var testName = "Tensor.split: " + m + "x" + n + "x" + channels;
+tape(testName, generateSplitTestCase(testDirectory, m, n * channels, channels));
+
+
+function generateSplitTestCase(testDirectory, M, N, channels){
+	return function(t){
+		var pad = weblas.gpu.gl.getPad(N / 2);
+		if(pad == 0){
+			t.plan(2);
+		} else {
+			t.plan(4);
+		}
+
+		var X, expected0, expected1; // typed arrays
+
+		// load matrices from files
+		weblas.test.load(testDirectory, matrixFiles, function(err, matrices){
+
+			// matrices is an array which matches matrixFiles
+			var X = matrices[0],
+				expected0 = matrices[1],
+				expected1 = matrices[2];
+
+			if(!(X && X.length && X.length == M * N)){
+
+				throw new Error("malformed data");
+			}
+
+			var t0 = new weblas.pipeline.Tensor([M, N], X),
+				t1, t2;
+
+			var result;
+			try{
+				// when splitting texture for t0 is deleted by default
+				submatrices = t0.split(channels / 2);
+				t1 = submatrices[0];
+				t2 = submatrices[1];
+			}
+			catch(ex){
+				t.error(ex);
+				return;
+			}
+
+
+			result = t1.transfer(true);
+
+			testWithPad(t, M, N / 2, pad, result, expected0, t1.texture, RTOL, ATOL);
+			t1.delete();
+
+
+			result = t2.transfer(true);
+
+			testWithPad(t, M, N / 2, pad, result, expected1, t2.texture, RTOL, ATOL);
+
+			t2.delete();
+
+		});
+	};
 }
