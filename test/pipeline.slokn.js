@@ -33,7 +33,9 @@ function generateTestCase(prefix, M, N, channels, factor, stride, margin){
 		weblas.test.load(testDirectory, matrixFiles, function(err, matrices){
 
 			if(err){
-				console.log(err);
+				t.error(err);
+				if(pad != 0) t.notOk(false, "skipping padding test");
+
 				return;
 			}
 
@@ -67,7 +69,9 @@ function generateTestCase(prefix, M, N, channels, factor, stride, margin){
 
 			}
 			catch(ex){
-				t.assert(false, ex);
+				t.error(ex);
+				if(pad != 0) t.notOk(false, "skipping padding test");
+
 				return;
 			}
 

@@ -42,7 +42,7 @@ tape("Tensor.reshape: 4 x 8", function(t){
 		var result = t1.transfer();
 	}
 	catch(ex){
-		t.assert(false, ex);
+		t.error(ex);
 		return;
 	}
 
@@ -72,7 +72,7 @@ tape("Tensor.reshape: 3 x 4", function(t){
 		var result = t1.transfer(true);
 	}
 	catch(ex){
-		t.assert(false, ex);
+		t.error(ex);
 		return;
 	}
 
@@ -93,7 +93,8 @@ tape("Tensor.reshape: 3 x 4", function(t){
 		weblas.gpu.gl.context.deleteTexture(out);
 	}
 	catch(ex){
-		t.assert(false, ex);
+		t.error(ex);
+		return;
 	}
 
 	weblas.test.assert.allclose(t, result, padded, null, RTOL, ATOL);
@@ -117,6 +118,13 @@ function generateReshapeTestCase(prefix, M, N){
 		// load matrices from files
 		weblas.test.load(testDirectory, matrixFiles, function(err, matrices){
 
+			if(err){
+				t.error(err);
+				if(pad != 0) t.notOk(false, "skipping padding test");
+
+				return;
+			}
+
 			// matrices is an array which matches matrixFiles
 			var X = matrices[0];
 
@@ -135,7 +143,9 @@ function generateReshapeTestCase(prefix, M, N){
 				t1 = t0.reshape([N, M]);
 			}
 			catch(ex){
-				t.assert(false, ex);
+				t.error(ex);
+				if(pad != 0) t.notOk(false, "skipping padding test");
+				
 				return;
 			}
 
