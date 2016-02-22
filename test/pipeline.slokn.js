@@ -153,6 +153,30 @@ channels = 48;
 testName = "pipeline.slokn: " + m + "x" + n + "x" + channels + " + " + margin;
 tape(testName, generateTestCase("0006", m, n, channels, factor, stride, margin));
 
+var margin = 1;
+m = 13;
+n = 13;
+channels = 256;
+factor = 3;
+stride = 1;
+/* 169, 2304 */
+
+testName = "pipeline.slokn: " + m + "x" + n + "x" + channels + " + " + margin;
+tape(testName, generateTestCase("0007", m, n, channels, factor, stride, margin));
+
+var margin = 1;
+m = 13;
+n = 13;
+channels = 192;
+factor = 3;
+stride = 1;
+/* 169, 1728 */
+testName = "pipeline.slokn: " + m + "x" + n + "x" + channels + " + " + margin;
+tape(testName, generateTestCase("0008", m, n, channels, factor, stride, margin));
+
+testName = "pipeline.slokn: " + m + "x" + n + "x" + channels + " + " + margin;
+tape(testName, generateTestCase("0009", m, n, channels, factor, stride, margin));
+
 /*
 loader.load(dataDirectory + testFile, function(err, config){
 
