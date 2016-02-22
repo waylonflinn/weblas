@@ -6,13 +6,8 @@ var tape = require('tape'),
 var RTOL = 1e-05,
 	ATOL = 1e-07;
 
-// reusing data from sscal
-var dataDirectory = 'test/data/sscal/',
-	testFile = 'small.json';
-
 var gl = weblas.gpu.gl;
 
-var matrixFiles = ['a.arr'];
 
 tape("Tensor.combine: 8 x 8", function(t){
 	t.plan(1);
@@ -61,141 +56,93 @@ tape("Tensor.combine: 8 x 8", function(t){
 	weblas.test.assert.allclose(t, result, expected, null, RTOL, ATOL);
 });
 
-/*
-tape("Tensor.combine: 8 x 6", function(t){
-	t.plan(1);
-	var x1 = new Float32Array([  1.0,  2.0,  3.0,
-								 9.0, 10.0, 11.0,
-								17.0, 18.0, 19.0,
-								25.0, 26.0, 27.0,
-								33.0, 34.0, 35.0,
-								41.0, 42.0, 43.0,
-								49.0, 50.0, 51.0,
-								57.0, 58.0, 59.0]),
-		x2 = new Float32Array([  5.0,  6.0,  7.0,
-								13.0, 14.0, 15.0,
-								21.0, 22.0, 23.0,
-								29.0, 30.0, 31.0,
-								37.0, 38.0, 39.0,
-								45.0, 46.0, 47.0,
-								53.0, 54.0, 55.0,
-								61.0, 62.0, 63.0]),
-		expected = new Float32Array([ 1.0,  2.0,  3.0,  5.0,  6.0,  7.0,
-									   9.0, 10.0, 11.0, 13.0, 14.0, 15.0,
-									  17.0, 18.0, 19.0, 21.0, 22.0, 23.0,
-									  25.0, 26.0, 27.0, 29.0, 30.0, 31.0,
-									  33.0, 34.0, 35.0, 37.0, 38.0, 39.0,
-									  41.0, 42.0, 43.0, 45.0, 46.0, 47.0,
-									  49.0, 50.0, 51.0, 53.0, 54.0, 55.0,
-									  57.0, 58.0, 59.0, 61.0, 62.0, 63.0]);
+matrixFiles = ['a0.arr', 'a1.arr', 'out.arr'];
+
+var m = 13,
+	n = 13,
+	channels = 192;
+var testDirectory = "./test/data/combine/" + "0001" + '/';
+
+//console.log("a: " + a + "; b: " + b);
+var testName = "Tensor.combine: " + m + "x" + n + "x" + channels;
+tape(testName, generateCombineTestCase(testDirectory, m, n * channels, channels));
+
+m = 27;
+n = 27;
+channels = 128;
+var testDirectory = "./test/data/combine/" + "0002" + '/';
+
+//console.log("a: " + a + "; b: " + b);
+var testName = "Tensor.combine: " + m + "x" + n + "x" + channels;
+tape(testName, generateCombineTestCase(testDirectory, m, n * channels, channels));
+
+m = 27;
+n = 27;
+channels = 128;
+var testDirectory = "./test/data/combine/" + "0003" + '/';
+
+//console.log("a: " + a + "; b: " + b);
+var testName = "Tensor.combine: " + m + "x" + n + "x" + channels;
+tape(testName, generateCombineTestCase(testDirectory, m, n * channels, channels));
+
+m = 13;
+n = 13;
+channels = 128;
+var testDirectory = "./test/data/combine/" + "0004" + '/';
+
+//console.log("a: " + a + "; b: " + b);
+var testName = "Tensor.combine: " + m + "x" + n + "x" + channels;
+tape(testName, generateCombineTestCase(testDirectory, m, n * channels, channels));
 
 
-	var M = 8, N = 3,
-		t1 = new weblas.pipeline.Tensor([M, N], x1),
-		t2 = new weblas.pipeline.Tensor([M, N], x2);
-
-	try{
-		// when splitting texture for t0 is deleted by default
-		t0 = weblas.pipeline.Tensor.combine(t1, t2);
-		// when transfering texture for t1 is deleted by default
-		var result = t0.transfer();
-	}
-	catch(ex){
-		t.assert(false, ex);
-		return;
-	}
-
-	weblas.test.assert.allclose(t, result, expected, null, RTOL, ATOL);
-});
-*/
-
-function generateSplitCombineTestCase(prefix, M, N){
+function generateCombineTestCase(testDirectory, M, N, channels){
 	return function(t){
-		var pad = weblas.gpu.gl.getPad(N);
+		var pad = weblas.gpu.gl.getPad(N * 2);
 		if(pad == 0){
 			t.plan(1);
 		} else {
 			t.plan(2);
 		}
 
-		var X, expected; // typed arrays
+		var X0, X1, expected; // typed arrays
 
 		// directory containing matrix data files for current test
-		var testDirectory = dataDirectory + prefix + '/';
 
 		// load matrices from files
 		weblas.test.load(testDirectory, matrixFiles, function(err, matrices){
 
-			if(err){
-				t.error(err);
-				if(pad != 0) t.notOk(false, "skipping padding test");
-
-				return;
-			}
-
 			// matrices is an array which matches matrixFiles
-			var X = matrices[0];
+			var X0 = matrices[0],
+				X1 = matrices[1],
+				expected = matrices[2];
 
-			if(!(X && X.length && X.length == M * N)){
+			if(!(X0 && X0.length && X0.length == M * N) ||
+				!(X1 && X1.length && X1.length == M * N)){
 
 				throw new Error("malformed data");
 			}
 
-			var t0 = new weblas.pipeline.Tensor([M, N], X),
-				t1, t2, t3;
+			var t0 = new weblas.pipeline.Tensor([M, N], X0),
+				t1 = new weblas.pipeline.Tensor([M, N], X1),
+				t2;
 
-			var expected = X;
 			try{
-				// when splitting texture for t0 is deleted by default
-				submatrices = t0.split();
-				t1 = submatrices[0];
-				t2 = submatrices[1];
-				t3 = weblas.pipeline.Tensor.combine(t1, t2);
+				t2 = weblas.pipeline.Tensor.combine(t0, t1, channels);
 			} catch(ex){
-				t.error(ex);
-				if(pad != 0) t.notOk(false, "skipping padding test");
-
+				t.assert(false, ex);
 				return;
 			}
 
 
 			// when transfering texture for t1 is deleted by default
-			var result = t3.transfer(true);
+			var result = t2.transfer(true);
 
-			testWithPad(t, M, N, pad, result, expected, t3.texture, RTOL, ATOL);
-			t3.delete();
+			testWithPad(t, M, N * 2, pad, result, expected, t2.texture, RTOL, ATOL);
+			t2.delete();
 
 		});
 	};
 }
-
-loader.load(dataDirectory + testFile, function(err, config){
-
-	var suite = JSON.parse(config);
-
-	// suite configuration file uses directory name as key
-	for(var i = 0; i < suite.length; i++){
-
-		directory = String("0000" + (i + 1)).slice(-4);
-
-		var test = suite[i];
-
-		var input = test['in'],
-			sizes = input['shape'],
-			arg = test['arg'] || {};
-
-		var m = input[0]['shape'][0],
-			n = input[0]['shape'][1];
-
-		if(n % 2 !== 0)
-			continue;
-
-		//console.log("a: " + a + "; b: " + b);
-		var testName = "Tensor.split+combine: " + m + "x" + n;
-		tape(testName, generateSplitCombineTestCase(directory, m, n));
-	}
-
-});
 
 function testWithPad(t,  M, N, pad, result, expected, texture, RTOL, ATOL){
 
