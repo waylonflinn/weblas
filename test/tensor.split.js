@@ -57,7 +57,7 @@ tape("Tensor.split: 8 x 8", function(t){
 		var result = t1.transfer();
 	}
 	catch(ex){
-		t.assert(false, ex);
+		t.error(ex);
 		return;
 	}
 
@@ -85,6 +85,18 @@ function generateSplitTestCase(prefix, M, N){
 		// load matrices from files
 		weblas.test.load(testDirectory, matrixFiles, function(err, matrices){
 
+			if(err){
+				t.error(err);
+				t.notOk(false, "skipping second test");
+
+				if(pad != 0){
+					t.notOk(false, "skipping padding test");
+					t.notOk(false, "skipping padding test");
+				}
+
+				return;
+			}
+
 			// matrices is an array which matches matrixFiles
 			var X = matrices[0];
 
@@ -104,7 +116,7 @@ function generateSplitTestCase(prefix, M, N){
 				t2 = submatrices[1];
 			}
 			catch(ex){
-				t.assert(false, ex);
+				t.error(ex);
 				return;
 			}
 
