@@ -111,6 +111,13 @@ function generateCombineTestCase(testDirectory, M, N, channels){
 		// load matrices from files
 		weblas.test.load(testDirectory, matrixFiles, function(err, matrices){
 
+			if(err){
+				t.error(err);
+				if(pad != 0) t.notOk(false, "skipping padding test");
+
+				return;
+			}
+
 			// matrices is an array which matches matrixFiles
 			var X0 = matrices[0],
 				X1 = matrices[1],
@@ -129,7 +136,9 @@ function generateCombineTestCase(testDirectory, M, N, channels){
 			try{
 				t2 = weblas.pipeline.Tensor.combine(t0, t1, channels);
 			} catch(ex){
-				t.assert(false, ex);
+				t.error(ex);
+				if(pad != 0) t.notOk(false, "skipping padding test");
+
 				return;
 			}
 

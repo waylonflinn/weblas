@@ -140,6 +140,17 @@ function generateSplitTestCase(testDirectory, M, N, channels){
 		// load matrices from files
 		weblas.test.load(testDirectory, matrixFiles, function(err, matrices){
 
+			if(err){
+				t.error(err);
+				t.notOk(false, "skipping padding test");
+				if(pad != 0){
+					t.notOk(false, "skipping padding test");
+					t.notOk(false, "skipping padding test");
+				}
+
+				return;
+			}
+
 			// matrices is an array which matches matrixFiles
 			var X = matrices[0],
 				expected0 = matrices[1],
