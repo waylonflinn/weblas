@@ -99,7 +99,7 @@ function generateSplitTestCase(prefix, M, N){
 			var result, expected;
 			try{
 				// when splitting texture for t0 is deleted by default
-				submatrices = t0.split();
+				submatrices = t0.split( N / 2);
 				t1 = submatrices[0];
 				t2 = submatrices[1];
 			}
@@ -125,7 +125,7 @@ function generateSplitTestCase(prefix, M, N){
 		});
 	};
 }
-/*
+
 
 loader.load(dataDirectory + testFile, function(err, config){
 
@@ -154,7 +154,8 @@ loader.load(dataDirectory + testFile, function(err, config){
 	}
 
 });
-*/
+
+
 function testWithPad(t,  M, N, pad, result, expected, texture, RTOL, ATOL){
 
 	weblas.test.assert.allclose(t, result, expected, null, RTOL, ATOL);
