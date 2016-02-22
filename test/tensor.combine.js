@@ -97,12 +97,6 @@ tape(testName, generateCombineTestCase(testDirectory, m, n * channels, channels)
 
 function generateCombineTestCase(testDirectory, M, N, channels){
 	return function(t){
-		var pad = weblas.gpu.gl.getPad(N * 2);
-		if(pad == 0){
-			t.plan(1);
-		} else {
-			t.plan(2);
-		}
 
 		var X0, X1, expected; // typed arrays
 
@@ -112,10 +106,17 @@ function generateCombineTestCase(testDirectory, M, N, channels){
 		weblas.test.load(testDirectory, matrixFiles, function(err, matrices){
 
 			if(err){
-				t.error(err);
-				if(pad != 0) t.notOk(false, "skipping padding test");
+				t.skip("Unable to load files: " + err.message);
+				t.end();
 
 				return;
+			}
+
+			var pad = weblas.gpu.gl.getPad(N * 2);
+			if(pad == 0){
+				t.plan(1);
+			} else {
+				t.plan(2);
 			}
 
 			// matrices is an array which matches matrixFiles
