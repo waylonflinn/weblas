@@ -16,12 +16,7 @@ var matrixFiles = ['a.arr', 'out.arr'];
 function generateTestCase(prefix, M, N, channels, factor, stride, margin){
 
 	return function(t){
-		var pad = weblas.gpu.gl.getPad(factor * factor * channels);
-		if(pad == 0){
-			t.plan(1);
-		} else {
-			t.plan(2);
-		}
+
 
 		var X, expected; // typed arrays
 
@@ -33,10 +28,17 @@ function generateTestCase(prefix, M, N, channels, factor, stride, margin){
 		weblas.test.load(testDirectory, matrixFiles, function(err, matrices){
 
 			if(err){
-				t.error(err);
-				if(pad != 0) t.notOk(false, "skipping padding test");
+				t.skip("Unable to load files: " + err.message);
+				t.end();
 
 				return;
+			}
+
+			var pad = weblas.gpu.gl.getPad(factor * factor * channels);
+			if(pad == 0){
+				t.plan(1);
+			} else {
+				t.plan(2);
 			}
 
 			//console.log(M, N, channels);
