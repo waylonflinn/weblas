@@ -128,12 +128,6 @@ tape(testName, generateSplitTestCase(testDirectory, m, n * channels, channels));
 
 function generateSplitTestCase(testDirectory, M, N, channels){
 	return function(t){
-		var pad = weblas.gpu.gl.getPad(N / 2);
-		if(pad == 0){
-			t.plan(2);
-		} else {
-			t.plan(4);
-		}
 
 		var X, expected0, expected1; // typed arrays
 
@@ -141,14 +135,17 @@ function generateSplitTestCase(testDirectory, M, N, channels){
 		weblas.test.load(testDirectory, matrixFiles, function(err, matrices){
 
 			if(err){
-				t.error(err);
-				t.notOk(false, "skipping padding test");
-				if(pad != 0){
-					t.notOk(false, "skipping padding test");
-					t.notOk(false, "skipping padding test");
-				}
+				t.skip("Unable to load files: " + err.message);
+				t.end();
 
 				return;
+			}
+
+			var pad = weblas.gpu.gl.getPad(N / 2);
+			if(pad == 0){
+				t.plan(2);
+			} else {
+				t.plan(4);
 			}
 
 			// matrices is an array which matches matrixFiles
@@ -173,6 +170,7 @@ function generateSplitTestCase(testDirectory, M, N, channels){
 			}
 			catch(ex){
 				t.error(ex);
+				t.end();
 				return;
 			}
 
