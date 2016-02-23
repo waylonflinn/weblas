@@ -9,6 +9,9 @@
     "test": "test",
     "dist": "dist"
   },
+  "browser" : {
+      "./lib/glcontext" : "./lib/glcontext-client"
+  },
   "dependencies": {
     "glslify": "^5.0.2"
   },
