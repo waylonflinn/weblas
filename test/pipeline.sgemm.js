@@ -20,7 +20,41 @@ var RTOL = 1e-05,
 var dataDirectory = 'test/data/sgemm/',
 	testFile = 'small.json';
 
+function single(){
+	tape("1x1 . 1x4", function(t){
+		t.plan(1);
 
+		var alpha = 1.0,
+			beta = 1.0,
+			A = new Float32Array([1.0]),
+			B = new Float32Array([1.0, 1.0, 1.0, 1.0]),
+			C = new Float32Array([2.0, 2.0, 2.0, 2.0]),
+			expected = new Float32Array([3.0, 3.0, 3.0, 3.0]);
+
+		var t0 = new weblas.pipeline.Tensor([1, 1], A),
+			t1 = new weblas.pipeline.Tensor([4, 1], B),
+			t2 = new weblas.pipeline.Tensor([1, 4], C);
+
+		try{
+			t3 = weblas.pipeline.sgemm(alpha, t0, t1, beta, t2);
+
+			// get the result, but retain the texture (for padding check)
+			result = t3.transfer(true);
+			//console.log(result.slice(0, 6));
+
+		}
+		catch(ex){
+			t.assert(false, ex);
+			return;
+		}
+
+		weblas.test.assert.allclose(t, result, expected, null, RTOL, ATOL);
+
+		t0.delete();
+		t1.delete();
+		t2.delete();
+	});
+}
 var matrixFiles = ['a.arr', 'b.arr', 'out.arr'];
 
 function generateTestCase(prefix, m, n, k, alpha){
@@ -183,6 +217,8 @@ function generateExtendedTestCase(prefix, m, n, k, alpha, beta){
 }
 
 loader.load(dataDirectory + testFile, function(err, config){
+
+	single();
 
 	var suite = JSON.parse(config);
 
