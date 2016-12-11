@@ -13,19 +13,20 @@
     "glslify": "^5.0.2"
   },
   "devDependencies": {
-    "minifyify": "^7.1.0",
+    "arrayloader": "^1.0.1",
     "async": "^1.5.0",
     "benchmark": "^1.0.0",
     "floader": "^1.0.1",
-    "arrayloader": "^1.0.1",
+    "licensify": "^3.1.2",
     "microtime": "^2.0.0",
+    "minifyify": "^7.1.0",
     "tape": "^4.2.2"
   },
   "scripts": {
     "data": "node test/data/generate.js",
     "test": "browserify test/*.js | testling -x $npm_config_browser",
-    "build": "browserify index.js --s weblas > dist/weblas.js",
-    "min": "browserify index.js --s weblas -d -p [minifyify --map ./weblas.map.json --output dist/weblas.map.json] > dist/weblas.js",
+    "build": "browserify index.js --s weblas -p licensify > dist/weblas.js",
+    "min": "browserify index.js --s weblas -d -p [minifyify --map ./weblas.map.json --output dist/weblas.map.json] -p licensify > dist/weblas.js",
     "benchmark": "browserify benchmark/*.js | testling -x $npm_config_browser"
   },
   "browserify": {
