@@ -2,6 +2,8 @@ var tape = require('tape'),
 	weblas = require('../index'),
 	loader = require('floader'); // browserify aware file loader (xhr in browser)
 
+weblas.test = require('../lib/test');
+
 /*  run in a browser with testling
 
 		browserify test/*.js | testling -x google-chrome

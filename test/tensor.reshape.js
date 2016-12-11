@@ -2,6 +2,7 @@ var tape = require('tape'),
 	weblas = require('../index'),
 	loader = require('floader'); // browserify aware file loader (xhr in browser)
 
+weblas.test = require('../lib/test');
 
 var RTOL = 1e-05,
 	ATOL = 1e-07;
@@ -145,7 +146,7 @@ function generateReshapeTestCase(prefix, M, N){
 			catch(ex){
 				t.error(ex);
 				if(pad != 0) t.notOk(false, "skipping padding test");
-				
+
 				return;
 			}
 

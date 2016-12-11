@@ -4,8 +4,7 @@ var globals = require('./lib/globals'),
 	SAXPYCalculator = require("./lib/saxpycalculator"),
 	SSCALCalculator = require("./lib/sscalcalculator"),
 	SDWNSCalculator = require("./lib/sdwnscalculator"),
-	SCLMPCalculator = require("./lib/sclmpcalculator"),
-	test = require("./lib/test");
+	SCLMPCalculator = require("./lib/sclmpcalculator");
 
 var gl = globals.gl,
 	sgemmcalculator = new SGEMMCalculator(gl),
@@ -35,8 +34,7 @@ module.exports = {
 				"sdwns" : pipeline.sdwnscalculator.calculate.bind(pipeline.sdwnscalculator),
 				"encode" : gl.encode.bind(gl)
 			},
-	"util" : { "fromArray" : fromArray, "transpose" : transpose},
-	"test" : test
+	"util" : { "fromArray" : fromArray, "transpose" : transpose}
 };
 
 
