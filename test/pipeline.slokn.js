@@ -123,6 +123,7 @@ tape("sdwns: 13 x 13 x 256", manualTestCase("0003", 13, 13, 256, 3, 2));
 */
 
 
+var margin = 0;
 var m = 224,
 	n = 224,
 	channels = 3,
@@ -130,11 +131,11 @@ var m = 224,
 	stride = 4;
 
 var testName = "pipeline.slokn: " + m + "x" + n + "x" + channels;
-tape(testName, generateTestCase("0001", m, n, channels, factor, stride));
-tape(testName, generateTestCase("0002", m, n, channels, factor, stride));
-tape(testName, generateTestCase("0003", m, n, channels, factor, stride));
+tape(testName, generateTestCase("0001", m, n, channels, factor, stride, margin));
+tape(testName, generateTestCase("0002", m, n, channels, factor, stride, margin));
+tape(testName, generateTestCase("0003", m, n, channels, factor, stride, margin));
 
-var margin = 0;
+margin = 0;
 m = 31;
 n = 31;
 channels = 48;
