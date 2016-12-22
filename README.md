@@ -172,3 +172,11 @@ ok 11 2048x2048 . 2048x2048
 ```
 
 more information about benchmarks (including test configuration) can be found on the [wiki](https://github.com/waylonflinn/weblas/wiki).
+
+
+# Donations
+
+Want to see more happen here?
+Contribute on
+
+[![Patreon](https://s3.amazonaws.com/patreon_public_assets/toolbox/patreon.png)](https://patreon.com/waylonflinn)
