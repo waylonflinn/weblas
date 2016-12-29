@@ -2,6 +2,8 @@ var Benchmark = require('benchmark'),
 	tape = require('tape'),
 	weblas = require('../index');
 
+var test = require('../lib/test');
+
 var suite = new Benchmark.Suite();
 
 var pass = 0,
