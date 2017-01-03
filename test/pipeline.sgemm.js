@@ -135,9 +135,9 @@ function generateTestCase(prefix, m, n, k, alpha){
 	};
 }
 
-var extendedMatrixFiles = ['a.json', 'b.json', 'c.json', 'out.json'];
+var extendedMatrixFiles = ['a.arr', 'b.arr', 'c.arr', 'out.arr'];
 
-function generateExtendedTestCase(prefix, m, n, k, alpha, beta){
+function generateExtendedTestCase(prefix, m, n, k, alpha, beta, transposed){
 	return function(t){
 		var pad = weblas.gpu.gl.getPad(n);
 		if(pad == 0){
@@ -168,7 +168,7 @@ function generateExtendedTestCase(prefix, m, n, k, alpha, beta){
 			}
 
 			var t0 = new weblas.pipeline.Tensor([m, k], A),
-				t1 = new weblas.pipeline.Tensor([n, k], weblas.util.transpose(k, n, B)),
+				t1 = new weblas.pipeline.Tensor([n, k], transposed ? B : weblas.util.transpose(k, n, B)),
 				t2 = new weblas.pipeline.Tensor([1, n], C),
 				t3;
 
@@ -232,18 +232,37 @@ loader.load(dataDirectory + testFile, function(err, config){
 		var input = test['in'],
 			arg = test['arg'] || {};
 
-		var m = input[0]['shape'][0],
-			n = input[1]['shape'][1],
-			k = input[0]['shape'][1],
-			alpha = (arg['alpha'] != null) ? arg['alpha'] : 1.0,
+		// get base matrix dimensions
+		var m1 = input[0]['shape'][0],
+			n1 = input[0]['shape'][1],
+			m2 = input[1]['shape'][0],
+			n2 = input[1]['shape'][1];
+
+		var m = m1,
+			transposed;
+
+		// is the second matrix already transposed?
+		if(n1 === m2){
+			transposed = false;
+			k = m2;
+			n = n2;
+		} else if(n1 === n2){
+			transposed = true;
+			k = n2;
+			n = m2;
+		} else {
+			throw new Error("Matrices not compatible");
+		}
+
+		var alpha = (arg['alpha'] != null) ? arg['alpha'] : 1.0,
 			beta = (arg['beta'] != null) ? arg['beta'] : 1.0;
 
 		var testName = "pipeline.sgemm: " + m + "x" + k + " . " + k + "x" + n;
 		if(input.length == 2){
-			tape(testName, generateTestCase(directory, m, n, k, alpha));
+			tape(testName, generateTestCase(directory, m, n, k, alpha, null, transposed));
 		} else {
 			testName += " + 1x" + n;
-			tape(testName, generateExtendedTestCase(directory, m, n, k, alpha, beta));
+			tape(testName, generateExtendedTestCase(directory, m, n, k, alpha, beta, transposed));
 		}
 	}
 
