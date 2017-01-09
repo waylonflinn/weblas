@@ -5,7 +5,7 @@ var tape = require('tape'),
 weblas.test = require('../lib/test');
 
 var RTOL = 1e-05,
-	ATOL = 1e-07;
+	ATOL = 1e-12;
 
 // reusing data from sscal
 var dataDirectory = 'test/data/sscal/',
