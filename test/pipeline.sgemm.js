@@ -185,7 +185,16 @@ function generateExtendedTestCase(prefix, m, n, k, alpha, beta, transposed){
 				return;
 			}
 
-			weblas.test.assert.allclose(t, result, expected, null, RTOL, ATOL);
+			var ok;
+			ok = weblas.test.assert.allclose(t, result, expected, null, RTOL, ATOL);
+			/*
+			if(!ok && download){
+				// dump result
+
+				console.log("dumping result");
+				download(result, "result.arr", "application/octet-stream");
+			}*/
+
 
 			if(pad > 0){
 				var padded;
