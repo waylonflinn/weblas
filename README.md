@@ -137,32 +137,32 @@ npm run benchmark
 ```
 
 ### results
-weblas@0.6.0
+weblas@0.9.1
 
 ```
 TAP version 13
-ok 1 128x128 . 128x128
-# 316 ops/sec  ±4.80%  n = 51 µ = 3ms
-ok 2 128x256 . 256x128
-# 280 ops/sec  ±6.15%  n = 40 µ = 4ms
-ok 3 256x256 . 256x256
-# 171 ops/sec  ±14.79%  n = 47 µ = 6ms
-ok 4 512x256 . 256x512
-# 101 ops/sec  ±6.68%  n = 50 µ = 10ms
-ok 5 256x512 . 512x256
-# 139 ops/sec  ±3.64%  n = 49 µ = 7ms
-ok 6 512x512 . 512x512
-# 61.61 ops/sec  ±3.14%  n = 42 µ = 16ms
-ok 7 513x513 . 513x513
-# 52.92 ops/sec  ±8.82%  n = 49 µ = 19ms
-ok 8 1024x512 . 512x1024
-# 34.99 ops/sec  ±4.86%  n = 38 µ = 29ms
-ok 9 512x1024 . 1024x512
-# 52.03 ops/sec  ±2.66%  n = 47 µ = 19ms
-ok 10 1024x1024 . 1024x1024
-# 23.27 ops/sec  ±12.70%  n = 34 µ = 43ms
-ok 11 2048x2048 . 2048x2048
-# 4.89 ops/sec  ±1.82%  n = 17 µ = 204ms
+ok 1 sgemm: 128x128 . 128x128
+# 1.032 GFlops/sec  ±3.71%  n = 50 µ = 4ms
+ok 2 sgemm: 128x256 . 256x128
+# 1.745 GFlops/sec  ±2.89%  n = 44 µ = 5ms
+ok 3 sgemm: 256x256 . 256x256
+# 5.061 GFlops/sec  ±2.89%  n = 42 µ = 7ms
+ok 4 sgemm: 512x256 . 256x512
+# 15.454 GFlops/sec  ±3.86%  n = 51 µ = 9ms
+ok 5 sgemm: 256x512 . 512x256
+# 10.262 GFlops/sec  ±2.76%  n = 47 µ = 7ms
+ok 6 sgemm: 512x512 . 512x512
+# 22.231 GFlops/sec  ±3.54%  n = 50 µ = 12ms
+ok 7 sgemm: 513x513 . 513x513
+# 14.474 GFlops/sec  ±4.51%  n = 43 µ = 19ms
+ok 8 sgemm: 1024x512 . 512x1024
+# 41.859 GFlops/sec  ±3.38%  n = 43 µ = 26ms
+ok 9 sgemm: 512x1024 . 1024x512
+# 31.353 GFlops/sec  ±2.60%  n = 46 µ = 17ms
+ok 10 sgemm: 1024x1024 . 1024x1024
+# 45.545 GFlops/sec  ±3.99%  n = 31 µ = 47ms
+ok 11 sgemm: 2048x2048 . 2048x2048
+# 62.159 GFlops/sec  ±28.88%  n = 13 µ = 276ms
 
 1..11
 # tests 11
