@@ -4,6 +4,18 @@ var tape = require('tape'),
 
 weblas.test = require('../lib/test');
 
+tape("Tensor.toStringTag", function(t){
+	t.plan(1);
+
+
+	t0 = new weblas.pipeline.Tensor([1, 2], [1.0, 2.0]);
+
+	var result = Object.prototype.toString.call(t0),
+		expected = "[object Tensor]";
+
+	t.equals(result, expected);
+});
+
 var RTOL = 1e-05,
 	ATOL = 1e-12;
 
