@@ -158,7 +158,7 @@ tape("pipeline.sdwns: 2 x 2 x 8", function(t){
 var dataDirectory = 'test/data/sdwns/',
 	testFile = 'small.json';
 
-var matrixFiles = ['a.arr', 'out.arr'];
+var matrixFiles = ['a.f32', 'out.f32'];
 
 function generateTestCase(prefix, m, n, channels, factor, stride){
 

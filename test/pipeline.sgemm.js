@@ -55,7 +55,7 @@ function single(){
 		t2.delete();
 	});
 }
-var matrixFiles = ['a.arr', 'b.arr', 'out.arr'];
+var matrixFiles = ['a.f32', 'b.f32', 'out.f32'];
 
 function generateTestCase(prefix, m, n, k, alpha){
 	return function(t){
@@ -135,7 +135,7 @@ function generateTestCase(prefix, m, n, k, alpha){
 	};
 }
 
-var extendedMatrixFiles = ['a.arr', 'b.arr', 'c.arr', 'out.arr'];
+var extendedMatrixFiles = ['a.f32', 'b.f32', 'c.f32', 'out.f32'];
 
 function generateExtendedTestCase(prefix, m, n, k, alpha, beta, transposed){
 	return function(t){
@@ -192,7 +192,7 @@ function generateExtendedTestCase(prefix, m, n, k, alpha, beta, transposed){
 				// dump result
 
 				console.log("dumping result");
-				download(result, "result.arr", "application/octet-stream");
+				download(result, "result.f32", "application/octet-stream");
 			}*/
 
 

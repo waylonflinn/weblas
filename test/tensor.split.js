@@ -13,7 +13,7 @@ var dataDirectory = 'test/data/sscal/',
 
 var gl = weblas.gpu.gl;
 
-var matrixFiles = ['a.arr'];
+var matrixFiles = ['a.f32'];
 
 
 tape("Tensor.split: 8 x 8", function(t){
@@ -96,7 +96,7 @@ function testWithPad(t,  M, N, pad, result, expected, texture, RTOL, ATOL){
 	}
 }
 
-var matrixFiles = ['a.arr', 'a0.arr', 'a1.arr'];
+var matrixFiles = ['a.f32', 'a0.f32', 'a1.f32'];
 
 var m = 27,
 	n = 27,

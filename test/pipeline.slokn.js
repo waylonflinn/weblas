@@ -12,7 +12,7 @@ var RTOL = 1e-05,
 var dataDirectory = 'test/data/slokn/',
 	testFile = 'small.json';
 
-var matrixFiles = ['a.arr', 'out.arr'];
+var matrixFiles = ['a.f32', 'out.f32'];
 
 function generateTestCase(prefix, M, N, channels, factor, stride, margin){
 

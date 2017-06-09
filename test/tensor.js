@@ -25,7 +25,7 @@ var dataDirectory = 'test/data/sscal/',
 
 var gl = weblas.gpu.gl;
 
-var matrixFiles = ['a.arr'];
+var matrixFiles = ['a.f32'];
 
 
 tape("Tensor.transpose: 3 x 3", function(t){

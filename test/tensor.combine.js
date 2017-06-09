@@ -57,7 +57,7 @@ tape("Tensor.combine: 8 x 8", function(t){
 	weblas.test.assert.allclose(t, result, expected, null, RTOL, ATOL);
 });
 
-matrixFiles = ['a0.arr', 'a1.arr', 'out.arr'];
+matrixFiles = ['a0.f32', 'a1.f32', 'out.f32'];
 
 var m = 13,
 	n = 13,

@@ -111,7 +111,7 @@ tape("sdwns: 2 x 2 x 8", function(t){
 
 });
 
-var matrixFiles = ['a.arr', 'out.arr'];
+var matrixFiles = ['a.f32', 'out.f32'];
 var dataDirectory = 'test/data/sdwns/';
 
 function generateTestCase(prefix, m, n, channels, factor, stride){

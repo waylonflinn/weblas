@@ -106,7 +106,7 @@ tape("sclmp: 1x7", function(t){
 var dataDirectory = 'test/data/sclmp/',
 	testFile = 'small.json';
 
-var matrixFiles = ['a.arr', 'out.arr'];
+var matrixFiles = ['a.f32', 'out.f32'];
 
 function generateTestCase(prefix, m, n, a, b){
 	return function(t){

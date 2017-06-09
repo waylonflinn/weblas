@@ -28,8 +28,8 @@ import numpy as np
 import binary_matrix
 
 
-# names to use for json files storing input matrices
-default_names = ['a.arr', 'b.arr', 'c.arr']
+# names to use for files storing input matrices
+default_names = ['a.f32', 'b.f32', 'c.f32']
 
 def create_matrix(spec):
 
@@ -67,7 +67,7 @@ if __name__ == '__main__':
 			os.makedirs(directory)
 
 		# if a result exists, skip this data set
-		if os.path.exists(directory + 'out.arr'):
+		if os.path.exists(directory + 'out.f32'):
 			print("Skipping {0}".format(directory))
 			continue
 
@@ -94,6 +94,6 @@ if __name__ == '__main__':
 
 		# run mutliplication
 		#os.system("./multiply.py {0}".format(number))
-		binary_matrix.write(directory + "out.arr", out.flatten())
+		binary_matrix.write(directory + "out.f32", out.flatten())
 
 		print("Created {0}".format(directory))

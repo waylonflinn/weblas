@@ -13,7 +13,7 @@ var dataDirectory = 'test/data/sscal/',
 
 var gl = weblas.gpu.gl;
 
-var matrixFiles = ['a.arr'];
+var matrixFiles = ['a.f32'];
 
 tape("Tensor.reshape: 4 x 8", function(t){
 	t.plan(1);

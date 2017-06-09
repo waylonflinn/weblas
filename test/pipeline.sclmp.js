@@ -254,7 +254,7 @@ var dataDirectory = 'test/data/sclmp/',
 
 var gl = weblas.gpu.gl;
 
-var matrixFiles = ['a.arr', 'out.arr'];
+var matrixFiles = ['a.f32', 'out.f32'];
 
 function generateTestCase(prefix, m, n, a, b){
 	return function(t){
