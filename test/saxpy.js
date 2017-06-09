@@ -1,6 +1,5 @@
 var tape = require('tape'),
-	weblas = require('../index'),
-	loader = require('floader'); // browserify aware file loader (xhr in browser)
+	weblas = require('../index');
 
 weblas.test = require('../lib/test');
 

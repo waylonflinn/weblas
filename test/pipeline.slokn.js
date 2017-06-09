@@ -1,6 +1,6 @@
 var tape = require('tape'),
 	weblas = require('../index'),
-	loader = require('floader'); // browserify aware file loader (xhr in browser)
+	loader = require('arrayloader'); // browserify aware file loader (xhr in browser)
 
 weblas.test = require('../lib/test');
 
@@ -155,9 +155,8 @@ testName = "pipeline.slokn: " + m + "x" + n + "x" + channels + " + " + margin;
 tape(testName, generateTestCase("0006", m, n, channels, factor, stride, margin));
 
 /*
-loader.load(dataDirectory + testFile, function(err, config){
+loader.load(dataDirectory + testFile, function(err, suite){
 
-	var suite = JSON.parse(config);
 
 	// suite configuration file uses directory name as key
 	for(var i = 0; i < suite.length; i++){

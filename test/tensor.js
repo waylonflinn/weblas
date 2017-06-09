@@ -1,6 +1,6 @@
 var tape = require('tape'),
 	weblas = require('../index'),
-	loader = require('floader'); // browserify aware file loader (xhr in browser)
+	loader = require('arrayloader'); // browserify aware file loader (xhr in browser)
 
 weblas.test = require('../lib/test');
 
@@ -197,9 +197,7 @@ function generateTestCase(prefix, M, N){
 	};
 }
 
-loader.load(dataDirectory + testFile, function(err, config){
-
-	var suite = JSON.parse(config);
+loader.load(dataDirectory + testFile, function(err, suite){
 
 	// suite configuration file uses directory name as key
 	for(var i = 0; i < suite.length; i++){
@@ -378,9 +376,7 @@ function generateReshapeTestCase(prefix, M, N){
 	};
 }
 
-loader.load(dataDirectory + testFile, function(err, config){
-
-	var suite = JSON.parse(config);
+loader.load(dataDirectory + testFile, function(err, suite){
 
 	// suite configuration file uses directory name as key
 	for(var i = 0; i < suite.length; i++){
