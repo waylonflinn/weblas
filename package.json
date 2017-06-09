@@ -13,7 +13,7 @@
     "glslify": "^5.0.2"
   },
   "devDependencies": {
-    "arrayloader": "^1.0.1",
+    "arrayloader": "^2.2.2",
     "async": "^1.5.0",
     "benchmark": "^1.0.0",
     "floader": "^1.0.1",
