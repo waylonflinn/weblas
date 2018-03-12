@@ -30,17 +30,18 @@ Then use it like this.
 <script>
 
 
-var h1 = 1024, w1 = 1024,
-    h2 = 1024, w2 = 1024;
+// create Matrices as arrays
+var height_A = 1024, width_A = 1024,
+    height_B = 1024, width_B = 1024;
 
-var A = new Float32Array(h1 * w1);
-var B = new Float32Array(h2 * w2);
+var A = new Float32Array(height_A * width_A);
+var B = new Float32Array(height_B * width_B);
 
 // fill A and B with science
 
-var M = h1,
-	N = w2,
-	K = h2; // must match w1
+var M = height_A,
+    N = width_B,
+    K = height_B; // must match width_A
 
 var alpha = 1.0;
 var beta = 0.0;
