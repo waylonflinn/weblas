@@ -45,7 +45,7 @@ var M = height_A,
 
 var alpha = 1.0;
 var beta = 0.0;
-var C = new Float32Array(w2)      // specialized for neural net bias calculation
+var C = new Float32Array(width_B)      // specialized for neural net bias calculation
 
 // result will contain matrix multiply of A x B (times alpha)
 result = weblas.sgemm(M, N, K, alpha, A, B, beta, C);
