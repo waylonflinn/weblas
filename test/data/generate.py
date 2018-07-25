@@ -57,7 +57,6 @@ if __name__ == '__main__':
 			print("Couldn't parse JSON configuration file: {0}".format(e.message))
 			sys.exit(1)
 
-
 	for i in range(len(tests)):
 
 		options = tests[i]
@@ -71,18 +70,17 @@ if __name__ == '__main__':
 			print("Skipping {0}".format(directory))
 			continue
 
-		names = map(lambda i: default_names[i], range(len(options['in'])))
+		names = list(map(lambda i: default_names[i], range(len(options['in']))))
 
 		all_exist = False
 		for name in names:
 			all_exist = all_exist & os.path.exists(directory + name)
 
 		if all_exist:
-			matrices = map(lambda name : binary_matrix.read(directory + name), names)
+			matrices = list(map(lambda name : binary_matrix.read(directory + name), names))
 		else:
 			matrices = []
-			for i in range(len(names)):
-				name = names[i]
+			for i, name in enumerate(names):
 				spec = options['in'][i]
 				matrix = create_matrix(spec)
 				matrices.append(matrix)
