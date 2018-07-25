@@ -61,10 +61,10 @@ found [here](http://waylonflinn.github.io/DeepBeliefSDK/).
 Here's a basic example:
 ```javascript
 // create Tensor containers for interacting directly with GPU memory
-var t0 = weblas.pipeline.Tensor([M, K], data0);
+var t0 = new weblas.pipeline.Tensor([M, K], data0);
 // second matrix must be transposed
-var t1 = weblas.pipeline.Tensor([N, K], weblas.util.transpose(K, N, data1));
-var t2 = weblas.pipeline.Tensor([1, N], data2);
+var t1 = new weblas.pipeline.Tensor([N, K], weblas.util.transpose(K, N, data1));
+var t2 = new weblas.pipeline.Tensor([1, N], data2);
 var alpha = 1.0;
 var beta = 0.5;
 
