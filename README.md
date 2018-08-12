@@ -24,6 +24,12 @@ First, include the `weblas.js` file (from a release or the `dist` directory).
 <script type="text/javascript" src="weblas.js"></script>
 ```
 
+Or include it via CDN:
+
+```html
+<script src="https://cdn.jsdelivr.net/npm/weblas/dist/weblas.js"></script>
+```
+
 Then use it like this.
 
 ```html
